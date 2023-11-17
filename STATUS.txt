@@ -1,0 +1,71 @@
+THINGS THAT NEED TO GET DONE 
+
+- Upload to GitHub -- by 10/31
+- Submit Joss paper -- by 10/31
+
+- Run through installation once more -- 98% sure it should work with no changes (AM)
+
+- Check through the functionality once more -- run jupyter notebook (AM) or (ER) 
+
+- Do we have automated tests for users to test functionality?
+	- Should we just link to the QICK loop back test?
+
+-Software paper -- (ER) will review and edit this 
+	-Summary for diverse non specialist audience
+	-Statement of need
+	-State of the field 
+
+-Modify the hardware readme to include the ZCU111?
+-Modify the voltage divider in the hardware readme to match our current version
+
+- Setup.py and SPHINX documentation (ER/AM)
+________________________________________________________________________
+
+TO DO SOONER THAN LATER
+
+- setup a diamond/laser/mw/FPGA setup so we can test the functionality
+- (ER) meet with Jasmine talk about SPINX and setup.py 
+- Need to update the voltage divider from my old version to the new version and get pictures
+
+________________________________________________________________________
+
+OUTSTANDING QUESTIONS
+
+-Do we have automated tests for users to test functionality?
+-What do we want to put under the hardware section? I added a shortened list from the hardware readme that I have archived
+-Under project status do we want to say that a hardware setup/readme will be coming soon?
+-How do we want to credit Sho? Right now we just say thank you to Sho on the main readme page.
+-I had to add config.mw_readout_delay_treg to Readoutwindow in 4x2demo--I'm not sure what it should be set to can you check on this?
+-I had to config.laser_readout_offset_treg=310 ## ER HAD TO ADD THIS to 4x2
+-I had to mw_readout_delay and laser_readout_offset to Hahn echo 
+- Are we making functionality claims -- part of the JOSS paper. I think this would be related to the overhead in timing
+-Do we want to edit the installation to make sense for 4x2 and 111 users?
+	-this would mean sectioning off the balun surgery for onyl 4x2 users
+	-incuding a schematic setup for 111 users 
+
+______________________________________________________________________
+
+MOVE THINGS HERE WHEN THEY ARE COMPLETED 
+
+- Add licensing to readme (ER) DONE 10/14
+	- added the SANDIA text required before the OSS license
+	- used the MIT license template from GITHUB for the rest of the text
+	- I compared this to software on the sandia github and ours looks good
+	- this is in both the readme and its own license text document
+- ER edited main page readme and feels like its done 10/14
+	- edited the wording of the abstract
+	- changed the hardware section
+	- added the proper licensing 
+- went through and implemented AM comments in the main readme and installation read me 10/15 
+- went through the pulse sequence plotting and adjusted the vars_on plots so that the text is readable 10/15
+- 10/16 made some quick qickdawg timing analysis code--runs through each sequence for a range of reps and then does a linear fit on the data
+  Right now I'm thinking that the y intercept is the overhead time for any run regardless of the reps 
+  There might be fancier things we could do to add to the analysis like comparing the pusling time to the actual time it takes to run, but
+  I feel like this would only show the relax delay time and its already clear from the documentation what/how long that is 
+  ** I should re run this notebook with the correct settings for mw_readout_delay_treg and laser_readout_offset --> not sure what they should be
+	
+_______________________________________________________________________
+
+WHEN THE GITHUB IS POSTED CHANGE THESE THINGS
+
+- need to redo the internal links to other files 
