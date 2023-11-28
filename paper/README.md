@@ -34,10 +34,10 @@ authors:
   equal-contrib: true
   affiliation: 2 
 affiliations:
- - name: Haverford College, US
-   index: 1
- - name: Center for Integrated Nanotechnologies (CINT), Sandia National Laboratories, US
-   index: 2
+- name: Haverford College, US
+  index: 1
+- name: Center for Integrated Nanotechnologies (CINT), Sandia National Laboratories, US
+  index: 2
 - name: Brown University, US
   index: 3
 - name: Purdue University, US
