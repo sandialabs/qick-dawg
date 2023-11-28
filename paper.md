@@ -86,10 +86,11 @@ QICK-DAWG has standardized measurement programs for acquiring PL intensity, ODMR
 An example configuration, execution, and data plotting of our Rabi Oscillation program is displayed in Fig. 1, with configuration-value labeled pulse sequence graphic.  
 
 ![Rabi Pulse Sequence Example](RABI_example1.png)
+
 ![Rabi Pulse Sequence Example](RABI_example2.png "Figure 1. Example use of QICK-DAWG to perform Rabi oscillations from the demo Jupyter notebook.")
 
 
-     
+
 
 # Current Implementation
 
