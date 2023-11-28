@@ -59,7 +59,7 @@ Open-source software packages for quantum control and data acquisition such as A
 
 Focusing on hardware, Xilinx’s ZCU216, Xilinx’s ZCU111 and Real Digital’s RFSoC4x2 are recently available RFSoC FPGAs with the ability to generate control pulses at high frequencies (6–10GHz) and to digitize signals from photodiodes and single photon detector modules at high sample rates. The precise high frequencies pulse generation, readout capability, compact size, and relatively low cost of these RFSoC FPGAs make them ideal candidates for defect control hardware. There are two open-source quantum hardware software packages currently supporting the use of RFSoC’s: Qubic and QICK. 
 
-QubiC, started in 2018 at the Advanced Quantum Testbed at the Lawrence Berkeley National Laboratory, is an FPGA based open-source control and acquisition software, and it is focused on superconducting qubits. Recently, QubiC adopted Xilinx's ZCU216 to take advantage of new RFSoC capabilities[@Xu:2021,@Xu:2023]`. 
+QubiC, started in 2018 at the Advanced Quantum Testbed at the Lawrence Berkeley National Laboratory, is an FPGA based open-source control and acquisition software, and it is focused on superconducting qubits. Recently, QubiC adopted Xilinx's ZCU216 to take advantage of new RFSoC capabilities `[@Xu:2021,@Xu:2023]`. 
 
 QICK (Quantum Instrumentation Control Kit) is the second package to utilize RFSoC FPGA’s, developed in 2021 `[@Stefanazzi:2022]`. QICK has been applied to superconducting, spin, atomic, molecular, and optical qubit systems, and has reached 40 labs in the last two years `[@Shammah:2023]`. Most appealing for quantum sensing, QICK has complied firmware for Real Digital’s RFSoC4x2 which is the lowest cost option of commercial off the shelf FPGA boards. 
 
