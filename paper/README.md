@@ -45,9 +45,7 @@ affiliations:
 - name: Georgia Institute of Technology, US
   index: 5
 date: 27 November 2023
-bibliography: paper.bib
-- name: Open Journals PDF Generator
-  uses: openjournals/openjournals-draft-action@v.1.0        
+bibliography: paper.bib       
 ---
 
 # Summary	
