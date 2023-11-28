@@ -9,7 +9,6 @@ tags:
 authors:
 - name: E. G. Riendeauo
   orcid: 0000-0002-0460-873X
-  equalcontrib: true
   affiliation: "1, 2" # (Multiple affiliations must be quoted)
 - name: L. Basso
   affiliation: 2
@@ -31,7 +30,6 @@ authors:
   affiliation: 2 
 - name: A. M. Mounce 
   orcid: 0000-0002-8115-2764
-  equal-contrib: true
   affiliation: 2 
 affiliations:
 - name: Haverford College, US
