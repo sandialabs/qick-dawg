@@ -6,48 +6,33 @@ tags:
   - NVs 
   - quantum defect characterization
   - RFSoC4x2
-
 authors:
-- name: Emmeline Riendeau 
+- name: E. G. Riendeau 
     orcid: 0000-0002-0460-873X
     equal-contrib: true
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
-
-- name: Luca Basso
+- name: L. Basso
     affiliation: 2
-
-- name: Jasmine Mah
+- name: J. J. Mah
     affiliation: "2,3"
-
-- name: Rong Cong
+- name: R. Cong
     affiliation: "2,3" 
-  
-- name: Mohammed Sadi
+- name: M. A. Sadi
     affiliation: "2,4"
-
-- name: Jacob Henshaw
+- name: J. Henshaw
     affiliation: 2 
-
-- name: K M Azizur Rahman
+- name: K. M. Azizur-Rahman
     affiliation: 2 
-
-- name: Aulden Jones 
+- name: A. Jones 
     affiliation: "2,5"
-
-- name: Gajadhar Joshi
+- name: G. Joshi
     affiliation: 2 
-
-- name: Michael Lilly
+- name: M. P. Lilly
     affiliation: 2 
-
-- name: Andrew Mounce 
+- name: A. M. Mounce 
     orcid: 0000-0002-8115-2764
     equal-contrib: true
     affiliation: 2 
-
-
-
-
 affiliations:
  - name: Haverford College, US
    index: 1
@@ -59,13 +44,8 @@ affiliations:
    index: 4
 - name: Georgia Institute of Technology, US
    index: 5
-
-date: 18 November 2023
+date: 27 November 2023
 bibliography: paper.bib
-              
-- name: Open Journals PDF Generator
-              
-  uses: openjournals/openjournals-draft-action@v.1.0
 ---
 
 # Summary	
