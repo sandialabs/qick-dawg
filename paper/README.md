@@ -1,4 +1,6 @@
 ---
+- name: Open Journals PDF Generator            
+  uses: openjournals/openjournals-draft-action@v.1.0
 title: 'Quantum Instrument Control Kit – Defect Arbitrary Waveform Generator (QICK-DAWG): A Quantum Sensing Control Framework for Quantum Defects'
 tags:
   - QICK
