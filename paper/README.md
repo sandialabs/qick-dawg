@@ -20,7 +20,7 @@ authors:
     affiliation: "2,3"
 
 - name: Rong Cong
-    affiliation: 2,3 
+    affiliation: "2,3" 
   
 - name: Mohammed Sadi
     affiliation: "2,4"
