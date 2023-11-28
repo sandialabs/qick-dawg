@@ -39,11 +39,11 @@ affiliations:
  - name: Center for Integrated Nanotechnologies (CINT), Sandia National Laboratories, US
    index: 2
 - name: Brown University, US
-   index: 3
+  index: 3
 - name: Purdue University, US
-   index: 4
+  index: 4
 - name: Georgia Institute of Technology, US
-   index: 5
+  index: 5
 date: 27 November 2023
 bibliography: paper.bib
 ---
