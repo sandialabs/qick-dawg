@@ -1,5 +1,5 @@
 ---
-title: 'Quantum Instrument Control Kit – Defect Arbitrary Waveform Generator (QICK-DAWG): A Quantum Sensing Control Framework for Quantum Defects'
+title: 'Quantum Instrumentation Control Kit – Defect Arbitrary Waveform Generator (QICK-DAWG): A Quantum Sensing Control Framework for Quantum Defects'
 tags:
   - QICK
   - Nitrogen-Vacancy Centers
