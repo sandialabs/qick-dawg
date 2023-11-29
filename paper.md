@@ -7,7 +7,7 @@ tags:
   - quantum defect characterization
   - RFSoC4x2
 authors:
-- name: E. G. Riendeauo
+- name: E. G. Riendeau
   orcid: 0000-0002-0460-873X
   affiliation: "1, 2" # (Multiple affiliations must be quoted)
 - name: L. Basso
