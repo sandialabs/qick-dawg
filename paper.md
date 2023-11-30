@@ -92,7 +92,7 @@ An example configuration, execution, and data plotting of our Rabi Oscillation p
 
 # Current Implementation
 
-At Sandia National Laboratories, we are currently using QICK-DAWG to characterize ensembles of both NVs in diamond and boron-vacancy defects in hexagonal boron nitride. These quantum defects are characterized for PL intensity, T*<sub>2</sub>, T<sub>2 </sub>, and T<sub>1</sub>.  We characterize both the intrinsic properties of these quantum defects and dependent properties which change in the presence of other materials of interest, i.e., in a quantum sensing experiment. These methods allow us to understand the spin properties of low dimensional materials which cannot be accessed by traditional spin probes [@Henshaw:2023,@Henshaw:2022,@Casola:2018,@Wang:2022].
+At Sandia National Laboratories, we are currently using QICK-DAWG to characterize ensembles of both NVs in diamond and boron-vacancy defects in hexagonal boron nitride. These quantum defects are characterized for PL intensity, T*<sub>2</sub>, T<sub>2 </sub>, and T<sub>1</sub>.  We characterize both the intrinsic properties of these quantum defects and dependent properties which change in the presence of other materials of interest, i.e., in a quantum sensing experiment. These methods allow us to understand the spin properties of low dimensional materials which cannot be accessed by traditional spin probes [@Henshaw:2023][@Henshaw:2022][@Casola:2018][@Wang:2022].
 
 
 
