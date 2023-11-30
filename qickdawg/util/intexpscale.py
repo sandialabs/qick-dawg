@@ -1,8 +1,9 @@
 import numpy as np
 
+
 def int_exp_scale(start, end, scaling_factor):
     '''
-    Function that generates a exponentially scaled array from 'start' to 
+    Function that generates a exponentially scaled array from 'start' to
     'end' by 'scaling_factor'
     ---------------------------------------------------------------------
     Parameters
@@ -17,7 +18,7 @@ def int_exp_scale(start, end, scaling_factor):
     '''
 
     points = [start]
-    
+
     numerator, denominator = scaling_factor.split('/')
     numerator = int(numerator)
     denominator = int(denominator)

@@ -5,9 +5,9 @@ Class that allows access to attributes like a standard class
 but also allows access to attributes with dictionary item syntax
 
 i.e. "attribute" of "class" can be accessed as
-class.attribute 
+class.attribute
 
-or 
+or
 
 class["attribute"]
 
@@ -23,11 +23,10 @@ class ItemAttribute(object):
         dictionary - (default None) dictionary object
     '''
 
-
-    def __init__(self,dictionary=None):
-        if dictionary!=None:
+    def __init__(self, dictionary=None):
+        if dictionary is not None:
             for k in dictionary.keys():
-                self[k]=dictionary[k]
+                self[k] = dictionary[k]
 
     __getitem__ = object.__getattribute__
     __setitem__ = object.__setattr__

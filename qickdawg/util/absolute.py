@@ -6,11 +6,12 @@ absolute
 
 import numpy as np
 
+
 def absolute(a):
     '''
     A funciton that returns the quadrature sum of an array of shape
-    [2, n] 
-    
+    [2, n]
+
     Parameters
     a
         an array of size [2, n]

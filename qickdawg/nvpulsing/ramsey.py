@@ -13,6 +13,7 @@ from .nvqicksweep import NVQickSweep
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+
 class Ramsey(NVAveragerProgram):
     '''
     An NVAveragerProgram class that generates and executes a sequence used
@@ -33,7 +34,7 @@ class Ramsey(NVAveragerProgram):
             nyquist zone for microwave generator (1 or 2)
         .mw_gain : int
             gain of micrwave channel, in register values, from 0 to 2**15-1
-        
+
         .pre_init : bool
             boolian value that indicates whether to pre-pulse the laser to initialize
             the spin state
@@ -68,26 +69,25 @@ class Ramsey(NVAveragerProgram):
         returns the approximate total time for the entire program to complete
     '''
     required_cfg = [
-            "adc_channel",
-            "readout_integration_treg",
-            "mw_channel",
-            "mw_nqz",
-            "mw_pi2_treg",
-            "mw_gain",
-            "delay_start_treg",
-            "delay_end_treg",
-            "nsweep_points",
-            "pre_init",
-            "laser_gate_pmod",
-            "laser_on_treg",
-            "relax_delay_treg",
-            "readout_delay_treg",
-            "reps",
-            "readout_reference_start_treg",
-            "laser_readout_offset_treg",
-            "mw_readout_delay_treg"
-            ]
-    
+        "adc_channel",
+        "readout_integration_treg",
+        "mw_channel",
+        "mw_nqz",
+        "mw_pi2_treg",
+        "mw_gain",
+        "delay_start_treg",
+        "delay_end_treg",
+        "nsweep_points",
+        "pre_init",
+        "laser_gate_pmod",
+        "laser_on_treg",
+        "relax_delay_treg",
+        "readout_delay_treg",
+        "reps",
+        "readout_reference_start_treg",
+        "laser_readout_offset_treg",
+        "mw_readout_delay_treg"]
+
     def initialize(self):
         '''Method that generates the assembly code that is sets up adcs and sources.
 
@@ -106,43 +106,43 @@ class Ramsey(NVAveragerProgram):
 
         # Get registers for mw
 
-        self.declare_gen(ch=self.cfg.mw_channel, 
-                            nqz=self.cfg.mw_nqz)        
-        
+        self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)        
+
         # Setup pulse defaults microwave
-        self.default_pulse_registers(ch=self.cfg.mw_channel,
-                                    style='const',
-                                    freq=self.cfg.mw_freg,
-                                    length=self.cfg.mw_pi2_treg,
-                                    gain=self.cfg.mw_gain)
-    
+        self.default_pulse_registers(
+            ch=self.cfg.mw_channel,
+            style='const',
+            freq=self.cfg.mw_freg,
+            length=self.cfg.mw_pi2_treg,
+            gain=self.cfg.mw_gain)
+
         self.set_pulse_registers(ch=self.cfg.mw_channel,
                                  phase=0)
-    
+
         # Addd loops
         self.delay_register = self.new_gen_reg(self.cfg.mw_channel,
                                                name='delay', 
                                                init_val=self.cfg.delay_start_treg)
-        
+
         self.mw_time_register = self.get_gen_reg(self.cfg.mw_channel, 
                                                  name='t')
 
-      
-        self.add_sweep(NVQickSweep(self, 
-                                    self.delay_register,
-                                    self.cfg.delay_start_treg, 
-                                    self.cfg.delay_end_treg,
-                                    self.cfg.nsweep_points))
-      
+        self.add_sweep(NVQickSweep(
+            self, 
+            self.delay_register,
+            self.cfg.delay_start_treg, 
+            self.cfg.delay_end_treg,
+            self.cfg.nsweep_points))
+
         self.synci(400)  # give processor some time to self.cfgure pulses
 
         if self.cfg.pre_init:
-                self.trigger(
-                    pins=[self.cfg.laser_gate_pmod],
-                    width=self.cfg.laser_on_treg,
-                    adc_trig_offset=0
-                )           
-                self.sync_all(self.cfg.laser_on_treg+self.cfg.relax_delay_treg)
+            self.trigger(
+                pins=[self.cfg.laser_gate_pmod],
+                width=self.cfg.laser_on_treg,
+                adc_trig_offset=0
+            )           
+            self.sync_all(self.cfg.laser_on_treg + self.cfg.relax_delay_treg)
 
     def body(self):
         '''
@@ -172,7 +172,7 @@ class Ramsey(NVAveragerProgram):
         self.sync_all(self.cfg.mw_readout_delay_treg)
         # Readout           
         self.ttl_readout()
-        
+
         ## Pulse sequence 2
         # Second pi/2 pulse is in the -x direction
         # pi/2 - x
@@ -198,7 +198,6 @@ class Ramsey(NVAveragerProgram):
 
         return data
 
-    
     def time_per_rep(self):
 
         pass
@@ -206,7 +205,7 @@ class Ramsey(NVAveragerProgram):
     def plot_sequence(cfg=None):
         '''
         Function that plots the pulse sequence generated by this program
-        
+
         Parameters
         ----------
         cfg: `.NVConfiguration` or None(default None)
@@ -215,35 +214,35 @@ class Ramsey(NVAveragerProgram):
         '''
 
         if cfg is None:
-            plt.figure(figsize=(12,12))
+            plt.figure(figsize=(12, 12))
             plt.axis('off')
             plt.imshow(mpimg.imread('../graphics/Ramsey.png'))
-            plt.text(500,700,"config.reps",fontsize=14)
-            plt.text(270,365,"delay",fontsize=10)
-            plt.text(400,385,"  config.readout_reference_start",fontsize=10)
-            plt.text(200,340,"mw_pi2", fontsize=10)
-            
-            plt.text(310,340," mw_pi2", fontsize=10)
-            plt.text(260,465,"config.laser_readout_offset",fontsize=10)
-            plt.text(390,340,"config.readout_integration", fontsize=10)
-            plt.text(650,340,"config.readout_integration", fontsize=10)
-            plt.text(850,340,"config.relax_delay",fontsize=10)
-            plt.text(400,430,"config.laser_on",fontsize=10)
-            plt.text(220,605,"Sweep delay linearly from config.delay_start to config.delay_end in config.nsweep_points \n                            with scaling given by config.scaling_mode",fontsize=12)
+            plt.text(500, 700, "config.reps", fontsize=14)
+            plt.text(270, 365, "delay", fontsize=10)
+            plt.text(400, 385, "  config.readout_reference_start", fontsize=10)
+            plt.text(200, 340, "mw_pi2", fontsize=10)
+
+            plt.text(310, 340, " mw_pi2", fontsize=10)
+            plt.text(260, 465, "config.laser_readout_offset", fontsize=10)
+            plt.text(390, 340, "config.readout_integration", fontsize=10)
+            plt.text(650, 340, "config.readout_integration", fontsize=10)
+            plt.text(850, 340, "config.relax_delay", fontsize=10)
+            plt.text(400, 430, "config.laser_on", fontsize=10)
+            plt.text(220, 605, "Sweep delay linearly from config.delay_start to config.delay_end in config.nsweep_points \n                            with scaling given by config.scaling_mode", fontsize=12)
             plt.title("             Ramsey Pulse Sequence", fontsize=20)
         else:
-            plt.figure(figsize=(12,12))
+            plt.figure(figsize=(12, 12))
             plt.axis('off')
             plt.imshow(mpimg.imread('../graphics/Ramsey.png'))
-            plt.text(450,700,"Repeat {} times".format(cfg.reps),fontsize=14)
-            plt.text(270,365,"delay",fontsize=10)
-            plt.text(385,385,"  readout_reference_start = {} us".format(cfg.readout_reference_start_tus),fontsize=10)
-            plt.text(200,340,"pi/2", fontsize=12)
-            plt.text(310,340," pi/2", fontsize=12)
-            plt.text(240,465,"laser_readout_offset = {} treg".format(cfg.laser_readout_offset_treg),fontsize=10)
-            plt.text(390,337,"readout_integration = {} us".format(str(cfg.readout_integration_tus)[:4]), fontsize=10)
-            plt.text(650,357,"readout_integration \n = {} us".format(str(cfg.readout_integration_tus)[:4]), fontsize=10)
-            plt.text(850,357,"relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]),fontsize=10)
-            plt.text(400,430,"laser_on = {} us".format(cfg.laser_on_tus),fontsize=12)
-            plt.text(375,605,"    Sweep delay linearly from {} to {}          \n                     in {} steps".format(int(cfg.delay_start_tns),int(cfg.delay_end_tns),cfg.nsweep_points),fontsize=12)
+            plt.text(450, 700, "Repeat {} times".format(cfg.reps), fontsize=14)
+            plt.text(270, 365, "delay", fontsize=10)
+            plt.text(385, 385, "  readout_reference_start = {} us".format(cfg.readout_reference_start_tus), fontsize=10)
+            plt.text(200, 340, "pi/2", fontsize=12)
+            plt.text(310, 340, " pi/2", fontsize=12)
+            plt.text(240, 465, "laser_readout_offset = {} treg".format(cfg.laser_readout_offset_treg), fontsize=10)
+            plt.text(390, 337, "readout_integration = {} us".format(str(cfg.readout_integration_tus)[:4]), fontsize=10)
+            plt.text(650, 357, "readout_integration \n = {} us".format(str(cfg.readout_integration_tus)[:4]), fontsize=10)
+            plt.text(850, 357, "relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=10)
+            plt.text(400, 430, "laser_on = {} us".format(cfg.laser_on_tus), fontsize=12)
+            plt.text(375, 605, "    Sweep delay linearly from {} to {}          \n                     in {} steps".format(int(cfg.delay_start_tns), int(cfg.delay_end_tns), cfg.nsweep_points), fontsize=12)
             plt.title("               Ramsey Pulse Sequence", fontsize=20)

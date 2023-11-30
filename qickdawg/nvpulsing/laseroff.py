@@ -11,12 +11,12 @@ from .nvaverageprogram import NVAveragerProgram
 
 def laser_off(config, reps=1, readout_integration_treg=65535):
     '''Sets laser PMOD to low
-    
+
     Parameters
     ----------
     reps : int (default 1)
     readout_integration_treg (default 65535 (maximum))
-    
+
     Returns
     -------
     int
@@ -27,10 +27,10 @@ def laser_off(config, reps=1, readout_integration_treg=65535):
     config.readout_integration_treg = readout_integration_treg
     prog = LaserOff(config)
 
-    data = prog.acquire() 
+    data = prog.acquire()
     data = np.mean(data)
-    data/= readout_integration_treg
-    
+    data /= readout_integration_treg
+
     return data
 
 
@@ -39,7 +39,7 @@ class LaserOff(NVAveragerProgram):
 
     Parameters
     ----------
-    cfg : 
+    cfg :
         instance of `.NVConfiguration`  with attributes
         .laser_gate_pmod
         .readout_integration_treg
@@ -54,9 +54,8 @@ class LaserOff(NVAveragerProgram):
 
     def initialize(self):
         """
-        Method that generates the assembly code that initializes the pulse sequence. 
+        Method that generates the assembly code that initializes the pulse sequence.
         For LaserOff this simply sets up the adc to integrate for self.cfg.readout_intregration_t#
-        
         """
 
         self.declare_readout(ch=self.cfg.adc_channel,
@@ -68,20 +67,19 @@ class LaserOff(NVAveragerProgram):
 
         self.trigger(
             pins=[self.cfg.laser_gate_pmod],
-            adc_trig_offset=0, 
-            t=0
-            )
+            adc_trig_offset=0,
+            t=0)
 
-        self.synci(self.cfg.relax_delay_treg + self.cfg.readout_integration_treg)  # give processor some time to configure pulses
+        self.synci(self.cfg.relax_delay_treg + self.cfg.readout_integration_treg)
 
     def body(self):
         '''
-        Method that generates the assembly code that is looped over or repeated. 
+        Method that generates the assembly code that is looped over or repeated.
         For LaserOff this simply sets laser_gate_pmod to the low value
         '''
 
         self.trigger(adcs=[self.cfg.adc_channel],
                      adc_trig_offset=0,
                      t=0)
-        
+
         self.synci(self.cfg.relax_delay_treg + self.cfg.relax_delay_treg)

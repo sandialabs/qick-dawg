@@ -1,7 +1,7 @@
 '''
 get_readout_window
 =======================================================================
-An function that acquires a timedomain readout window signal that 
+An function that acquires a timedomain readout window signal that
 is composed of multiple segments due to the limited memory assigned to the
 FPGA buffer.  Furhtermore, this take a readout window with and without a microwave
 pulse to generate a spin contrast that can be used to calibrate the averaging time
@@ -12,11 +12,12 @@ from .readoutwindow import ReadoutWindow
 
 import numpy as np
 
+
 def get_readout_window(config, n_time_bins):
     '''
-    Function that acquires two readoutwindows by combining 
+    Function that acquires two readoutwindows by combining
     n_time_bins number of window
-    
+
     Parameters
     ----------
     soc : ::class:`~qick.QickSoc`
@@ -29,14 +30,14 @@ def get_readout_window(config, n_time_bins):
 
     Returns
     --------
-    (np.array, np.array, qickdawg.NVAveragerProgram) a three tuple 
-        consisting of 
+    (np.array, np.array, qickdawg.NVAveragerProgram) a three tuple
+        consisting of
         1D np.array of the readout window with microwave on
         1D np.array of the readout window wiht microwave off
         The average program instance for diagnostics
     '''
     pi2 = config.mw_pi2_tus
-    laser_readout_offset_treg = config.laser_readout_offset_treg    
+    laser_readout_offset_treg = config.laser_readout_offset_treg
     config.mw_pi2_tus = 0
 
     for i in range(n_time_bins):
@@ -57,7 +58,7 @@ def get_readout_window(config, n_time_bins):
     config.mw_pi2_tus = pi2
 
     for i in range(n_time_bins):
-        prog=ReadoutWindow(config)
+        prog = ReadoutWindow(config)
         if i == 0:
             laser_readout_offset_treg = config.laser_readout_offset_treg
             prog = ReadoutWindow(config)
@@ -71,4 +72,3 @@ def get_readout_window(config, n_time_bins):
             print(i, config.laser_readout_offset_treg)
 
     return data_on, data_off, prog
-

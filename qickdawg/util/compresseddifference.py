@@ -17,14 +17,14 @@ def compressed_difference(a):
     new_array[n] = a[2n+1] - a[2n]
 
     Parameters
-    -------------------------------------------------------------------------    
+    ----------
     a
         a 1D array of size n
 
     returns
         an array of size n//2 with takes the difference of every two
     """
-    a = np.reshape(a, [a.shape[1]//2, 2])
-    a[:, 1] = a[:, 1]* -1
-    
+    a = np.reshape(a, [a.shape[1] // 2, 2])
+    a[:, 1] = a[:, 1] * -1
+
     return np.sum(a, axis=1)

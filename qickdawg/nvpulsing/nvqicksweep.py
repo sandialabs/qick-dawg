@@ -1,7 +1,7 @@
 """
 NVQickSweep 
 ===========================
-Class configures the qick assembly language to loop measurements over 
+Class configures the qick assembly language to loop measurements over
 parameters. The main difference between this an QickSweep are
 1. Handling of sweeping pulse length
 2. Addition of logorithm scaling
@@ -16,9 +16,9 @@ import numpy as np
 class NVQickSweep(AbsQickSweep):
     """
     Class that generates the assembly language code to change parameters
-    between measurements. Modified from the original QickSweep class to handle 
+    between measurements. Modified from the original QickSweep class to handle
     pulse length sweep and implement exponential scaling
-    
+
     Attributes
     ----------
     prog
@@ -50,7 +50,7 @@ class NVQickSweep(AbsQickSweep):
     update
         generates the assembly code to update the sweep parameter after each
         iteration of the loop
-    
+
     reset
         generates the assembly code to rset the swept parameter(s) to the initial
         value(s)
@@ -65,7 +65,7 @@ class NVQickSweep(AbsQickSweep):
 
         super().__init__(prog)
         self.reg = reg
-        
+
         self.start = start
         self.stop = stop
         self.expts = expts
@@ -95,13 +95,13 @@ class NVQickSweep(AbsQickSweep):
         self.scaling_factor = scaling_factor
 
         if self.scaling_mode == 'exponential':
-            assert self.scaling_factor in ['17/16', '9/8', '5/4', '3/2'], 'Currently accepting only scaling values 17/16, 9/8, /5/4, 3/2'
+            assert self.scaling_factor in ['17/16', '9/8', '5/4', '3/2'], \
+                'Currently accepting only scaling values 17/16, 9/8, /5/4, 3/2'
             self.numerator, self.denominator = self.scaling_factor.split('/')
             self.numerator = int(self.numerator)
             self.denominator = int(self.denominator)
             self.nshift = int(np.log2(self.denominator))
             self.temp_reg = self.prog.new_gen_reg(self.reg.page)
-
 
     def get_sweep_pts(self):
         '''
@@ -110,10 +110,10 @@ class NVQickSweep(AbsQickSweep):
         for self.scaling_mode = 'exponential' returns array for self.start to self.end
             with setps determined by self.scaling_factor. see qickdawg.int_exp_scale for details 
         '''
-    
-        if self.scaling_mode=='linear':
+
+        if self.scaling_mode == 'linear':
             return np.linspace(self.start, self.stop, self.expts)
-        elif self.scaling_mode=='exponential':
+        elif self.scaling_mode == 'exponential':
             return int_exp_scale(self.start, self.stop, self.scaling_factor)
 
     def update(self):
@@ -130,27 +130,26 @@ class NVQickSweep(AbsQickSweep):
             caluclates 1/2*initial value, then adds 1/2*initial value to the inital value
             final_value = initial_value + 1/2 initial_value == 3/2*initial_value
         """
-        if self.scaling_mode=='linear':
+        if self.scaling_mode == 'linear':
             self.reg.set_to(self.reg, '+', self.step_val)
-            if self.label=='length':
+            if self.label == 'length':
                 self.mw_mode_register.set_to(self.mw_mode_register, '+', self.step_val)
-    
-        elif self.scaling_mode=='exponential':
+
+        elif self.scaling_mode == 'exponential':
             self.prog.bitwi(self.reg.page, self.temp_reg.addr, self.reg.addr, '>>', self.nshift)
-            self.prog.math(self.reg.page, self.reg.addr, self.reg.addr, '+', self.temp_reg.addr )
+            self.prog.math(self.reg.page, self.reg.addr, self.reg.addr, '+', self.temp_reg.addr)
 
     def reset(self):
         """
         Method that generates the assembly code for reseting the register to the inital value
         of the loop
-        
+
         This is the same as qick.QickSweep.reset() with an additional condition for self.label="length"
         so that the mode register is also reset
         """
 
         self.reg.reset()
-        
-        if self.label=='length':
+
+        if self.label == 'length':
             self.prog.set_pulse_registers(ch=self.mw_channel,
                                           length=self.start)
-            
