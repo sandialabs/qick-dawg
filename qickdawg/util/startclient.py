@@ -10,7 +10,7 @@ from qick import QickConfig
 import qickdawg as qd
 
 
-def start_client(host_ip_address, host_port=8888,  server_name="myqick"):
+def start_client(host_ip_address, host_port=8888, server_name="myqick"):
     """Start qick client and return remote socket and configurations
 
     Parameters
@@ -21,9 +21,8 @@ def start_client(host_ip_address, host_port=8888,  server_name="myqick"):
 
     """
 
-
     Pyro4.config.SERIALIZER = "pickle"
-    Pyro4.config.PICKLE_PROTOCOL_VERSION=4
+    Pyro4.config.PICKLE_PROTOCOL_VERSION = 4
 
     ns_host = host_ip_address
     ns_port = 8888

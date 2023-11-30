@@ -1,10 +1,9 @@
 """
-NVConfiguration 
+NVConfiguration
 ============================
-A configuration class that is passed to averager programs to 
+A configuration class that is passed to averager programs to
 setup the pulse sequencing for qick-dawg programs
 """
-
 
 
 from ..util.itemattribute import ItemAttribute
@@ -19,7 +18,7 @@ class NVConfiguration(ItemAttribute):
     A class that stores configuration used by qick-dawg programs and
     and automatically converts units to be used in qick-dawg programs
 
-    Time  properties: properties that end in '_tus', '_tns', or '_treg' 
+    Time  properties: properties that end in '_tus', '_tns', or '_treg'
     are converted to all three variants as soon as they are initialized
 
     Frequency properties: properties that end in '_fMHz', 'fGHz', and '_freg'
@@ -27,7 +26,7 @@ class NVConfiguration(ItemAttribute):
 
     Phase properties: properties that end in '_pdegrees', '_preg' are converted
     to all variants as soon as they are initilized
-    
+
     Parameters
     ---------
     None
@@ -44,16 +43,15 @@ class NVConfiguration(ItemAttribute):
         this method divides the expereiment into several rounds of less than 1k reps.  Likely slows acuqisition
 
     add_linear_sweep
-        method that generates all the attributes required for exectuing a linear sweep 
+        method that generates all the attributes required for exectuing a linear sweep
 
     add_exponential_sweep
-        method that generates all the attributes required for exectuing a linear sweep 
+        method that generates all the attributes required for exectuing a linear sweep
     '''
-    
+
     def __init__(self):
 
         self.soccfg = qd.soccfg
-
 
     def __setattr__(self, name, value):
         """
@@ -61,31 +59,29 @@ class NVConfiguration(ItemAttribute):
         related to units used by the qick-dawg program
         """
 
-
         if name.split('_')[-1] == 'tus':
 
-            treg= self.soccfg.us2cycles(value)
+            treg = self.soccfg.us2cycles(value)
             tus = self.soccfg.cycles2us(treg)
 
             self.__dict__[name.replace('tus', 'treg')] = treg
             self.__dict__[name] = tus
-            self.__dict__[name.replace('tus', 'tns')] = tus*1000
+            self.__dict__[name.replace('tus', 'tns')] = tus * 1000
 
         elif name.split('_')[-1] == 'treg':
-            tus= self.soccfg.cycles2us(value)
+            tus = self.soccfg.cycles2us(value)
 
             self.__dict__[name] = value
             self.__dict__[name.replace('treg', 'tus')] = tus
-            self.__dict__[name.replace('treg', 'tns')] = tus*1000
+            self.__dict__[name.replace('treg', 'tns')] = tus * 1000
 
         elif name.split('_')[-1] == 'tns':
-            treg= self.soccfg.us2cycles(value/1000)
+            treg = self.soccfg.us2cycles(value / 1000)
             tus = self.soccfg.cycles2us(treg)
 
             self.__dict__[name.replace('tns', 'treg')] = treg
             self.__dict__[name.replace('tns', 'tus')] = tus
-            self.__dict__[name] = tus*1000
-
+            self.__dict__[name] = tus * 1000
 
         elif name.split('_')[-1] == 'fMHz':
             freg = self.soccfg.freq2reg(value)
@@ -93,7 +89,7 @@ class NVConfiguration(ItemAttribute):
 
             self.__dict__[name.replace('fMHz', 'freg')] = freg
             self.__dict__[name] = fMHz
-            self.__dict__[name.replace('fMHz', 'fGHz')] = fMHz/1000
+            self.__dict__[name.replace('fMHz', 'fGHz')] = fMHz / 1000
 
         elif name.split('_')[-1] == 'fGHz':
             freg = self.soccfg.freq2reg(value * 1000)
@@ -101,14 +97,14 @@ class NVConfiguration(ItemAttribute):
 
             self.__dict__[name.replace('fGHz', 'freg')] = freg
             self.__dict__[name.replace('fGHz', 'fMHz')] = fMHz
-            self.__dict__[name] = fMHz/1000
+            self.__dict__[name] = fMHz / 1000
 
         elif name.split('_')[-1] == 'freg':
             fMHz = self.soccfg.reg2freq(value)
 
             self.__dict__[name] = value
             self.__dict__[name.replace('freg', 'fMHz')] = fMHz
-            self.__dict__[name.replace('freg', 'fMHz')] = fMHz/1000
+            self.__dict__[name.replace('freg', 'fMHz')] = fMHz / 1000
 
         elif name.split('_')[-1] == 'pdegrees':
             preg = self.soccfg.deg2reg(value)
@@ -133,18 +129,18 @@ class NVConfiguration(ItemAttribute):
 
         Note: this may be fixed with a qick-patch
         """
-    
+
         safe_round_points = 1e3
 
         if 'nsweep_points' not in self:
             self.nsweep_points = 1
-        
-        points_per_round = reads_per_rep*self.nsweep_points*self.reps
+
+        points_per_round = reads_per_rep * self.nsweep_points * self.reps
 
         if points_per_round > safe_round_points:
-            reps = safe_round_points//(reads_per_rep * self.nsweep_points)
+            reps = safe_round_points // (reads_per_rep * self.nsweep_points)
 
-            self.rounds = int(self.reps//reps)
+            self.rounds = int(self.reps // reps)
             self.reps = int(reps)
 
     def add_linear_sweep(self, name, unit, start, stop, delta=0, nsweep_points=0):
@@ -154,17 +150,17 @@ class NVConfiguration(ItemAttribute):
 
         Parameters
         -------------------------
-        name 
+        name
             A string which is attribute that is to be swept over, i.e. 'mw'
-        unit 
+        unit
            A string which can be either 'fMhz', 'fGHz', 'freg', 'tus', 'tns'
            or 'treg'
         start
             float or integer which is the start value of the sweep
-        stop 
+        stop
             float or integer which is the end value of the sweep
         delta
-            float or integer which is the step size between start and end values 
+            float or integer which is the step size between start and end values
             (if excluded, must have nsweep_points parameter)
         nsweep_points
             number of points between start and end
@@ -184,25 +180,26 @@ class NVConfiguration(ItemAttribute):
 
         if (delta != 0) & (nsweep_points == 0):
 
-            self.nsweep_points = int((self[name + '_end_' + unit] - 
-                                    self[name + '_start_' + unit]) / 
-                                    self[name + '_delta_' + unit] + 1)
+            self.nsweep_points = int(
+                (self[name + '_end_' + unit]
+                 - self[name + '_start_' + unit])
+                / self[name + '_delta_' + unit] + 1)
 
         elif (delta == 0) & (nsweep_points != 0):
 
             self.nsweep_points = nsweep_points
             start_reg = self[name + '_start_' + unit]
-            end_reg = self[name + '_end_' + unit] 
+            end_reg = self[name + '_end_' + unit]
 
-            if not (end_reg - start_reg)%(nsweep_points-1):
-                self.__setattr__(name + '_delta_' + unit, 
-                                 (end_reg-start_reg)//(nsweep_points-1))
+            if not (end_reg - start_reg) % (nsweep_points - 1):
+                self.__setattr__(name + '_delta_' + unit,
+                                 (end_reg - start_reg) // (nsweep_points - 1))
             else:
-                delta_reg = floor((end_reg-start_reg)/(nsweep_points-1))
-                self.__setattr__(name + '_delta_' + unit, 
+                delta_reg = floor((end_reg - start_reg) / (nsweep_points - 1))
+                self.__setattr__(name + '_delta_' + unit,
                                  delta_reg)
-                self.__setattr__(name + '_end_' + unit, 
-                                 start_reg + delta_reg*(nsweep_points-1))
+                self.__setattr__(name + '_end_' + unit,
+                                 start_reg + delta_reg * (nsweep_points - 1))
 
         else:
             assert 0, 'Either delta and nsweep_points are required, but not both'
@@ -215,14 +212,14 @@ class NVConfiguration(ItemAttribute):
 
         Parameters
         -------------------------
-        name 
+        name
             A string which is attribute that is to be swept over, i.e. 'mw'
-        unit 
+        unit
            A string which can be either 'fMhz', 'fGHz', 'freg', 'tus', 'tns'
            or 'treg'
         start
             float or integer which is the start value of the sweep
-        stop 
+        stop
             float or integer which is the end value of the sweep
         scaling_factor
             string which currently is only implemented for strings
@@ -231,7 +228,8 @@ class NVConfiguration(ItemAttribute):
         """
 
         self.scaling_mode = 'exponential'
-        assert scaling_factor in ['17/16', '9/8', '5/4', '3/2'], 'Currently accepting only scaling values 17/16, 9/8, /5/4, 3/2'
+        assert scaling_factor in ['17/16', '9/8', '5/4', '3/2'], 'Currently accepting only \
+        scaling values 17/16, 9/8, /5/4, 3/2'
 
         self.scaling_factor = scaling_factor
         self.__setattr__(name + '_start_' + unit, start)

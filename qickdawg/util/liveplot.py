@@ -23,21 +23,20 @@ def live_plot(measure_function, histogram_range=100, dt=0.001):
         function that generates a data point or array of points
     histogram_range
         total number of data points plotted before overwriting
-    dt 
+    dt
         time between datapoints being taken
     '''
 
     plt.axis()
     plt.ion()
 
-
     x_data = []
     y_data = []
     data = []
     y = None
-    
-    t0=time()
-    
+
+    t0 = time()
+
     i = 0
     try:
         while True:
@@ -75,7 +74,7 @@ def live_plot(measure_function, histogram_range=100, dt=0.001):
                 print("Bad measure function return type")
                 return 0
 
-            if dims==0:
+            if dims == 0:
                 if histogram_range == 1:
                     data = new_data
                     x_data = x
@@ -89,14 +88,14 @@ def live_plot(measure_function, histogram_range=100, dt=0.001):
                 else:
                     data = np.append(data[1:], [new_data])
                     x_data = np.append(x_data[1:], [x])
-                    if y:   
+                    if y:
                         y_data = np.append(y_data[1:], [y])
-            elif dims==1:
+            elif dims == 1:
                 data = new_data
-                x_data=x
-            elif dims==2:
+                x_data = x
+            elif dims == 2:
                 data = new_data
-                x_data=x
+                x_data = x
                 y_data = y
             plt.gca().cla()
 
@@ -105,21 +104,21 @@ def live_plot(measure_function, histogram_range=100, dt=0.001):
             if dims == 0:
                 plt.plot(x_data, data)
                 plt.xlabel("Time (s)")
-                ypad=(np.max(data)-np.min(data))/20
-                plt.ylim(np.min(data)-ypad,np.max(data)+ypad)
-                plt.xlim(x_data[0],x_data[-1])
+                ypad = (np.max(data) - np.min(data)) / 20
+                plt.ylim(np.min(data) - ypad, np.max(data) + ypad)
+                plt.xlim(x_data[0], x_data[-1])
 
             if dims == 1:
                 plt.plot(x_data.T, data.T)
                 plt.xlabel(x_name)
-                ypad=(np.max(data)-np.min(data))/20
-                plt.ylim(np.min(data)-ypad,np.max(data)+ypad)
-                plt.xlim(x_data[0],x_data[-1])
+                ypad = (np.max(data) - np.min(data)) / 20
+                plt.ylim(np.min(data) - ypad, np.max(data) + ypad)
+                plt.xlim(x_data[0], x_data[-1])
 
             if dims == 2:
                 plt.pcolormesh(x_data, y_data, data.T)
                 plt.xlabel(x_name)
-                plt.xlim(x_data[0],x_data[-1])
+                plt.xlim(x_data[0], x_data[-1])
                 plt.ylim(y_data[0], y_data[-1])
 
             plt.ylabel(y_name)

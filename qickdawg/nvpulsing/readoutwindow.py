@@ -26,7 +26,7 @@ class ReadoutWindow(NVAveragerProgram):
         instance of qickdawg.NVConfiguration class with attributes:
         .adc_channel (required)
             int channel which is reading data 0 or 1
-        
+
         .mw_channel (required)
             qick channel that provides microwave excitation
             0 or 1 for RFSoC4x2
@@ -35,7 +35,7 @@ class ReadoutWindow(NVAveragerProgram):
             nyquist zone for microwave generator (1 or 2)
         .mw_gain (required)
             gain of micrwave channel, in register values, from 0 to 2**15-1
-        
+
         .pre_init (required)
             boolian value that indicates whether to pre-pulse the laser to initialize
             the spin state
@@ -71,22 +71,21 @@ class ReadoutWindow(NVAveragerProgram):
         returns the approximate total time for the entire program to complete
 
     '''
-    required_cfg=["mw_channel",
-                  "adc_channel",
-                  "mw_nqz",
-                  "mw_gain",
-                  "pre_init",
-                  "relax_delay_treg",
-                  "laser_gate_pmod",
-                  "readout_length_treg",
-                  "mw_pi2_treg",
-                  "mw_fMHz",
-                  "laser_initialize_treg",
-                  "mw_readout_delay_treg",
-                  "laser_readout_offset_treg",
-                  "soft_avgs"
-                  ]
-
+    required_cfg = [
+        "mw_channel",
+        "adc_channel",
+        "mw_nqz",
+        "mw_gain",
+        "pre_init",
+        "relax_delay_treg",
+        "laser_gate_pmod",
+        "readout_length_treg",
+        "mw_pi2_treg",
+        "mw_fMHz",
+        "laser_initialize_treg",
+        "mw_readout_delay_treg",
+        "laser_readout_offset_treg",
+        "soft_avgs"]
 
     def initialize(self):
         '''
@@ -102,19 +101,18 @@ class ReadoutWindow(NVAveragerProgram):
                              length=self.cfg.readout_length_treg,
                              sel="input")
 
-
         # Setup pulse defaults microwave
         if self.cfg.mw_pi2_treg > 0:
 
-            self.declare_gen(ch=self.cfg.mw_channel, 
-                                nqz=self.cfg.mw_nqz)        
-            self.default_pulse_registers(ch=self.cfg.mw_channel,
-                                    style='const',
-                                    freq=self.cfg.mw_freg,
-                                    gain=self.cfg.mw_gain,
-                                    length=self.cfg.mw_pi2_treg,
-                                    phase=0)
-        
+            self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)        
+            self.default_pulse_registers(
+                ch=self.cfg.mw_channel,
+                style='const',
+                freq=self.cfg.mw_freg,
+                gain=self.cfg.mw_gain,
+                length=self.cfg.mw_pi2_treg,
+                phase=0)
+
             self.set_pulse_registers(ch=self.cfg.mw_channel)
 
         self.synci(400)  # give processor some time to configure pulses
@@ -128,7 +126,7 @@ class ReadoutWindow(NVAveragerProgram):
         self.cfg.laser_readout_offset_t#
         '''
         t = 0
-        
+
         if self.cfg.pre_init:
             self.trigger(
                 pins=[self.cfg.laser_gate_pmod],
@@ -136,30 +134,30 @@ class ReadoutWindow(NVAveragerProgram):
             )
             t += self.cfg.laser_initialize_treg           
 
-        t+=self.cfg.relax_delay_treg
+        t += self.cfg.relax_delay_treg
 
         if self.cfg.mw_pi2_treg > 0:
-                self.pulse(ch=self.cfg.mw_channel, t=t)
-                t+= self.cfg.mw_pi2_treg
+            self.pulse(ch=self.cfg.mw_channel, t=t)
+            t += self.cfg.mw_pi2_treg
 
         self.sync_all(self.cfg.mw_readout_delay_treg)
-        
+
         if self.cfg.laser_readout_offset_treg > 3:
             self.trigger_no_off(
-                        pins=[self.cfg.laser_gate_pmod],
-                        t=t,
-                        adc_trig_offset=0,
-                        )
+                pins=[self.cfg.laser_gate_pmod],
+                t=t,
+                adc_trig_offset=0)
             t += self.cfg.laser_readout_offset_treg
-                
-        self.trigger(adcs=[0],
-                        adc_trig_offset=0,
-                        pins=[self.cfg.laser_gate_pmod],
-                        t=t,
-                        width=self.cfg.laser_initialize_treg-self.cfg.laser_readout_offset_treg)
-        
-        t+= self.cfg.laser_initialize_treg            
-        t+= self.cfg.relax_delay_treg
+
+        self.trigger(
+            adcs=[0],
+            adc_trig_offset=0,
+            pins=[self.cfg.laser_gate_pmod],
+            t=t,
+            width=self.cfg.laser_initialize_treg - self.cfg.laser_readout_offset_treg)
+
+        t += self.cfg.laser_initialize_treg            
+        t += self.cfg.relax_delay_treg
 
         self.synci(t)
         self.waiti(0, 0)
@@ -176,23 +174,22 @@ class ReadoutWindow(NVAveragerProgram):
         '''
 
         if cfg is None:
-            plt.figure(figsize=(10,10))
+            plt.figure(figsize=(10, 10))
             plt.axis('off')
             plt.imshow(mpimg.imread('../graphics/READOUT.png'))
-            plt.text(265,440,"config.soft_avgs",fontsize=14)
-            plt.text(205,305,"config.readout_length_t#",fontsize=12)
-            plt.text(445,305,"config.relax_delay_t#",fontsize=14)
-            plt.text(175,220,"config.mw_pi2_t#",fontsize=14)
-            plt.text(210,340,"config.laser_initialize_t#",fontsize=14)
+            plt.text(265, 440, "config.soft_avgs", fontsize=14)
+            plt.text(205, 305, "config.readout_length_t#", fontsize=12)
+            plt.text(445, 305, "config.relax_delay_t#", fontsize=14)
+            plt.text(175, 220, "config.mw_pi2_t#", fontsize=14)
+            plt.text(210, 340, "config.laser_initialize_t#", fontsize=14)
             plt.title("            Readout Pulse Sequence", fontsize=20)
         else:
-            plt.figure(figsize=(10,10))
+            plt.figure(figsize=(10, 10))
             plt.axis('off')
             plt.imshow(mpimg.imread('../graphics/READOUT.png'))
-            plt.text(265,440,"Repeat {} times".format(cfg.soft_avgs),fontsize=14)
-            plt.text(205,305,"readout_length = {} treg".format(int(cfg.readout_length_treg)),fontsize=12)
-            plt.text(445,305,"relax_delay = {} us".format(str(cfg.relax_delay_tus)[:4]),fontsize=14)
-            plt.text(175,220,"pi/2 pulse = {} ns".format(int(cfg.mw_pi2_tns)),fontsize=14)
-            plt.text(210,340,"laser_initialize = {} us".format(int(cfg.laser_initialize_tus)),fontsize=14)
+            plt.text(265, 440, "Repeat {} times".format(cfg.soft_avgs), fontsize=14)
+            plt.text(205, 305, "readout_length = {} treg".format(int(cfg.readout_length_treg)), fontsize=12)
+            plt.text(445, 305, "relax_delay = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=14)
+            plt.text(175, 220, "pi/2 pulse = {} ns".format(int(cfg.mw_pi2_tns)), fontsize=14)
+            plt.text(210, 340, "laser_initialize = {} us".format(int(cfg.laser_initialize_tus)), fontsize=14)
             plt.title("            Readout Pulse Sequence", fontsize=20)
-

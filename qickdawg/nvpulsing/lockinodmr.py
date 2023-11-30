@@ -1,7 +1,7 @@
 '''
 LockinODMR
 =======================================================================
-An NVAveragerProgram class that generates and executes ODMR measurements by 
+An NVAveragerProgram class that generates and executes ODMR measurements by
 measuring photoluminescnece intensity (PL) as a function of microwave frequency
 while taking the difference between PL for microwave drive on or off
 '''
@@ -15,9 +15,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+
 class LockinODMR(NVAveragerProgram):
     '''
-    An NVAveragerProgram class that generates and executes ODMR measurements by 
+    An NVAveragerProgram class that generates and executes ODMR measurements by
     measuring photoluminescnece intensity (PL) as a function of microwave frequency
     taking the difference between PL for microwave drive on or off
 
@@ -27,7 +28,7 @@ class LockinODMR(NVAveragerProgram):
         instance of qickdawg.NVConfiguration class with attributes:
         .adc_channel (required)
             int channel which is reading data 0 or 1
-        
+
         .mw_channel (required)
             qick channel that provides microwave excitation
             0 or 1 for RFSoC4x2
@@ -42,7 +43,7 @@ class LockinODMR(NVAveragerProgram):
             number of points between mw_start_fMHz and mw_end_fMHz
         .mw_gain (required)
             gain of micrwave channel, in register values, from 0 to 2**15-1
-        
+
         .pre_init (required)
             boolian value that indicates whether to pre-pulse the laser to initialize
             the spin state
@@ -85,52 +86,54 @@ class LockinODMR(NVAveragerProgram):
 
     '''
 
-    required_cfg=["readout_integration_treg",
-                      "adc_channel",
-                      "laser_gate_pmod",
-                      "relax_delay_treg",
-                      "mw_channel",
-                      "mw_nqz",
-                      "mw_gain",
-                      "nsweep_points",
-                      "pre_init",
-                      "reps"] 
-    
+    required_cfg = [
+        "readout_integration_treg",
+        "adc_channel",
+        "laser_gate_pmod",
+        "relax_delay_treg",
+        "mw_channel",
+        "mw_nqz",
+        "mw_gain",
+        "nsweep_points",
+        "pre_init",
+        "reps"]
+
     def initialize(self):
         """
-        Method that generates the assembly code that initializes the pulse sequence. 
+        Method that generates the assembly code that initializes the pulse sequence.
         For LockinODMR this sets up the adc to integrate for self.cfg.readout_intregration_t#,
-        setups hte microave channel to run fo the same amount of time, and setups the a 
+        setups hte microave channel to run fo the same amount of time, and setups the a
         qickdawg.NVQickSweep to sweep over frequencies
         """
         self.check_cfg()
         if self.cfg.mw_gain > 30000:
-            assert("hello")
+            assert 0, 'Microwave gain exceeds maximum value'
         self.declare_readout(ch=self.cfg.adc_channel,
                              freq=0,
                              length=self.cfg.readout_integration_treg,
                              sel="input")
 
         # Get registers for mw
-        self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)        
-        
+        self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
+
         # Setup pulse defaults microwave
-        self.set_pulse_registers(ch=self.cfg.mw_channel,
-                                     style='const',
-                                     freq=self.cfg.mw_start_freg,
-                                     gain= self.cfg.mw_gain,
-                                     length=self.cfg.readout_integration_treg,
-                                     phase=0)
-    
+        self.set_pulse_registers(
+            ch=self.cfg.mw_channel,
+            style='const',
+            freq=self.cfg.mw_start_freg,
+            gain=self.cfg.mw_gain,
+            length=self.cfg.readout_integration_treg,
+            phase=0)
+
         ## Get frequency register and convert frequency values to integers
-        self.mw_frequency_register=self.get_gen_reg(self.cfg.mw_channel, "freq")   
-        
+        self.mw_frequency_register = self.get_gen_reg(self.cfg.mw_channel, "freq")
+
         self.add_sweep(QickSweep(self,
                                  self.mw_frequency_register,
                                  self.cfg.mw_start_fMHz,
                                  self.cfg.mw_end_fMHz,
                                  self.cfg.nsweep_points))
-        
+
         self.synci(400)  # give processor some time to self.cfgure pulses
 
         if self.cfg.pre_init:
@@ -138,13 +141,12 @@ class LockinODMR(NVAveragerProgram):
             self.trigger(
                 pins=[self.cfg.laser_gate_pmod],
                 width=self.cfg.readout_integration_treg,
-                adc_trig_offset=0
-                )
-            self.sync_all(self.cfg.readout_integration_treg+self.cfg.relax_delay_treg)
+                adc_trig_offset=0)
+            self.sync_all(self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
 
     def body(self):
         '''
-        Method that generates the assembly code that is looped over or repeated. 
+        Method that generates the assembly code that is looped over or repeated.
         For LockinODMR this has two acquisitions
         The first acquisition has the microwave channel on for .cfg.readout_integration_t# and
             averages the adc values over this time
@@ -154,22 +156,23 @@ class LockinODMR(NVAveragerProgram):
 
         self.pulse(ch=self.cfg.mw_channel, t=0)
 
-        self.trigger(adcs=[0],
+        self.trigger(
+            adcs=[0],
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=0)
-            
-        self.trigger(adcs=[0],
+
+        self.trigger(
+            adcs=[0],
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
-            t=self.cfg.readout_integration_treg + self.cfg.relax_delay_treg
-            )
+            t=self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
 
         self.sync_all(self.cfg.relax_delay_treg)
         self.wait_all()
-    
+
     def acquire(self, raw_data=False, *arg, **kwarg):
 
         data = super().acquire(reads_per_rep=2, *arg, **kwarg)
@@ -181,7 +184,7 @@ class LockinODMR(NVAveragerProgram):
 
     def analyze_results(self, data):
         """
-        Method that takes in a 1D array of data points from self.acquire() and analyzes the 
+        Method that takes in a 1D array of data points from self.acquire() and analyzes the
         results based on the number of reps, rounds, and frequency points
 
         Parameters
@@ -198,7 +201,7 @@ class LockinODMR(NVAveragerProgram):
             .odmr_contrast (nfrequency np.array, % units) - (.signal - .reference)/.reference *100
         """
         data = np.reshape(data, self.data_shape)
-        data = data/self.cfg.readout_integration_treg
+        data = data / self.cfg.readout_integration_treg
 
         if len(self.data_shape) == 2:
             signal = data[:, 0]
@@ -211,36 +214,35 @@ class LockinODMR(NVAveragerProgram):
             reference = data[:, :, :, 1]
 
         odmr = (signal - reference)
-        odmr_contrast = (signal - reference)/reference *100
-        
+        odmr_contrast = (signal - reference) / reference * 100
+
         for _ in range(len(odmr.shape) - 1):
             odmr = np.mean(odmr, axis=0)
             signal = np.mean(signal, axis=0)
             reference = np.mean(reference, axis=0)
             odmr_contrast = np.mean(odmr_contrast, axis=0)
-        
+
         d = ItemAttribute()
         d.odmr = odmr
         d.signal = signal
         d.reference = reference
         d.odmr_contrast = odmr_contrast
-        
+
         d.frequencies = self.qick_sweeps[0].get_sweep_pts()
-        
+
         return d
-        
 
     def time_per_rep(self):
         """
         Method that returns the approximate time per rep, excluding any overhead
-        
+
         returns
             (float) time for one rep in seconds
-        
+
         """
-        t = self.cfg.readout_integration_tus*2
+        t = self.cfg.readout_integration_tus * 2
         t += self.cfg.relax_delay_tus * 2
-        t *= self.cfg.nsweep_points /1e6
+        t *= self.cfg.nsweep_points / 1e6
 
         return t
 
@@ -250,16 +252,13 @@ class LockinODMR(NVAveragerProgram):
 
         returns
             (float) time for full qickdawg program in seconds
-        
-        
         """
         return self.time_per_rep() * self.cfg.reps
-
 
     def plot_sequence(cfg=None):
         '''
         Function that plots the pulse sequence generated by this program
-        
+
         Parameters
         ----------
         cfg: `.NVConfiguration` or None(default None)
@@ -268,21 +267,20 @@ class LockinODMR(NVAveragerProgram):
         '''
 
         if cfg is None:
-            plt.figure(figsize=(10,10))
+            plt.figure(figsize=(10, 10))
             plt.axis('off')
             plt.imshow(mpimg.imread('../graphics/ODMR.png'))
-            plt.text(295,340,"    config.reps",fontsize=16)
-            plt.text(200,275,"config.readout_integration_t#",fontsize=14)
-            plt.text(520,275,"config.relax_delay_t#",fontsize=14)
-            plt.text(145,430,"Sweep linearly from config.mw_start_f# to config.mw_end_f# \n                   in steps of config.mw_delta_f#", fontsize=14)
+            plt.text(295, 340, "    config.reps", fontsize=16)
+            plt.text(200, 275, "config.readout_integration_t#", fontsize=14)
+            plt.text(520, 275, "config.relax_delay_t#", fontsize=14)
+            plt.text(145, 430, "Sweep linearly from config.mw_start_f# to config.mw_end_f# \n                   in steps of config.mw_delta_f#", fontsize=14)
             plt.title("      ODMR Pulse Sequence", fontsize=20)
         else:
-            plt.figure(figsize=(10,10))
+            plt.figure(figsize=(10, 10))
             plt.axis('off')
             plt.imshow(mpimg.imread('../graphics/ODMR.png'))
-            plt.text(295,340,"Repeat {} times".format(cfg.reps),fontsize=16)
-            plt.text(200,275,"readout_integration = {} us".format(int(cfg.readout_integration_tus)),fontsize=14)
-            plt.text(520,290,"relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]),fontsize=14)
-            plt.text(130,400,"Sweep linearly from {} MHz to {} MHz in steps of {} MHz".format(int(cfg.mw_start_fMHz),int(cfg.mw_end_fMHz),str(cfg.mw_delta_fMHz)[:4]), fontsize=14)
+            plt.text(295, 340, "Repeat {} times".format(cfg.reps), fontsize=16)
+            plt.text(200, 275, "readout_integration = {} us".format(int(cfg.readout_integration_tus)), fontsize=14)
+            plt.text(520, 290, "relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=14)
+            plt.text(130, 400, "Sweep linearly from {} MHz to {} MHz in steps of {} MHz".format(int(cfg.mw_start_fMHz), int(cfg.mw_end_fMHz), str(cfg.mw_delta_fMHz)[:4]), fontsize=14)
             plt.title("      ODMR Pulse Sequence", fontsize=20)
-
