@@ -83,6 +83,8 @@ Thank you to Sho Uemura at Fermi Labs for helping us edit the QICK firmware.
 
 
 ## License
+MIT License 
+
 Copyright 2023 National Technology & Engineering Solutions of Sandia, LLC (NTESS). Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains certain rights in this software.
 
 
