@@ -172,7 +172,8 @@ class LockinODMRTwoSources2(NVAveragerProgram):
         plt.text(240, 710, "Repeat {} times".format(self.cfg.reps), fontsize=16)
         plt.text(170, 465, "readout_integration = {} us".format(int(self.cfg.readout_integration_tus)), fontsize=14)
         plt.text(485, 490, "relax_delay \n = {} us".format(str(self.cfg.relax_delay_tus)[:4]), fontsize=14)
-        plt.text(90, 520, "Sweep linearly from {} MHz to {} MHz in steps of {} MHz".format(int(self.cfg.mw_start_fMHz), int(self.cfg.mw_end_fMHz), str(self.cfg.mw_delta_fMHz)[:4]), fontsize=14)
+        plt.text(90, 520, "Sweep linearly from {} MHz to {} MHz in steps of {} MHz".format(
+            int(self.cfg.mw_start_fMHz), int(self.cfg.mw_end_fMHz), str(self.cfg.mw_delta_fMHz)[:4]), fontsize=14)
         plt.title("      ODMR Pulse Sequence", fontsize=20)
 
     def time_per_rep(self):

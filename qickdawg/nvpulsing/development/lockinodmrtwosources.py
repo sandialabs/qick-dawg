@@ -44,7 +44,8 @@ class LockinODMRTwoSources(NVAveragerProgram):
 
         df_points = (self.cfg.mw1_end_freg - self.cfg.mw1_start_freg) // self.cfg.mw1_delta_freg + 1
 
-        self.add_sweep(NVQickSweep(self, self.mw1_frequency_register, self.cfg.mw1_start_freqMHz, self.cfg.mw1_end_freqMHz, df_points, source2=self.mw2_frequency_register))
+        self.add_sweep(NVQickSweep(self, self.mw1_frequency_register, self.cfg.mw1_start_freqMHz,
+                       self.cfg.mw1_end_freqMHz, df_points, source2=self.mw2_frequency_register))
 
         if self.cfg.pre_init:
             self.pulse(ch=self.cfg.mw1_channel)    

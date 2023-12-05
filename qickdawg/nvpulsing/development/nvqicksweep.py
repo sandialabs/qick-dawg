@@ -95,7 +95,8 @@ class NVQickSweep(AbsQickSweep):
         self.scaling_factor = scaling_factor
 
         if self.scaling_mode == 'exponential':
-            assert self.scaling_factor in ['17/16', '9/8', '5/4', '3/2'], 'Currently accepting only scaling values 17/16, 9/8, /5/4, 3/2'
+            assert self.scaling_factor in ['17/16', '9/8', '5/4',
+                                           '3/2'], 'Currently accepting only scaling values 17/16, 9/8, /5/4, 3/2'
             self.numerator, self.denominator = self.scaling_factor.split('/')
             self.numerator = int(self.numerator)
             self.denominator = int(self.denominator)

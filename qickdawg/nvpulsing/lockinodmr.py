@@ -282,5 +282,6 @@ class LockinODMR(NVAveragerProgram):
             plt.text(295, 340, "Repeat {} times".format(cfg.reps), fontsize=16)
             plt.text(200, 275, "readout_integration = {} us".format(int(cfg.readout_integration_tus)), fontsize=14)
             plt.text(520, 290, "relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=14)
-            plt.text(130, 400, "Sweep linearly from {} MHz to {} MHz in steps of {} MHz".format(int(cfg.mw_start_fMHz), int(cfg.mw_end_fMHz), str(cfg.mw_delta_fMHz)[:4]), fontsize=14)
+            plt.text(130, 400, "Sweep linearly from {} MHz to {} MHz in steps of {} MHz".format(
+                int(cfg.mw_start_fMHz), int(cfg.mw_end_fMHz), str(cfg.mw_delta_fMHz)[:4]), fontsize=14)
             plt.title("      ODMR Pulse Sequence", fontsize=20)

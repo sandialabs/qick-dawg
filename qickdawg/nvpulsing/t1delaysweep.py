@@ -236,8 +236,10 @@ class T1DelaySweep(NVAveragerProgram):
             plt.text(250, 335, "pi", fontsize=10)
             plt.text(240, 465, "laser_readout_offset = {} treg".format(cfg.laser_readout_offset_treg), fontsize=10)
             plt.text(390, 337, "readout_integration = {} us".format(str(cfg.readout_integration_tus)[:4]), fontsize=10)
-            plt.text(650, 357, "readout_integration \n = {} us".format(str(cfg.readout_integration_tus)[:4]), fontsize=10)
+            plt.text(650, 357, "readout_integration \n = {} us".format(
+                str(cfg.readout_integration_tus)[:4]), fontsize=10)
             plt.text(850, 357, "relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=10)
             plt.text(400, 430, "laser_on = {} us".format(cfg.laser_on_tus), fontsize=12)
-            plt.text(325, 605, "    Sweep delay from {} us to {} us \n                in {} {} steps".format(int(cfg.delay_start_tns), int(cfg.delay_end_tns), cfg.nsweep_points, cfg.scaling_mode), fontsize=12)
+            plt.text(325, 605, "    Sweep delay from {} us to {} us \n                in {} {} steps".format(
+                int(cfg.delay_start_tns), int(cfg.delay_end_tns), cfg.nsweep_points, cfg.scaling_mode), fontsize=12)
             plt.title("               T1 Pulse Sequence", fontsize=20)

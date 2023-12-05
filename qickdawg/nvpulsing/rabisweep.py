@@ -206,11 +206,15 @@ class RabiSweep(NVAveragerProgram):
             plt.imshow(mpimg.imread('../graphics/RABI.png'))
             plt.text(420, 510, "Repeat {} times".format(cfg.reps), fontsize=14)
             plt.text(350, 440, "laser_on_tus = {} us".format(str(cfg.laser_on_tus)[:4]), fontsize=14)
-            plt.text(195, 580, " Sweep pi/2 pulse time linearly from {} time register to {} time register in steps of {} time register".format(int(cfg.mw_start_treg), int(cfg.mw_end_treg), str(cfg.mw_delta_treg)[:4]), fontsize=12)
-            plt.text(265, 370, "readout_integration  \n       = {} ns".format(int(cfg.readout_integration_tns)), fontsize=14)
-            plt.text(527, 370, "readout_integration  \n      = {} ns".format(int(cfg.readout_integration_tns)), fontsize=14)
+            plt.text(195, 580, " Sweep pi/2 pulse time linearly from {} time register to {} time register in steps of {} time register".format(
+                int(cfg.mw_start_treg), int(cfg.mw_end_treg), str(cfg.mw_delta_treg)[:4]), fontsize=12)
+            plt.text(265, 370, "readout_integration  \n       = {} ns".format(
+                int(cfg.readout_integration_tns)), fontsize=14)
+            plt.text(527, 370, "readout_integration  \n      = {} ns".format(
+                int(cfg.readout_integration_tns)), fontsize=14)
             plt.text(190, 368, " pi/2\npulse", fontsize=14)
             plt.text(735, 370, "relax_delay \n = {} ns".format(int(cfg.relax_delay_tns)), fontsize=14)
             plt.text(235, 407, "laser_offset = {} ns".format(int(cfg.laser_readout_offset_tns)), fontsize=14)
-            plt.text(430, 407, "readout_reference_start = {} us".format(int(cfg.readout_reference_start_tus)), fontsize=14)
+            plt.text(430, 407, "readout_reference_start = {} us".format(
+                int(cfg.readout_reference_start_tus)), fontsize=14)
             plt.title("           Rabi Oscillation Pulse Sequence", fontsize=20)
