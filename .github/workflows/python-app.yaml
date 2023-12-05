@@ -37,20 +37,6 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
          - uses: actions/checkout@v2
-    # - name: autopep8
-    #   uses: peter-evans/autopep8@v2
-    #   with:
-    #     args: --in-place --recursive --select=E101,E126,E128,E225,E231,E261,E303,E402,W391 .
-    # - name: Create Pull Request
-    #   uses: peter-evans/create-pull-request@v3
-    #   with:
-    #     commit-message: autopep8 action fixes
-    #     title: Fixes by autopep8 action
-    #     body: This is an auto-generated PR with fixes by autopep8.
-    #     labels: autopep8, automated pr
-    #     reviewers: i-am-mounce
-    #     branch: autopep8-patches
-    
     # - name: Test with pytest
     #   run: |
     #     pytest
