@@ -191,7 +191,10 @@ class RabiSweep(NVAveragerProgram):
             plt.imshow(mpimg.imread('../graphics/RABI.png'))
             plt.text(455, 510, "config.reps", fontsize=14)
             plt.text(350, 440, "config.laser_on", fontsize=14)
-            plt.text(195, 580, " Sweep pi/2 pulse time linearly from config.mw_start to config.mw_end in config.mw_delta sized steps", fontsize=12)
+            plt.text(
+                195, 580,
+                " Sweep pi/2 pulse time linearly from config.mw_start to config.mw_end in config.mw_delta sized steps",
+                fontsize=12)
             plt.text(265, 355, "config.readout_integration", fontsize=14)
             plt.text(527, 355, " config.readout_integration", fontsize=14)
             plt.text(190, 368, " pi/2\npulse", fontsize=14)
@@ -206,8 +209,11 @@ class RabiSweep(NVAveragerProgram):
             plt.imshow(mpimg.imread('../graphics/RABI.png'))
             plt.text(420, 510, "Repeat {} times".format(cfg.reps), fontsize=14)
             plt.text(350, 440, "laser_on_tus = {} us".format(str(cfg.laser_on_tus)[:4]), fontsize=14)
-            plt.text(195, 580, " Sweep pi/2 pulse time linearly from {} time register to {} time register in steps of {} time register".format(
-                int(cfg.mw_start_treg), int(cfg.mw_end_treg), str(cfg.mw_delta_treg)[:4]), fontsize=12)
+            plt.text(
+                195, 580,
+                " Sweep pi/2 pulse time linearly from {} time register to {}\
+                 time register in steps of {} time register".format(
+                    int(cfg.mw_start_treg), int(cfg.mw_end_treg), str(cfg.mw_delta_treg)[:4]), fontsize=12)
             plt.text(265, 370, "readout_integration  \n       = {} ns".format(
                 int(cfg.readout_integration_tns)), fontsize=14)
             plt.text(527, 370, "readout_integration  \n      = {} ns".format(

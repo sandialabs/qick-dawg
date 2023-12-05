@@ -273,7 +273,10 @@ class LockinODMR(NVAveragerProgram):
             plt.text(295, 340, "    config.reps", fontsize=16)
             plt.text(200, 275, "config.readout_integration_t#", fontsize=14)
             plt.text(520, 275, "config.relax_delay_t#", fontsize=14)
-            plt.text(145, 430, "Sweep linearly from config.mw_start_f# to config.mw_end_f# \n                   in steps of config.mw_delta_f#", fontsize=14)
+            plt.text(
+                145, 430,
+                "Sweep linearly from config.mw_start_f# to config.mw_end_f#\n\
+                                   in steps of config.mw_delta_f#", fontsize=14)
             plt.title("      ODMR Pulse Sequence", fontsize=20)
         else:
             plt.figure(figsize=(10, 10))

@@ -228,7 +228,10 @@ class Ramsey(NVAveragerProgram):
             plt.text(650, 340, "config.readout_integration", fontsize=10)
             plt.text(850, 340, "config.relax_delay", fontsize=10)
             plt.text(400, 430, "config.laser_on", fontsize=10)
-            plt.text(220, 605, "Sweep delay linearly from config.delay_start to config.delay_end in config.nsweep_points \n                            with scaling given by config.scaling_mode", fontsize=12)
+            plt.text(
+                220, 605,
+                "Sweep delay linearly from config.delay_start to config.delay_end in config.nsweep_points \n\
+                                                with scaling given by config.scaling_mode", fontsize=12)
             plt.title("             Ramsey Pulse Sequence", fontsize=20)
         else:
             plt.figure(figsize=(12, 12))
@@ -245,6 +248,9 @@ class Ramsey(NVAveragerProgram):
                 str(cfg.readout_integration_tus)[:4]), fontsize=10)
             plt.text(850, 357, "relax_delay \n = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=10)
             plt.text(400, 430, "laser_on = {} us".format(cfg.laser_on_tus), fontsize=12)
-            plt.text(375, 605, "    Sweep delay linearly from {} to {}          \n                     in {} steps".format(
-                int(cfg.delay_start_tns), int(cfg.delay_end_tns), cfg.nsweep_points), fontsize=12)
+            plt.text(
+                375, 605,
+                "    Sweep delay linearly from {} to {}          \n\
+                                     in {} steps".format(
+                    int(cfg.delay_start_tns), int(cfg.delay_end_tns), cfg.nsweep_points), fontsize=12)
             plt.title("               Ramsey Pulse Sequence", fontsize=20)

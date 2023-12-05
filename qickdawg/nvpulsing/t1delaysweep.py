@@ -224,7 +224,10 @@ class T1DelaySweep(NVAveragerProgram):
             plt.text(650, 340, "config.readout_integration", fontsize=10)
             plt.text(850, 340, "config.relax_delay", fontsize=10)
             plt.text(400, 430, "config.laser_on", fontsize=10)
-            plt.text(220, 605, "Sweep delay from config.delay_start to config.delay_end in config.nsweep_points \n                            with scaling given by config.scaling_mode", fontsize=12)
+            plt.text(
+                220, 605, 
+                "Sweep delay from config.delay_start to config.delay_end in config.nsweep_points \n\
+                                            with scaling given by config.scaling_mode", fontsize=12)
             plt.title("             T1 Pulse Sequence", fontsize=20)
         else:
             plt.figure(figsize=(12, 12))
