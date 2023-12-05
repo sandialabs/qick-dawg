@@ -125,7 +125,7 @@ class LockinODMR(NVAveragerProgram):
             length=self.cfg.readout_integration_treg,
             phase=0)
 
-        ## Get frequency register and convert frequency values to integers
+        # Get frequency register and convert frequency values to integers
         self.mw_frequency_register = self.get_gen_reg(self.cfg.mw_channel, "freq")
 
         self.add_sweep(QickSweep(self,

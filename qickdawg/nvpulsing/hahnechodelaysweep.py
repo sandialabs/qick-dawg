@@ -176,7 +176,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         '''
 
         self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
-        ## Pulse Sequence 1
+        # Pulse Sequence 1
         # first reset phase to x
         # pi/2 - x
         self.pulse(ch=self.cfg.mw_channel)
@@ -195,7 +195,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         # Readout
         self.ttl_readout()
 
-        ## Pulse sequence 2
+        # Pulse sequence 2
         # Second pi/2 pulse is in the -x direction
         # pi/2 - x
         self.pulse(ch=self.cfg.mw_channel)

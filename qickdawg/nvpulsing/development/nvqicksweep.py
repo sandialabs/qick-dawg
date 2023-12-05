@@ -18,7 +18,7 @@ class NVQickSweep(AbsQickSweep):
     Class that generates the assembly language code to change parameters
     between measurements. Modified from the original QickSweep class to handle 
     pulse length sweep and implement exponential scaling
-    
+
     Attributes
     ----------
     prog
@@ -50,7 +50,7 @@ class NVQickSweep(AbsQickSweep):
     update
         generates the assembly code to update the sweep parameter after each
         iteration of the loop
-    
+
     reset
         generates the assembly code to rset the swept parameter(s) to the initial
         value(s)
@@ -65,7 +65,7 @@ class NVQickSweep(AbsQickSweep):
 
         super().__init__(prog)
         self.reg = reg
-        
+
         self.start = start
         self.stop = stop
         self.expts = expts
@@ -103,7 +103,6 @@ class NVQickSweep(AbsQickSweep):
             self.temp_reg = self.prog.new_gen_reg(self.reg.page)
         self.source2_reg = source2_reg
 
-
     def get_sweep_pts(self):
         '''
         Method that returns a 1D array of points for which the main sweep parameter is swept over
@@ -112,33 +111,29 @@ class NVQickSweep(AbsQickSweep):
             with setps determined by self.scaling_factor. see qickdawg.int_exp_scale for details 
         '''
 
-
-
-
-
-        if self.scaling_mode=='linear':
+        if self.scaling_mode == 'linear':
             return np.linspace(self.start, self.stop, self.expts)
-        elif self.scaling_mode=='exponential':
+        elif self.scaling_mode == 'exponential':
             return int_exp_scale(self.start, self.stop, self.scaling_factor)
 
     def update(self):
         """
         Method that generates the assembly code to update the swept register value 
         for each iteration of the appropriate loop
-        
+
 
         """
-        if self.scaling_mode=='linear':
+        if self.scaling_mode == 'linear':
             self.reg.set_to(self.reg, '+', self.step_val)
-            if self.label=='length':
+            if self.label == 'length':
                 self.mw_mode_register.set_to(self.mw_mode_register, '+', self.step_val)
 
             if self.source2_reg is not None:
                 self.source2_reg.set_to(self.source2_reg, '+', self.step_val)
-    
-        elif self.scaling_mode=='exponential':
+
+        elif self.scaling_mode == 'exponential':
             self.prog.bitwi(self.reg.page, self.temp_reg.addr, self.reg.addr, '>>', self.nshift)
-            self.prog.math(self.reg.page, self.reg.addr, self.reg.addr, '+', self.temp_reg.addr )
+            self.prog.math(self.reg.page, self.reg.addr, self.reg.addr, '+', self.temp_reg.addr)
 
     def reset(self):
         """
@@ -148,13 +143,12 @@ class NVQickSweep(AbsQickSweep):
         """
 
         self.reg.reset()
-        
+
         if self.source2_reg is not None:
             # self.source2_reg.reset()
             self.prog.set_pulse_registers(ch=self.prog.cfg.mw2_channel,
-                                          freq = self.prog.cfg.mw_start_freg)
+                                          freq=self.prog.cfg.mw_start_freg)
 
-        if self.label=='length':
+        if self.label == 'length':
             self.prog.set_pulse_registers(ch=self.mw_channel,
                                           length=self.start)
-            
