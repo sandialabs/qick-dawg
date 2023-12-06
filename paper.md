@@ -8,6 +8,7 @@ tags:
   - RFSoC4x2
 authors:
 - name: E. G. Riendeau
+  corresponding: emmelineriendeau@gmail.com
   orcid: 0000-0002-0460-873X
   affiliation: "1, 2" # (Multiple affiliations must be quoted)
 - name: L. Basso
@@ -29,7 +30,7 @@ authors:
 - name: M. P. Lilly
   affiliation: 2 
 - name: A. M. Mounce
-  corresponding: true amounce@sandia.gov
+  corresponding: amounce@sandia.gov
   orcid: 0000-0002-8115-2764
   affiliation: 2 
 affiliations:
