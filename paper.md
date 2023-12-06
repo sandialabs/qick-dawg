@@ -28,7 +28,8 @@ authors:
   affiliation: 2 
 - name: M. P. Lilly
   affiliation: 2 
-- name: A. M. Mounce 
+- name: A. M. Mounce
+  corresponding: true
   orcid: 0000-0002-8115-2764
   affiliation: 2 
 affiliations:
