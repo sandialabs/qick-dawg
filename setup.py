@@ -1,6 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
+__version__ = "0.0.0"
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -8,7 +9,7 @@ def read(fname):
 
 setup(
     name="qickdawg",
-    version="0.1.0",
+    version=__version__,
     author="Andrew Mounce, Emmeline Riendeau",
     author_email="amounce@sandia.gov",
     description=("Software for full quantum control of nitrogen-vacancy defects and other quantum defects in diamond \
