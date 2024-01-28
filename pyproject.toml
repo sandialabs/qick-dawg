@@ -1,7 +1,7 @@
 [project]
 name = "qick-dawg"
 version = "0.0.0"
-dynamic = "version"
+dynamic = ["version"]
 
 
 [tool.semantic_release]
