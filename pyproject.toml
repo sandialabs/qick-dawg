@@ -1,5 +1,8 @@
 [project]
 name = "qick-dawg"
+version = "0.0.0"
+dynamic = "version"
+
 
 [tool.semantic_release]
 version_variables = ["setup.py:__version__"]
