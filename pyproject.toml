@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "qick-dawg"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "pyro4",
+    "serpent",
+    "tqdm",
+    "scipy",
+    "qick==0.2.160"
+    ]
+requires-python = ">=3.7"
+description = """
+Software for full quantum control of nitrogen-vacancy defects and other quantum defects in diamond
+through microwave and laser pulsing control.
+"""
+readme = "README.md"
+license = {file = "LICENSE.md"}
+keywords = ["quantum control", "nitrogen vacancy", "fpga", "xilinx", "rfsoc", "qubit"]
+authors = [
+    {name = "Andy Mounce", email = "amounce@sandia.gov"},
+    {name = "Emmeline Riendeau", email = "eriendeau@sandia.gov"}]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/sandialabs/qick-dawg.git"
+"Bug Tracker" = "https://github.com/sandialabs/qick-dawg/issues"
+
+[tool.semantic_release]
+version_variables = ["pyproject.toml:data.project.version"]
+
+[tool.setuptools.packages.find]
+exclude = ["qick*", "graphics*", "installation*", "jupyter_notebooks"]
