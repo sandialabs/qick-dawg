@@ -12,7 +12,7 @@ from .nvqicksweep import NVQickSweep
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
+import os 
 
 class HahnEchoDelaySweep(NVAveragerProgram):
     '''
@@ -233,14 +233,17 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         Parameters
         ----------
         cfg: `.NVConfiguration` or None(default None)
-            If None, this plots the squence with configuration labels
-            If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
+            If None, this plots the sequence with configuration labels
+            If a `.NVConfiguration` object is supplied, the configuration value are added to the plot
         '''
+        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        image_path = os.path.join(graphics_folder, 'HAHN_ECHO.png')
+
 
         if cfg is None:
             plt.figure(figsize=(12, 12))
             plt.axis('off')
-            plt.imshow(mpimg.imread('../graphics/HAHN_ECHO.png'))
+            plt.imshow(mpimg.imread(image_path))
             plt.text(500, 700, "config.reps", fontsize=14)
             plt.text(235, 345, "delay", fontsize=10)
             plt.text(300, 345, "delay", fontsize=10)
@@ -261,7 +264,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         else:
             plt.figure(figsize=(12, 12))
             plt.axis('off')
-            plt.imshow(mpimg.imread('../graphics/HAHN_ECHO.png'))
+            plt.imshow(mpimg.imread(image_path))
             plt.text(450, 700, "Repeat {} times".format(cfg.reps), fontsize=14)
             plt.text(235, 345, "delay", fontsize=10)
             plt.text(300, 345, "delay", fontsize=10)
