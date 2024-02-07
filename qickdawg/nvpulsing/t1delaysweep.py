@@ -12,7 +12,7 @@ from .nvqicksweep import NVQickSweep
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
+import os 
 
 class T1DelaySweep(NVAveragerProgram):
     '''
@@ -208,11 +208,14 @@ class T1DelaySweep(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
+        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        image_path = os.path.join(graphics_folder, 'T1.png')
+
 
         if cfg is None:
             plt.figure(figsize=(12, 12))
             plt.axis('off')
-            plt.imshow(mpimg.imread('../graphics/T1.png'))
+            plt.imshow(mpimg.imread(image_path))
             plt.text(500, 700, "config.reps", fontsize=14)
       
             plt.text(305, 335, "delay", fontsize=10)
@@ -229,7 +232,7 @@ class T1DelaySweep(NVAveragerProgram):
         else:
             plt.figure(figsize=(12, 12))
             plt.axis('off')
-            plt.imshow(mpimg.imread('../graphics/T1.png'))
+            plt.imshow(mpimg.imread(image_path))
             plt.text(450, 700, "Repeat {} times".format(cfg.reps), fontsize=14)
             plt.text(305, 335, "delay", fontsize=10)
             plt.text(400, 385, "  config.readout_reference_start", fontsize=10)
