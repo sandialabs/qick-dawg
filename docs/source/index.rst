@@ -20,7 +20,7 @@ QICK-DAWG
    programs/odmr
    programs/readout_window
    programs/rabi_oscillations
-   programs/ramsay_interferometry
+   programs/ramsey_interferometry
    programs/hahn_echo
    programs/t1_relaxation
    programs/cpmgxy8
