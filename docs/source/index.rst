@@ -10,8 +10,8 @@ QICK-DAWG
    :maxdepth: 2
    :caption: The basics
 
-   thebasics/introduction
-   thebasics/getting_started
+   thebasics/ReadMe.md
+   
 
 .. toctree:: 
    :maxdepth: 2
@@ -20,11 +20,18 @@ QICK-DAWG
    programs/odmr
    programs/readout_window
    programs/rabi_oscillations
-   programs/ramsay_interferometry
+   programs/ramsey_interferometry
    programs/hahn_echo
    programs/t1_relaxation
    programs/cpmgxy8
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Setup
+
+   installation/Readme.md
+   hardware/Readme.md
+   
 Indices and tables
 ==================
 
