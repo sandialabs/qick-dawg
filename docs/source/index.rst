@@ -10,8 +10,8 @@ QICK-DAWG
    :maxdepth: 2
    :caption: The basics
 
-   thebasics/introduction
-   thebasics/getting_started
+   thebasics/ReadMe.md
+   
 
 .. toctree:: 
    :maxdepth: 2
@@ -28,9 +28,10 @@ QICK-DAWG
 .. toctree::
    :maxdepth: 2
    :caption: Setup
-   
-   hardware/Readme.md
 
+   installation/Readme.md
+   hardware/Readme.md
+   
 Indices and tables
 ==================
 
