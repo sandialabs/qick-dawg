@@ -27,7 +27,7 @@ QICK-DAWG
 
 .. toctree::
    :maxdepth: 2
-   :caption: Hardware Setup
+   :caption: Setup
    
    hardware/Readme.md
 

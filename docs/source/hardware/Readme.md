@@ -1,9 +1,12 @@
-# Quantum Instrumentation Control Kit - <br> Defect Arbitrary Waveform Generator 
+
 <p align="center">
     <img src="./../_static/QD_logo.png"
         alt="QD logo"
         width="300x"/>
 </p>
+
+
+
 
 # Hardware Setup
 In this document we outline the hardware setup for an all-in-one RFSoC4x2 enclosure. We show:
@@ -163,7 +166,7 @@ Recall from the installation readme that the balun and capacitors on the analog-
 ### Modified Installation Readme 1b. <br> Connect the low-frequency differential amplifier 
 
 <div style="text-align: center;">
-    <img src="graphics/differential_amp.PNG"
+    <img src="./../_static/differential_amp.PNG"
         alt="Diff Amp Circuit Schematic"
         width="450px"/>
     <p style="text-align: center;">Texas Instruments LMH5401EVM low-frequency differential amplifier schematic with bias voltage for the RFSoC4x2</p>
@@ -235,7 +238,7 @@ A single power source is plugged into the power pass-through in the back of the 
 
 <div style="text-align: center;">
     <div style="display: inline-block; text-align: center; margin-right: 20px;">
-        <img src="graphics/pig_tail_power_passthrough.jpg"
+        <img src="./../_static/pig_tail_power_passthrough.jpg"
             alt="Power Split Physical"
             width="500px"/>    
         <p>Power pass-through and pig-tail power splitting in the RFSoC4x2 enclosure. Power is split to the RFSoC4x2, router, and voltage source.</p>
@@ -280,7 +283,7 @@ The SMA and BNC pass-throughs should be secured in place on the front enclosure 
 
 
 <div style="text-align: center;">
-    <img src="graphics/enclosure_front_real.jpg"
+    <img src="./../_static/enclosure_front_real.jpg"
         alt="Front Panel Real"
         width="800px"/>     
     <img src="./../_static/Front_Panel.png"
