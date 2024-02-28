@@ -22,7 +22,7 @@ In this package we supply specific mw, laser, and readout pulsing code to charac
 - 3 Voltage supplies to power the differential amplifier
 
 ## Installation
-To install QICKDAWG software follow the README found [here](https://gitlab-ex.sandia.gov/amounce/qickdawg/-/blob/main/installation/RFSoC4x2_ReadMe.md#quantum-instrumentation-control-kit-defect-arbitary-waveform-generator). Software installation includes:
+To install QICKDAWG software follow the README found [here](./installation/Readme.md). Software installation includes:
 
 ## Usage
 QICKDAWG has programs for the characterization of:
