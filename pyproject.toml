@@ -36,4 +36,4 @@ Repository = "https://github.com/sandialabs/qick-dawg.git"
 version_variables = ["pyproject.toml:data.project.version"]
 
 [tool.setuptools.packages.find]
-exclude = ["qick*", "graphics*", "installation*", "jupyter_notebooks*"]
+exclude = ["qick", "graphics*", "installation*", "jupyter_notebooks*"]
