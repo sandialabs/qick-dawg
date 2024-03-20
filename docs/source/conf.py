@@ -52,7 +52,7 @@ autodoc_default_options = {'members': None}
 #
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-html_logo = "_static/QD_logo-removebg-preview.png"
+html_logo = "_static/qickdawg_forgithub.png"
 html_theme_options = {
     'logo-only': True,
     'display_version': False,
