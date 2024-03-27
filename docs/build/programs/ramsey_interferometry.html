@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ramsey Interferometry &mdash; QICK-DAWG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=8695e426" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hahn Echo" href="hahn_echo.html" />
+    <link rel="prev" title="Rabi Oscillations" href="rabi_oscillations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            QICK-DAWG
+              <img src="../_static/QD_logo-removebg-preview.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../thebasics/ReadMe.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Programs/Pulse Sequences</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="odmr.html">ODMR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readout_window.html">Readout Window</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rabi_oscillations.html">Rabi Oscillations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Ramsey Interferometry</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#qickdawg.Ramsey"><code class="docutils literal notranslate"><span class="pre">Ramsey</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qickdawg.Ramsey.acquire"><code class="docutils literal notranslate"><span class="pre">Ramsey.acquire()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qickdawg.Ramsey.body"><code class="docutils literal notranslate"><span class="pre">Ramsey.body()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qickdawg.Ramsey.initialize"><code class="docutils literal notranslate"><span class="pre">Ramsey.initialize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qickdawg.Ramsey.plot_sequence"><code class="docutils literal notranslate"><span class="pre">Ramsey.plot_sequence()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hahn_echo.html">Hahn Echo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t1_relaxation.html">T1 Relaxation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpmgxy8.html">CPMGXY-8</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/Readme.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/Readme.html">Hardware Setup</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">QICK-DAWG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Ramsey Interferometry</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/programs/ramsey_interferometry.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ramsey-interferometry">
+<h1>Ramsey Interferometry<a class="headerlink" href="#ramsey-interferometry" title="Link to this heading"></a></h1>
+<a class="reference internal image-reference" href="../_images/Ramsey.png"><img alt="../_images/Ramsey.png" class="align-center" src="../_images/Ramsey.png" style="width: 77%;" /></a>
+<dl class="py class">
+<dt class="sig sig-object py" id="qickdawg.Ramsey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qickdawg.</span></span><span class="sig-name descname"><span class="pre">Ramsey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qickdawg.Ramsey" title="Link to this definition"></a></dt>
+<dd><p>An NVAveragerProgram class that generates and executes a sequence used
+to measure ramsey</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<p>soccfg : <cite>qick.QickConfig</cite>
+cfg : <cite>.NVConfiguration</cite></p>
+<blockquote>
+<div><p>instance of <cite>.NVConfiguration</cite> class with attributes:
+.adc_channel : int</p>
+<blockquote>
+<div><p>ADC channel for gathering data, usually 0 or 1</p>
+</div></blockquote>
+<dl class="simple">
+<dt>.mw_channel<span class="classifier">int</span></dt><dd><p>qick channel that provides microwave excitation
+0 or 1 for RFSoC4x2
+0 to 6 for ZCU111 or ZCU216</p>
+</dd>
+<dt>.mw_nqz<span class="classifier">int</span></dt><dd><p>nyquist zone for microwave generator (1 or 2)</p>
+</dd>
+<dt>.mw_gain<span class="classifier">int</span></dt><dd><p>gain of micrwave channel, in register values, from 0 to 2**15-1</p>
+</dd>
+<dt>.pre_init<span class="classifier">bool</span></dt><dd><p>boolian value that indicates whether to pre-pulse the laser to initialize
+the spin state</p>
+</dd>
+<dt>.relax_delay_treg<span class="classifier">int</span></dt><dd><p>Time between on/off cycles and reps in register units</p>
+</dd>
+<dt>.readout_length_treg<span class="classifier">int</span></dt><dd><p>Time for which the adc accumulates data in register units</p>
+</dd>
+<dt>.laser_readout_offset_treg<span class="classifier">int</span></dt><dd><p>Time offset between initial laser triggering and readout start</p>
+</dd>
+<dt>.laser_gate_pmod<span class="classifier">int</span></dt><dd><p>PMOD channel used to trigger laser source usually 0 to 6</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Returns
+<cite>.Ramsey</cite></p>
+<blockquote>
+<div><p>An instance of Rmasey with compiled assembly language</p>
+</div></blockquote>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>initialize</dt><dd><p>method that generates the assembly code that setups the adcs &amp;  mw generators,
+and performs other one-off setps</p>
+</dd>
+<dt>body</dt><dd><p>method that generates the assembly code that exectues in the middle of each sweep
+and rep</p>
+</dd>
+<dt>plot_sequence</dt><dd><p>generates a plot labeled with self.cfg attributes or the required inputs</p>
+</dd>
+<dt>time_per_rep</dt><dd><p>returns the approximatetime for one rep to complete</p>
+</dd>
+<dt>total_time</dt><dd><p>returns the approximate total time for the entire program to complete</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qickdawg.Ramsey.acquire">
+<span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qickdawg.Ramsey.acquire" title="Link to this definition"></a></dt>
+<dd><p>Method that exectues the qick program and accumulates data from the data buffer until the proram is complete
+For NV measurements, the results are DC values and thus only have I values (rather than I and Q)</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>soc<span class="classifier">QickSoc</span></dt><dd><p>qick.QickSoc instance</p>
+</dd>
+<dt>reads_per_rep</dt><dd><p>int number of readout triggers in the loop body</p>
+</dd>
+<dt>load_pulses</dt><dd><p>bool: if True, load pulse envelopes</p>
+</dd>
+<dt>start_src</dt><dd><p>str: “internal” (tProc starts immediately) or “external” (each round waits for an external trigger)</p>
+</dd>
+<dt>progress</dt><dd><p>bool: if true, displays progress bar</p>
+</dd>
+<dt>debug</dt><dd><p>bool: if true, displays assembly code for tProc program</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>raw accumulated IQ values (int32)
+if rounds&gt;1, only the last round is kept
+dimensions : (n_ch, n_expts*n_reps*n_reads, 2)</p>
+</dd>
+<dt>ndarray</dt><dd><p>averaged IQ values (float)
+divided by the length of the RO window, and averaged over reps and rounds
+if shot_threshold is defined, the I values will be the fraction of points over threshold
+dimensions for a simple averaging program: (n_ch, n_reads, 2)
+dimensions for a program with multiple expts/steps: (n_ch, n_reads, n_expts, 2)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qickdawg.Ramsey.body">
+<span class="sig-name descname"><span class="pre">body</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qickdawg.Ramsey.body" title="Link to this definition"></a></dt>
+<dd><p>Method that generates the assembly code that is looped over or repeated. 
+For Ramsey this peforms four measurements at a time and does two pulse
+sequences differing only by the phase of the final pulse.  The sequences is:
+1. Set pulse phase to 0
+2. Pulse mw for pi/2
+5. delay by variable delay time
+6. pulse mw for pi/2 (on second sequence change the phase to 180 degrees)
+7. Perform readout
+8. Loop over delay times
+9. Loop over reps
+10. Loop over rounds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qickdawg.Ramsey.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qickdawg.Ramsey.initialize" title="Link to this definition"></a></dt>
+<dd><p>Method that generates the assembly code that is sets up adcs and sources.</p>
+<p>For Ramsey this:
+1. Configures the adc to acquire points for self.cfg.readout_integration_t#. 
+2. Configures the microwave channel 
+3. Configures the sweep parameters
+4. Initiailzes the spin state with a laser pulse</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qickdawg.Ramsey.plot_sequence">
+<span class="sig-name descname"><span class="pre">plot_sequence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qickdawg.Ramsey.plot_sequence" title="Link to this definition"></a></dt>
+<dd><p>Function that plots the pulse sequence generated by this program</p>
+<section id="id2">
+<h3>Parameters<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>cfg: <cite>.NVConfiguration</cite> or None(default None)</dt><dd><p>If None, this plots the squence with configuration labels
+If a <cite>.NVConfiguration</cite> object is supplied, the configuraiton value are added to the plot</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rabi_oscillations.html" class="btn btn-neutral float-left" title="Rabi Oscillations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hahn_echo.html" class="btn btn-neutral float-right" title="Hahn Echo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Andy Mounce, Emmeline Riendeau.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

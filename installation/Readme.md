@@ -1,4 +1,4 @@
-# RFSoC4x2 Setup 
+# RFSoC4x2 setup 
 The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has 8 DACs and ADCs, the RFSOC4x2 only uses 4x digital to analog converters (5 GSa/s) and 2x analog to digital converters (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is tyipcally too high frequency for our measurements and thus must be modified.
 
 
@@ -12,10 +12,10 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 
 In this document we outline setup for using QICK-DAWG with RFSoC4x2. In this guide we show how to:
 
-1. Setup RFSoC4x2 Hardware<br>
-    a. Bipass/Remove the balun & capacitors<br>
-    b. Connect the lw frequency differential amplifier<br>
-    c. Connect PMOD digial outputs<br>
+1. Setup RFSoC4x2 hardware<br>
+    a. Bypass/remove the balun & capacitors<br>
+    b. Connect the low frequency differential amplifier<br>
+    c. Connect PMOD digital outputs<br>
     d. Assembling and powering on your RFSoC4x2 board
     e. (Optional) Full enclosure
 
@@ -27,7 +27,7 @@ In this document we outline setup for using QICK-DAWG with RFSoC4x2. In this gui
 
 
 
-# 1. Setup RFSoC4x2 Hardware 
+# 1. Setup RFSoC4x2 hardware 
 ## ***Prerequisites***
 
 - [RFSoC4x2](https://www.xilinx.com/support/university/xup-boards/RFSoC4x2.html) (with 12 volt 50 watt power supply) 
@@ -45,9 +45,9 @@ In this document we outline setup for using QICK-DAWG with RFSoC4x2. In this gui
     - [Pyro4](https://pypi.org/project/Pyro4/)
     - [Serpent](https://pypi.org/project/serpent/) 
 
-## 1a. Bipass/Remove the Balun & Capacitors
+## 1a. Bypass/remove the Balun & Capacitors
 
-The signal measured by the photodiodes cannot be direcetly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at low frequency thus the balun and capacitors on the board need to be removed or bipassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential voltage signal, we have to add a differential amplifier which takes the signal from the photodetector in and outputs a biased signal to the ADCs for digitization (see section 1.b below). 
+The signal measured by the photodiodes cannot be direcetly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at a low frequency thus the balun and capacitors on the board need to be removed or bypassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential double ended voltage signal, we have to add a differential amplifier which takes the single ended signal from the photodetector in and outputs a double ended biased signal to the ADCs for digitization (see section 1.b below). 
 
 The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure below.  
 
@@ -60,7 +60,7 @@ The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure
     <figcaption align="center">WHERE IS THIS IMAGE CAPTION SHOWING UP.</figcaption>
 </figure>
 
-The combiation of the Balun, MABA-011118 and the two 100nF capactors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to bypass or remove these components. Our barbaric method is to pull off the balun (under an RF shield) and desolder the capacitors as shown in the following image.  The cacpacitors are then replaced with either 2x 0 ohm resistors or 2x short lenghts of wire. 
+The combination of the balun, MABA-011118 and the two 100nF capacitors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to bypass or remove these components. Our barbaric method is to pull off the balun (under an RF shield) and desolder the capacitors as shown in the following image.  The capacitors are then replaced with either 2x 0 ohm resistors or 2x short lengths of wire. 
 
 <p align="center">
     <img src="graphics/balun_surgery_1.PNG"
@@ -70,7 +70,7 @@ The combiation of the Balun, MABA-011118 and the two 100nF capactors (C302 and C
 
 ## 1b. Connect the low frequency differential amplifier
 
-To properly condidtion our signal for digitization, we use a Texas Instruments  [Texas Instruments LMH5401 EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A) evaluation board. This board takes in one or two signals and outputs two voltages above (V<sub>p</sub>) and below (V<sub>m</sub>) a common voltage, V<sub>cm</sub>. For full scale, the RFSoC4x2 requires an offset voltage of V<sub>cm</sub> = 0.7V (note that this is also true for the ZCU216 evaluation board, but the ZCU111 evaluation board requires V<sub>cm</sub> = 1.2 V). Addtionally, the differential amplifier requires two voltages for power, which are optimially set to V<sub>cm</sub> + 2.5 = 3.2V and V<sub>cm</sub> - 2.5 = -1.8.  A labeled diagram of the LMH5401EVN is shown in the figure below.  
+To properly condition our signal for digitization, we use a Texas Instruments  [Texas Instruments LMH5401 EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A) evaluation board. This board takes in one or two signals and outputs two voltages above (V<sub>p</sub>) and below (V<sub>m</sub>) a common voltage, V<sub>cm</sub>. For full scale, the RFSoC4x2 requires an offset voltage of V<sub>cm</sub> = 0.7V (note that this is also true for the ZCU216 evaluation board, but the ZCU111 evaluation board requires V<sub>cm</sub> = 1.2 V). Additionally, the differential amplifier requires two voltages for power, which are optimally set to V<sub>cm</sub> + 2.5 = 3.2V and V<sub>cm</sub> - 2.5 = -1.8.  A labeled diagram of the LMH5401EVN is shown in the figure below.  
 
 <p align="center">
     <img src="graphics/differential_amp.PNG"
@@ -103,7 +103,7 @@ RFSoC4x2 Schematic <sup>[1](#RFSoc4x2_Schematic)</sup>
 Note that you can instead leave the balun in place and directly solder coax cables to the capacitor terminals, however, this is more difficult and it is easy to destroy the capacitor terminals with the solder iron. 
 
 
-## 1c. Connect PMOD digial outputs
+## 1c. Connect PMOD digital outputs
 To control the laser through TTL you must connect your laser to the PMOD located on the corner of the board. To connect, we cut the female head off a PMOD cable and soldered on a female BNC head instead. PMOD A 1-8 are enabled for QICK-DAWG--in the demo we use PMOD 1. The image below provides a schematic of the PMOD on the RFSoC4x2.
 
 <p align="center">
@@ -163,7 +163,7 @@ In our lab, we have assembled all the necessary components into a custom rack bo
 To connect to your RFSoC4x2, you first need to find the IP address assigned to your board. Conveniently, the RFSoC4x2 has an LED screen on the top of the board that displays the IP address. 
 Alternatively, you can log into your router and find the IP address and/or assign a static IP address. 
 
-### Copying Necessary Files to the RFSoC4x2 ###
+### Copying necessary files to the RFSoC4x2 ###
 We have written our own .bat file and jupyter notebook to streamline the installation process. The first step is to run the .bat file which copies all of the required files to the RFSoC4x2
 
 - Clone qickdawg to your computer
@@ -178,7 +178,7 @@ We have written our own .bat file and jupyter notebook to streamline the install
 - run_server and qick_daemon Jupyter Notebook files
 - qickdawg speicific firmware
 
-### Connecting to the Jupyter Server 
+### Connecting to the Jupyter server 
 With the required files copied to your RFSoC4x2, we will now install the required packages by running an .ipynb though the RFSoC4x2's Jupyter Notebook server. To connect to the jupyter notebook server:
 
 - In a browser window type your RFSoC4x2 IP address as shown on the board's LED screen and use password `xilinx` as shown in the graphic below
@@ -203,7 +203,7 @@ With all of hte packages installed, you can now run your pyro server to connect 
 </p>
 
 
-- Second, we run the `run_server/qick_daemon.ipynb` notebook, which uploads firmware to the RFSoC4x2 and creates a python socket to communicat with the board. This notebook has a string which contains the path to our alternative firmware and has a `ns_host` variable which needs to be assigned to the ip address of your RFSoC4x2 board. 
+- Second, we run the `run_server/qick_daemon.ipynb` notebook, which uploads firmware to the RFSoC4x2 and creates a python socket to communicate with the board. This notebook has a string which contains the path to our alternative firmware and has a `ns_host` variable which needs to be assigned to the ip address of your RFSoC4x2 board. 
 <p align="center">
     <img src="graphics/qick_daemon.jpg"
         alt="Name Server"
