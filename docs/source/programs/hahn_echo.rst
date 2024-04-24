@@ -5,4 +5,4 @@ Hahn Echo
     :width: 77%
     :align: center
 
-.. autoclass:: qickdawg.HahnEchoDelaySweep
+.. autoclass:: qick-dawg.HahnEchoDelaySweep
