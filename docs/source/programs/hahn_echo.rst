@@ -1,8 +1,6 @@
 Hahn Echo
 =========
-import os
-import sys
-sys.path.insert(0, os.path.abspath('../..'))
+s
 .. image:: ./../_static/HAHN_ECHO.png
     :width: 77%
     :align: center
