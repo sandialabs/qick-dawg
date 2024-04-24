@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'qick-dawg'
+project = 'qickdawg'
 copyright = '2024, Andy Mounce, Emmeline Riendeau'
 author = 'Andy Mounce'
 
@@ -45,6 +45,12 @@ autodoc_typehints = "none"
 autoautodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
 
+# myst_parser options
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -58,5 +64,5 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 html_theme_options = {
-    'logo-only': False
+    'logo_only': False
 }
