@@ -2,3 +2,8 @@ sphinx-rtd-theme
 myst_parser
 numpy
 matplotlib
+pyro4
+serpent
+tqdm
+scipy
+qick==0.2.160
