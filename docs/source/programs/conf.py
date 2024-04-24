@@ -14,6 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
+
 # -- Project information -----------------------------------------------------
 
 project = 'qickdawg'
@@ -42,7 +43,7 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 autodoc_typehints = "none"
-autoautodoc_docstring_signature = True
+autodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
 
 # myst_parser options
