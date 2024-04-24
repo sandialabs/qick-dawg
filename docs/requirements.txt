@@ -7,3 +7,4 @@ serpent
 tqdm
 scipy
 qick==0.2.160
+IPython
