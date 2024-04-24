@@ -31,7 +31,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx_rtd_theme',
-    'myst_parser'
+    'myst_parser',
+    'numpy'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
