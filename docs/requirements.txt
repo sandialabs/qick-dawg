@@ -1,3 +1,4 @@
 sphinx-rtd-theme
 myst_parser
 numpy
+matplotlib
