@@ -1,5 +1,5 @@
 # RFSoC4x2 Setup 
-The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has eight digital-to-analog converters (DACs) and analog-to-digital converters (ADCs), the RFSOC4x2 only uses four DACs (5 GSa/s) and two ADCs (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is tyipcally too high frequency for our measurements and thus must be modified.
+The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has eight digital-to-analog converters (DACs) and analog-to-digital converters (ADCs), the RFSOC4x2 only uses four DACs (5 GSa/s) and two ADCs (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is typically too high frequency for our measurements and thus must be modified.
 
 
 <p align="center">
@@ -15,7 +15,7 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Speci
 1. Setup RFSoC4x2 Hardware<br>
     a. Bypass/Remove the balun & capacitors<br>
     b. Connect the lw frequency differential amplifier<br>
-    c. Connect PMOD digial outputs<br>
+    c. Connect PMOD digital outputs<br>
     d. Assembling and powering on your RFSoC4x2 board
     e. (Optional) Full enclosure
 
@@ -135,7 +135,7 @@ In our lab, we have assembled all the necessary components into a custom rack bo
 - Enclosure_Main.SLDPRT, CAD for custom enclosure drill holes to secure components
 - Low_Freq_Diff_Amp_Base.SLDRT, CAD for 3D printable differential amplifier support for mounting the differential amplifier near the RFSoC 4x2 board
 - Low-Freq_Diff_Amp_Top.SLDPRT, CAD for 3D printable differential amplifier top
-- Router_Holder.SLDPRT, CAD for 3D printable router cage for holding the router in the enclsoure
+- Router_Holder.SLDPRT, CAD for 3D printable router cage for holding the router in the enclosure
 
 <p align="center">
     <img src="graphics/Full_enclosure.jpg"
@@ -177,7 +177,7 @@ We have written our own .bat file and jupyter notebook to streamline the install
 - QICK
 - Serpent and Pyro4 packages
 - run_server and qick_daemon Jupyter Notebook files
-- QICK-DAWG speicific firmware
+- QICK-DAWG specific firmware
 
 ### Connecting to the Jupyter Server 
 With the required files copied to your RFSoC4x2, we will now install the required packages by running an .ipynb though the RFSoC4x2's Jupyter Notebook server. To connect to the jupyter notebook server:
@@ -190,13 +190,13 @@ With the required files copied to your RFSoC4x2, we will now install the require
         width="800px"/>
 </p>
  
-From the home page, navigate to the installation folder, open Installation_Packages.ipynb and run all of the cells in install the packages. This should install qick, serpent, and pyro4 to your python environtment, which sholud be sufficient to run a pyro server and remotely connect to your RFSoC4x2
+From the home page, navigate to the installation folder, open Installation_Packages.ipynb and run all of the cells in install the packages. This should install QICK, Serpent, and Pyro4 to your python environment, which should be sufficient to run a Pyro server and remotely connect to your RFSoC4x2
 
-### Run the pyro server to remotely connect to QICK and the RFSoC4x2
+### Run the Pyro server to remotely connect to QICK and the RFSoC4x2
 
-With all of the packages installed, you can now run your pyro server to connect to an instance of qick. This is accomplished by running two jupyter notebooks. 
+With all of the packages installed, you can now run your Pyro server to connect to an instance of QICK. This is accomplished by running two jupyter notebooks. 
 
-- First we run `run_server/name_server.ipynb` which starts a pyro4 server. In this notebook, you need to change the IP address to the IP address to the board. 
+- First we run `run_server/name_server.ipynb` which starts a Pyro server. In this notebook, you need to change the IP address to the IP address to the board. 
 <p align="center">
     <img src="graphics/name_server.jpg"
         alt="Name Server"
@@ -204,7 +204,7 @@ With all of the packages installed, you can now run your pyro server to connect 
 </p>
 
 
-- Second, we run the `run_server/qick_daemon.ipynb` notebook, which uploads firmware to the RFSoC4x2 and creates a python socket to communicat with the board. This notebook has a string which contains the path to our alternative firmware and has a `ns_host` variable which needs to be assigned to the IP address of your RFSoC4x2 board. 
+- Second, we run the `run_server/qick_daemon.ipynb` notebook, which uploads firmware to the RFSoC4x2 and creates a python socket to communicate with the board. This notebook has a string which contains the path to our alternative firmware and has a `ns_host` variable which needs to be assigned to the IP address of your RFSoC4x2 board. 
 <p align="center">
     <img src="graphics/qick_daemon.jpg"
         alt="Name Server"
