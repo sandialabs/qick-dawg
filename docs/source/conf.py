@@ -66,4 +66,4 @@ html_static_path = ['_static']
 html_logo = "_static/qickdawg_forgithub.png"
 html_theme_options = {
     'logo_only': True
-}
+} 
