@@ -1,5 +1,5 @@
 # RFSoC4x2 Setup 
-The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has 8 DACs and ADCs, the RFSOC4x2 only uses 4x digital to analog converters (5 GSa/s) and 2x analog to digital converters (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is tyipcally too high frequency for our measurements and thus must be modified.
+The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has 8 digital-to-analog converters (DACs) and analog-to-digital converters (ADCs), the RFSOC4x2 only uses 4 DACs (5 GSa/s) and 2 ADCs (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is tyipcally too high frequency for our measurements and thus must be modified.
 
 
 <p align="center">
@@ -10,7 +10,7 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 </p>
 
 
-In this document we outline setup for using QICK-DAWG with RFSoC4x2. In this guide we show how to:
+In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Specifically, we show how to:
 
 1. Setup RFSoC4x2 Hardware<br>
     a. Bipass/Remove the balun & capacitors<br>
@@ -31,16 +31,16 @@ In this document we outline setup for using QICK-DAWG with RFSoC4x2. In this gui
 ## ***Prerequisites***
 
 - [RFSoC4x2](https://www.xilinx.com/support/university/xup-boards/RFSoC4x2.html) (with 12 volt 50 watt power supply) 
-- Managed Router [(example)](https://www.amazon.com/TP-Link-Integrated-Lightening-Protection-TL-R605/dp/B08QTXNWZ1/ref=asc_df_B08QTXNWZ1/?tag=hyprod-20&linkCode=df0&hvadid=475692076734&hvpos=&hvnetw=g&hvrand=3761702075041011209&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1022494&hvtargid=pla-1149738264234&psc=1)
-- Low Frequency Differential Amplifier [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A)
-- 3 x DC Output Voltage Supply (+3.2, +0.7, -1.8V for biasing the differential amplifier)
+- Managed router [(example)](https://www.amazon.com/TP-Link-Integrated-Lightening-Protection-TL-R605/dp/B08QTXNWZ1/ref=asc_df_B08QTXNWZ1/?tag=hyprod-20&linkCode=df0&hvadid=475692076734&hvpos=&hvnetw=g&hvrand=3761702075041011209&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1022494&hvtargid=pla-1149738264234&psc=1)
+- Low frequency differential amplifier [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A)
+- 3 x DC output voltage supply (+3.2, +0.7, -1.8V for biasing the differential amplifier)
 - SMA cables
 - Computer with Ethernet port or ethernet adaptor
-- Ethernet Cord(s) (at least one from RFSoC to router)
-- Micro SD Card Reader
+- Ethernet cord(s) (at least one from RFSoC to router)
+- Micro SD card reader
 ### Software 
 - [Win32DiskImager](https://sourceforge.net/projects/win32diskimager/) for Windows or Disk Manager on MacOS
-- Dependent Packages (follow `Installing Necessary Packages` section--included in batch file setup)
+- Dependent packages (follow `Installing Necessary Packages` section--included in batch file setup)
     - [QICK](https://github.com/openquantumhardware/qick)
     - [Pyro4](https://pypi.org/project/Pyro4/)
     - [Serpent](https://pypi.org/project/serpent/) 
