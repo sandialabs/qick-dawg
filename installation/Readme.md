@@ -57,7 +57,7 @@ The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure
             alt="Balun Surgery"
             width="1000px"/>
     </p>
-    <figcaption align="center">WHERE IS THIS IMAGE CAPTION SHOWING UP.</figcaption>
+    <figcaption align="center">Circuit diagram for the RFSoC4x2 ADC D. (Left - Circled) Balun to be removed (Right - Circled) Capacitors to be removed </figcaption>
 </figure>
 
 The combiation of the Balun, MABA-011118 and the two 100nF capactors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to bypass or remove these components. Our barbaric method is to pull off the balun (under an RF shield) and desolder the capacitors as shown in the following image.  The cacpacitors are then replaced with either 2x 0 ohm resistors or 2x short lenghts of wire. 
