@@ -13,7 +13,7 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Specifically, we show how to:
 
 1. Setup RFSoC4x2 Hardware<br>
-    a. Bypass/Remove the balun & capacitors<br>
+    a. Remove the balun & Bypass capacitors<br>
     b. Connect the lw frequency differential amplifier<br>
     c. Connect PMOD digital outputs<br>
     d. Assembling and powering on your RFSoC4x2 board
@@ -47,7 +47,7 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Speci
 
 ## 1a. Bypass/Remove the Balun & Capacitors
 
-The signal measured by the photodiodes cannot be directly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at low frequency thus the balun and capacitors on the board need to be removed or bypassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential voltage signal, we have to add a differential amplifier which takes the signal from the photodetector in and outputs a biased signal to the ADCs for digitization (see section 1.b below). 
+The signal measured by the photodiodes cannot be directly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at low frequency thus the balun needs to be removed and the capacitors need to be bypassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential voltage signal, we have to add a differential amplifier which takes the signal from the photodetector in and outputs a biased signal to the ADCs for digitization (see section 1.b below). 
 
 The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure below.  
 
@@ -57,10 +57,10 @@ The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure
             alt="Balun Surgery"
             width="1000px"/>
     </p>
-    <figcaption align="center">Circuit diagram for the RFSoC4x2 ADC D. (Left - Circled) Balun to be removed (Right - Circled) Capacitors to be removed </figcaption>
+    <figcaption align="center">Circuit diagram for the RFSoC4x2 ADC D. (Left - Circled) Balun to be removed (Right - Circled) Solder input leads to the far side of the capacitors </figcaption>
 </figure>
 
-The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to bypass or remove these components. Our clumsy method is to pull off the balun (under an RF shield) and desolder the capacitors as shown in the following image.  The capacitors are then replaced with either two zero ohm resistors or two short lengths of wire. 
+The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to remove the balun and bypass the capacitors. Our clumsy method is to pull off the balun (under an RF shield) and solder input wires on the down current side of the capacitors. 
 
 <p align="center">
     <img src="graphics/balun_surgery_1.PNG"
@@ -86,11 +86,10 @@ To connect the low frequency differential amplifier to the RFSoC4x2,
 - cut a semi-flexible SMA cable in half and strip the insulation off of both ends to expose the center conductor ;
 - screw the SMA heads of the cut SMA cable to Vp and Vm SMA heads on the low frequency differential amplifier--screwing on the SMA cables now will limit the torsion on our delicate soldering in the next steps;
 - take the SMA cables attached to the low frequency differential amplifier and solder them to the RFSoC4x2.
-    - Vp should be solder to the top right solder pad.
-    - Vm should be soldered to the middle right solder pad. 
+    - Vp should be soldered to the far side of the top capacitor
+    - Vm should be soldered to the far side of the bottom capacitor
 
-The image below is the circuit diagram for the RFSoC4x2. The top right solder pad (the pad for Vp) is labeled `6`. The middle right solder pad (the pad for Vm) is labeled `5`
-
+The image below is the circuit diagram for the RFSoC4x2 ADC modification.
 <p align="center">
     <img src="graphics/balun_surgery_2.PNG"
         alt="Balun Surgery"
@@ -100,7 +99,7 @@ The image below is the circuit diagram for the RFSoC4x2. The top right solder pa
 
 RFSoC4x2 Schematic <sup>[1](#RFSoc4x2_Schematic)</sup>
 
-Note that you can instead leave the balun in place and directly solder coax cables to the capacitor terminals, however, this is more difficult and it is easy to destroy the capacitor terminals with the solder iron. 
+Note if you are worried about removing the balun from your RFSoC4x2, marketplaces such as Digikey sell replacement baluns, if you wanted to restore the functionality of the ADC in the future. 
 
 
 ## 1c. Connect PMOD digial outputs
