@@ -1,7 +1,7 @@
 '''
 CPMGXY-n
 =======================================================================
-An NVAveragerProgram class acquires data for CPMGXY8-n, 
+An NVAveragerProgram class acquires data for CPMGXY-n, 
 '''
 
 from .nvaverageprogram import NVAveragerProgram
@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os 
 
-class CPMGXY8-n(NVAveragerProgram):
+class CPMGXY-n(NVAveragerProgram):
     '''
     An NVAveragerProgram class that generates and executes a sequence used
-    to measure CPMGXY8-n
+    to measure CPMGX8-n
 
     Parameters
     ----------
@@ -47,7 +47,7 @@ class CPMGXY8-n(NVAveragerProgram):
             PMOD channel used to trigger laser source usually 0 to 6
 
     Returns
-    `.CPMGXY8-n`
+    `.CPMGXY-n`
         An instance of CMPGXY8 with compiled assembly language
 
     Methods
@@ -84,7 +84,8 @@ class CPMGXY8-n(NVAveragerProgram):
         "reps",
         "readout_reference_start_treg",
         "laser_readout_offset_treg",
-        "mw_readout_delay_treg"]
+        "mw_readout_delay_treg",
+        "n"]
 
     def initialize(self):
         '''Method that generates the assembly code that is sets up adcs and sources.
@@ -155,92 +156,74 @@ class CPMGXY8-n(NVAveragerProgram):
             )
             self.sync_all(self.cfg.laser_on_treg + self.cfg.relax_delay_treg)
 
+        if self.cfg.n % 4 == 0:
+            pass
+        else:
+            assert 0, 'cfg.n must be a multiple of 4'
+
     def body(self):
         '''
         FILL IN 
         '''
 
        
-        
-        # pi/2 - x (1)
+        # pi/2 - x 
         self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
         self.pulse(ch=self.cfg.mw_channel)
         self.sync_all()
         # delay - t
         self.sync(self.delay_register.page, self.delay_register.addr)
 
-        # pi - x  (2)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
+    
+        for i in range(1,(self.cfg.n/4)):
+            #### LOOP OVER FOR n/4
+            # pi - x  
+            self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
+            self.pulse(ch=self.cfg.mw_channel)
+            self.pulse(ch=self.cfg.mw_channel)
+            self.sync_all()
+            # delay - 2t
+            self.sync(self.delay_register.page, self.delay_register.addr)
+            self.sync(self.delay_register.page, self.delay_register.addr)
 
 
-        # pi - y (3)
-        self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(90))
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
-
-        # pi - x (4)
-        self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
-
-        # pi - y (5)
-        self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(90))
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
-
-        # pi/2 -  y (6)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
-
-        # pi/2 -  x (7)
-        self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
-
-        # pi/2 -  y (8)
-        self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(90))
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - 2t
-        self.sync(self.delay_register.page, self.delay_register.addr)
-        self.sync(self.delay_register.page, self.delay_register.addr)
+            # pi - y 
+            self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(90))
+            self.pulse(ch=self.cfg.mw_channel)
+            self.pulse(ch=self.cfg.mw_channel)
+            self.sync_all()
+            # delay - 2t
+            self.sync(self.delay_register.page, self.delay_register.addr)
+            self.sync(self.delay_register.page, self.delay_register.addr)
 
 
-         # pi - x  (9)
-        self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
-        self.pulse(ch=self.cfg.mw_channel)
-        self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
-        # delay - t
-        self.sync(self.delay_register.page, self.delay_register.addr)
+        for i in range(1,(self.cfg.n/4)):
+            # pi - y 
+            self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(90))
+            self.pulse(ch=self.cfg.mw_channel)
+            self.pulse(ch=self.cfg.mw_channel)
+            self.sync_all()
+            # delay - 2t
+            self.sync(self.delay_register.page, self.delay_register.addr)
+            self.sync(self.delay_register.page, self.delay_register.addr)
 
-        # pi/2 - x (10)
+    
+            # pi/2 -  x 
+            self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
+            self.pulse(ch=self.cfg.mw_channel)
+            self.pulse(ch=self.cfg.mw_channel)
+            self.sync_all()
+            
+            if i<(self.cfg.n):
+                # delay - 2t
+                self.sync(self.delay_register.page, self.delay_register.addr)
+                self.sync(self.delay_register.page, self.delay_register.addr)
+            else: 
+                #delay - 1t
+                self.sync(self.delay_register.page, self.delay_register.addr)
+
+          
+        # pi/2 - x 
         self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
         self.pulse(ch=self.cfg.mw_channel)
         self.sync_all()
