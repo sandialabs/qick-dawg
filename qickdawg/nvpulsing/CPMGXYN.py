@@ -1,7 +1,7 @@
 '''
-CPMGXY8
+CPMGXY-n
 =======================================================================
-An NVAveragerProgram class acquires data for CPMGXY8, 
+An NVAveragerProgram class acquires data for CPMGXY8-n, 
 '''
 
 from .nvaverageprogram import NVAveragerProgram
@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os 
 
-class CPMGXY8(NVAveragerProgram):
+class CPMGXY8-n(NVAveragerProgram):
     '''
     An NVAveragerProgram class that generates and executes a sequence used
-    to measure CPMGXY8
+    to measure CPMGXY8-n
 
     Parameters
     ----------
@@ -47,7 +47,7 @@ class CPMGXY8(NVAveragerProgram):
             PMOD channel used to trigger laser source usually 0 to 6
 
     Returns
-    `.CPMGXY8`
+    `.CPMGXY8-n`
         An instance of CMPGXY8 with compiled assembly language
 
     Methods
