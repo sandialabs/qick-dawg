@@ -154,7 +154,7 @@ class CPMG(NVAveragerProgram):
                 pins=[self.cfg.laser_gate_pmod],
                 width=self.cfg.laser_on_treg,
                 adc_trig_offset=0
-            )glo
+            )
             self.sync_all(self.cfg.laser_on_treg + self.cfg.relax_delay_treg)
 
     def body(self):
