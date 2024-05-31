@@ -1,5 +1,5 @@
 '''
-CPMGXY-n
+CPMGXYn
 =======================================================================
 An NVAveragerProgram class acquires data for CPMGXY-n, 
 '''
@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os 
 
-class CPMGXY-n(NVAveragerProgram):
+class CPMGXYn(NVAveragerProgram):
     '''
     An NVAveragerProgram class that generates and executes a sequence used
-    to measure CPMGX8-n
+    to measure CPMGX8n
 
     Parameters
     ----------
@@ -161,6 +161,12 @@ class CPMGXY-n(NVAveragerProgram):
         else:
             assert 0, 'cfg.n must be a multiple of 4'
 
+ 
+        
+        
+        
+
+        
     def body(self):
         '''
         FILL IN 
@@ -170,7 +176,18 @@ class CPMGXY-n(NVAveragerProgram):
         self.pulse(ch=self.cfg.mw_channel)
         self.sync_all()
 
-        ############## BEGIN LOOP HERE ####################
+
+        ############## BEGIN LOOP HERE ####################.
+
+        p = self
+
+        rjj = 14
+        rcount = 15
+        p.initialize()
+        p.regwi(0, rcount, 0)
+        p.regwi(0, rjj, self.cfg['n']-1)
+        p.label("LOOP_J")
+
         # delay - t
         self.sync(self.delay_register.page, self.delay_register.addr)
 
@@ -245,9 +262,17 @@ class CPMGXY-n(NVAveragerProgram):
         # delay - t
         self.sync(self.delay_register.page, self.delay_register.addr)
 
+
+        p.mathi(0, rcount, rcount, "+", 1)
+
+        p.memwi(0, rcount, self.counter_addr)
+
+        p.loopnz(0, rjj, 'LOOP_J')
+
+        p.end()
         ########## LOOP ENDS HERE ##############
 
-        
+
         # pi/2 - x (10)
         self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
         self.pulse(ch=self.cfg.mw_channel)
