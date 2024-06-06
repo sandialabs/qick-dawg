@@ -24,7 +24,7 @@ license = {file = "LICENSE.md"}
 keywords = ["quantum control", "nitrogen vacancy", "fpga", "xilinx", "rfsoc", "qubit"]
 authors = [
     {name = "Andy Mounce", email = "amounce@sandia.gov"},
-    {name = "Emmeline Riendeau", email = "eriendeau@sandia.gov"}]
+    {name = "Emmeline Riendeau", email = "eriendeau@uchicago.edu"}]
 dynamic = ["version"]
 
 [project.urls]
