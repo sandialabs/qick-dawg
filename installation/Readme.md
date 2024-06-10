@@ -155,7 +155,7 @@ In our lab, we have assembled all the necessary components into a custom rack bo
 
 (Getting started directions adapted from [QICK ZCU111 quick-start-guide](https://github.com/openquantumhardware/qick/blob/main/quick_start/README_ZCU111.md))
 
-## 2a. ***Flashing your Micro SD Card*** 
+## 2a. ***Flash your Micro SD Card*** 
 - First, you will need to flash the micro SD card with the **RFSoC4x2 PYNQ** image found [here](http://www.pynq.io/board.html). Download the RFSoC4x2 PYNQ image and unzip the file if it is a .zip file. 
 
 (Windows)
