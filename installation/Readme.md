@@ -1,4 +1,7 @@
-# RFSoC4x2 Setup 
+# RFSoC4x2 Setup (RFSoC4x2 no Wifi - managed router connection)
+
+This Readme supports setting up your RFSoC4x2 where the RFSoC4x2 is not connected directly to the internet. Instead, here, the RFSoC4x2 is connected to a lab control computer through a managed router connection. There is an alternative Readme in the installation folder for labs where the RFSoC4x2 is permitted to be connected directly to the internet. 
+
 The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has eight digital-to-analog converters (DACs) and analog-to-digital converters (ADCs), the RFSOC4x2 only uses four DACs (5 GSa/s) and two ADCs (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is typically too high frequency for our measurements and thus must be modified.
 
 
@@ -16,9 +19,9 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Speci
 
 1. Setup RFSoC4x2 Hardware<br>
     a. Remove the balun and bypass capacitors<br>
-    b. Connect the low frequency differential amplifier<br>
+    b. Connect the low-frequency differential amplifier<br>
     c. Connect PMOD digital outputs<br>
-    d. Assembling and powering on your RFSoC4x2 board
+    d. Assemble and power on your RFSoC4x2 board
     e. (Optional) Full enclosure
 
 2. Upload and install QICK-DAWG and other software to you RFSoC4x2 board<br>
@@ -48,7 +51,7 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Speci
     - [Serpent](https://pypi.org/project/serpent/) 
 
 
-## 1a. Bypass/Remove the Balun & Capacitors
+## 1a. Remove the balun and bypass capacitors
 
 The signal measured by the photodiodes cannot be directly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at low frequency thus the balun needs to be removed and the capacitors need to be bypassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential voltage signal, we have to add a differential amplifier which takes the signal from the photodetector in and outputs a biased signal to the ADCs for digitization (see section 1.b below). 
 
@@ -117,7 +120,7 @@ To control the laser through TTL you must connect your laser to the PMOD located
         width="800px"/>
 </p>
 
-## 1d. Assembling and powering on your RFSoC4x2 board
+## 1d. Assemble and power on your RFSoC4x2 board
 
 With the hardware modified and differential amplifier connected, the RFSoC4x2 can be assembled to be connected to your computer. This connection is made through a managed Ethernet router and by using the Pyro4 python package. To do so:
 
@@ -169,7 +172,7 @@ In our lab, we have assembled all the necessary components into a custom rack bo
 To connect to your RFSoC4x2, you first need to find the IP address assigned to your board. Conveniently, the RFSoC4x2 has an LED screen on the top of the board that displays the IP address. 
 Alternatively, you can log into your router and find the IP address and/or assign a static IP address. 
 
-### Copying Necessary Files to the RFSoC4x2 ###
+### Copy Necessary Files to the RFSoC4x2 ###
 We have written our own .bat file and jupyter notebook to streamline the installation process. The first step is to run the .bat file which copies all of the required files to the RFSoC4x2. To do so:
 
 - clone QICK-DAWG to your computer;
@@ -184,7 +187,7 @@ We have written our own .bat file and jupyter notebook to streamline the install
 - run_server and qick_daemon Jupyter Notebook files
 - QICK-DAWG specific firmware
 
-### Connecting to the Jupyter server 
+### Connect to the Jupyter server 
 With the required files copied to your RFSoC4x2, we will now install the required packages by running an .ipynb though the RFSoC4x2's Jupyter Notebook server. To connect to the jupyter notebook server:
 
 - In a browser window type your RFSoC4x2 IP address as shown on the board's LED screen and use password `xilinx` as shown in the graphic below
