@@ -12,11 +12,12 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
+
 
 # -- Project information -----------------------------------------------------
 
-project = 'QICK-DAWG'
+project = 'qickdawg'
 copyright = '2024, Andy Mounce, Emmeline Riendeau'
 author = 'Andy Mounce'
 
@@ -42,8 +43,14 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 autodoc_typehints = "none"
-autoautodoc_docstring_signature = True
+autodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
+
+# myst_parser options
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -51,14 +58,12 @@ autodoc_default_options = {'members': None}
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
-html_logo = "_static/QD_logo-removebg-preview.png"
-html_theme_options = {
-    'logo-only': True,
-    'display_version': False,
-}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-
+html_static_path = ['_static']
+html_logo = "_static/qickdawg_forgithub.png"
+html_theme_options = {
+    'logo_only': True
+} 

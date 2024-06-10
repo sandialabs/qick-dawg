@@ -11,17 +11,17 @@
 # Hardware Setup
 In this document we outline the hardware setup for an all-in-one RFSoC4x2 enclosure. We show:
 
-1. Enclosure Overview 
+1. Enclosure overview 
 
     a. Components list 
 
-2. Enclosure Modification 
+2. Enclosure modification 
 
-    a. Drill Holes
+    a. Drill holes
 
-    b. 3D Printed Cages 
+    b. 3D printed cages 
 
-    c. Low-Frequency Differential Amplifier 
+    c. Low-frequency differential amplifier 
 
     d. BNC to PMOD TTL 
 
@@ -33,11 +33,11 @@ In this document we outline the hardware setup for an all-in-one RFSoC4x2 enclos
 
     c. Securing 3D printed cages 
 
-    d. Front Panel Assembly
+    d. Front panel assembly
 
-    e. Input Signal Assembly 
+    e. Input signal assembly 
 
-    f. Router and Ethernet Connection
+    f. Router and Ethernet connection
 
 
 
@@ -51,31 +51,31 @@ In this document we outline the hardware setup for an all-in-one RFSoC4x2 enclos
 </p>
 
 ***1a. Components***
-- [Bud Industries CH-14404 Enclosure](https://www.digikey.com/en/products/detail/bud-industries/CH-14404/428959)
+- [Bud Industries CH-14404 enclosure](https://www.digikey.com/en/products/detail/bud-industries/CH-14404/428959)
 - [RFSoC4x2 FPGA](https://www.xilinx.com/support/university/xup-boards/RFSoC4x2.html) 
 - [Router](https://www.amazon.com/TP-Link-Integrated-Lightening-Protection-TL-R605/dp/B08QTXNWZ1/ref=asc_df_B08QTXNWZ1/?tag=hyprod-20&linkCode=df0&hvadid=475692076734&hvpos=&hvnetw=g&hvrand=3761702075041011209&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1022494&hvtargid=pla-1149738264234&psc=1)
-- [DC Voltage Supply](https://www.digikey.com/en/products/detail/cui-inc/PYB30-Q24-T315-U/4477530) 
-- Low-Frequency Differential Amplifier [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A)
-- 3D printed Router Cage
-- 3D printed Low-Frequency Differential Amplifier Holder
-- [Ethernet Pass-Through](https://www.digikey.com/en/products/detail/amphenol-ltw/RCP-5SPFFH-TCU7001/5253168)
-- [Power Pass-Through](https://www.digikey.com/en/products/detail/tensility-international-corp/54-00151/9829987)
-- [6 SMA Pass-Through](https://www.digikey.com/en/products/detail/amphenol-rf/132170/1011921) 
-- [8 BNC Pass-Through](https://www.digikey.com/en/products/detail/adam-tech/RF1-106-D-00-50-HDW/9830449)
-- [Pig Tail Power Cord](https://www.digikey.com/en/products/detail/tensility-international-corp/10-02937/9686418)
-- [1 x Flexible SMA Cable](https://www.digikey.com/en/products/detail/cinch-connectivity-solutions-johnson/415-0025-012/457078) 
+- [DC voltage supply](https://www.digikey.com/en/products/detail/cui-inc/PYB30-Q24-T315-U/4477530) 
+- Low-frequency differential amplifier [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A)
+- 3D printed router cage
+- 3D printed low-frequency differential amplifier holder
+- [Ethernet pass-through](https://www.digikey.com/en/products/detail/amphenol-ltw/RCP-5SPFFH-TCU7001/5253168)
+- [Power pass-through](https://www.digikey.com/en/products/detail/tensility-international-corp/54-00151/9829987)
+- [6 SMA pass-through](https://www.digikey.com/en/products/detail/amphenol-rf/132170/1011921) 
+- [8 BNC pass-through](https://www.digikey.com/en/products/detail/adam-tech/RF1-106-D-00-50-HDW/9830449)
+- [Pig tail power cord](https://www.digikey.com/en/products/detail/tensility-international-corp/10-02937/9686418)
+- [1 x Flexible SMA cable](https://www.digikey.com/en/products/detail/cinch-connectivity-solutions-johnson/415-0025-012/457078) 
 - [2 x Rigid SMA Cable](https://www.digikey.com/en/products/detail/cinch-connectivity-solutions-johnson/415-0081-006/1014585) 
-- [1' Ethernet Cord](https://www.digikey.com/en/products/detail/panduit-corp/UTP28CH1/7981686) 
-- [1.64' Ethernet Cord](https://www.digikey.com/en/products/detail/metz-connect-usa-inc/13084U0533-E/13402445) 
+- [1' Ethernet cord](https://www.digikey.com/en/products/detail/panduit-corp/UTP28CH1/7981686) 
+- [1.64' Ethernet cord](https://www.digikey.com/en/products/detail/metz-connect-usa-inc/13084U0533-E/13402445) 
 - [16 x 4-40 Screws (0.25")](https://www.digikey.com/en/products/detail/keystone-electronics/9900/317321)
-- [8 x 4-40 0.5" Hex Standoff Pilar](https://www.digikey.com/en/products/detail/keystone-electronics/1450C/303581)
+- [8 x 4-40 0.5" Hex standoff pilar](https://www.digikey.com/en/products/detail/keystone-electronics/1450C/303581)
 - [Wire](https://www.amazon.com/AWG-Stranded-Wire-Kit-Pre-Tinned/dp/B07T4SYVYG/ref=sr_1_5?crid=1PFWR4LYQI3YD&keywords=wire+set&qid=1704903898&sprefix=wire+set+soldering%2Caps%2C624&sr=8-5)
 - [Heat Shrink](https://www.amazon.com/Ginsco-580-pcs-Assorted-Sleeving/dp/B01MFA3OFA/ref=sr_1_3?crid=14F6I0UNEEKPJ&keywords=heat+shrink+tubing&qid=1704903836&sprefix=heat+sh%2Caps%2C422&sr=8-3
 ) 
 - PMOD Connectors 
 - [Solder](https://www.amazon.com/MAIYUM-63-37-Solder-Electrical-Soldering/dp/B075WB98FJ/ref=sr_1_5?keywords=solder&qid=1704903785&sr=8-5
 )
-- [Zip Ties with Adhesive Mounts](https://www.amazon.com/Adhesive-Backed-Mounts-holder-Anchor-Holders/dp/B07Z79LHJC/ref=asc_df_B07Z79LHJC?tag=bingshoppinga-20&linkCode=df0&hvadid=80127002044380&hvnetw=o&hvqmt=e&hvbmt=be&hvdev=c&hvlocint=&hvlocphy=&hvtargid=pla-4583726547458434&th=1)
+- [Zip ties with adhesive mounts](https://www.amazon.com/Adhesive-Backed-Mounts-holder-Anchor-Holders/dp/B07Z79LHJC/ref=asc_df_B07Z79LHJC?tag=bingshoppinga-20&linkCode=df0&hvadid=80127002044380&hvnetw=o&hvqmt=e&hvbmt=be&hvdev=c&hvlocint=&hvlocphy=&hvtargid=pla-4583726547458434&th=1)
 
 
 <!-- - Laser Cut Voltage Divider 
@@ -101,18 +101,18 @@ Drill holes are made in the main body of the CH-14404 enclosure to secure 3D pri
         width="700px"
         />
         <figcaption>
-        Bud Industries CH-14404 Enclosure Screw Hole CAD Schematic <br> 
+        Bud Industries CH-14404 enclosure screw hole CAD schematic <br> 
         <li><b>A = RFSoC4x2</b> with the PMOD oriented toward the enclosure front <br></li>
-        <li><b>B = Router</b> with the ethernet ports facing the RFSoC4x2 <br></li>
+        <li><b>B = Router</b> with the Ethernet ports facing the RFSoC4x2 <br></li>
         <li><b>Optional</b><br></li>
         <ul>
-            <li><b>C = DC Power Supply</b> supply with voltage outputs orientated towards the RFSoC4x2</li>
-            <li><b>D = Voltage Divider</b></li>
+            <li><b>C = DC Power supply</b> with voltage outputs orientated towards the RFSoC4x2</li>
+            <li><b>D = Voltage divider</b></li>
             <li> An external power supply can be used rather than C) DC Power Supply and D) Voltage Divider
         </ul>
-        <li><b>E = Low-Frequency Differential Amplifier </b> with V+ and V- facing the RFSoC4x2</li>
-        <li><b>F = Ethernet Pass-Through</b></li>
-        <li><b>G = Power Pass-Through</b></li>
+        <li><b>E = Low-frequency differential amplifier </b> with V+ and V- facing the RFSoC4x2</li>
+        <li><b>F = Ethernet pass-through</b></li>
+        <li><b>G = Power pass-through</b></li>
         </figcaption>
 </p>
 <p align="center">
@@ -128,7 +128,7 @@ Drill holes are made in the main body of the CH-14404 enclosure to secure 3D pri
 ### 2b. 3D Printed Cages ###
 The router and low-frequency differential amplifier are secured in the enclosure using 3D printed cages. It is especially important to immobilize the low-frequency differential amplifier since the wires and solder for the RFSoC4x2 to low-frequency differential amplifier connection are very delicate. 
 
-The 3D printed low-frequency differential amplifier holder is made of `Low_Freq_Diff_Amp_Base.STEP` and `Low_Freq_Diff_Amp_Top.STEP` in the main hardware folder. Print these parts at 0.16mm tolerance. The low-frequency differential amplifier sits in the 3D printed base with the loops for V+, V-, and ground pointing down. The 3D printed top should be snug over the top of the 3D printed base. In a later step, the 3D printed low-frequency differential amplifier holder will be secured to the enclosure base with screws. 
+The 3D printed low-frequency differential amplifier holder is made of `Low_Freq_Diff_Amp_Base.STEP` and `Low_Freq_Diff_Amp_Top.STEP` in the main hardware folder. Print these parts at 0.16mm tolerance to allow for proper fit. The low-frequency differential amplifier sits in the 3D printed base with the loops for V+, V-, and ground pointing down. The 3D printed top should be snug over the top of the 3D printed base. In a later step, the 3D printed low-frequency differential amplifier holder will be secured to the enclosure base with screws. 
 
 <div style="display: flex; justify-content: center;">
     <div style="text-align: center;">
@@ -160,8 +160,8 @@ The 3D printed low-frequency differential amplifier holder is made of `Low_Freq_
 
 
 ### 2c. Low-Frequency Differential Amplifier ###
-to bypass the high-pass filter inherent to the analog to digital converters (ADCs) on the RFSOC4x2. 
-Recall from the installation readme that the balun and capacitors on the analog-to-digital converters (ADCs) act as a high-pass filter, which filters our the low-frequency experimental defect data. The balun and capacitor need to be removed from one ADC to read in experiment data. Additionally, a low-frequency differential amplifier is required to process the low-frequency signal input after the balun has been removed. Follow step 1a in the installation readme to remove or bypass the balun and capacitors for one of the ADCs if not yet done. Now follow the modified step 1b to connect the low-frequency differential amplifier with the 3D printed holder for the low-frequency differential amplifier.  
+It's necessary to bypass the high-pass filter inherent to the analog to digital converters (ADCs) on the RFSOC4x2. 
+Recall from the installation readme that the balun and capacitors on the analog-to-digital converters (ADCs) act as a high-pass filter, which filters out the low-frequency experimental defect data. The balun and capacitor need to be removed from one ADC to read in experiment data. Additionally, a low-frequency differential amplifier is required to process the low-frequency signal input after the balun has been removed. Follow step 1a in the installation readme to remove or bypass the balun and capacitors for one of the ADCs if not yet done. Now follow the modified step 1b to connect the low-frequency differential amplifier with the 3D printed holder for the low-frequency differential amplifier.  
 
 ### Modified Installation Readme 1b. <br> Connect the low-frequency differential amplifier 
 
@@ -174,18 +174,18 @@ Recall from the installation readme that the balun and capacitors on the analog-
 
 To connect the low-frequency differential amplifier to the RFSoC4x2,
 
-- solder a 3.3 V input wire to the red V+ post on the low-frequency differential amplifier
-- solder a -1.8 V input wire to the yellow V- post on the low-frequency differential amplifier
-- solder a ground wire to either the TPG1 or TPG2 post on the low-frequency amplifier
+- solder a 3.3 V input wire to the red V+ post on the low-frequency differential amplifier;
+- solder a -1.8 V input wire to the yellow V- post on the low-frequency differential amplifier;
+- solder a ground wire to either the TPG1 or TPG2 post on the low-frequency amplifier;
 - screw a 0.7 V SMA wire to the Vcm (V common) SMA head on the top of the low-frequency differential amplifier
-- `MODIFIED - with the posts facing down, feed the soldered V+, V-, and ground wires through the base of the low-frequency differential amplifier 3D printed holder, and push the low-frequency differential amplifier down so that it is snug in the base`
-- cut a semi-flexible SMA cable in half and strip the insulation off of both ends to expose the center conductor 
-- screw the SMA heads of the cut SMA cable to Vp and Vm SMA heads on the low-frequency differential amplifier--screwing on the SMA cables now will limit the torsion on our delicate soldering in the next steps
-- take the SMA cables attached to the low-frequency differential amplifier and solder them to the RFSoC4x2
-    - Vp should be solder to the top right solder pad
-    - Vm should be soldered to the middle right solder pad 
+- `MODIFIED - with the posts facing down, feed the soldered V+, V-, and ground wires through the base of the low-frequency differential amplifier 3D printed holder, and push the low-frequency differential amplifier down so that it is snug in the base`;
+- cut a semi-flexible SMA cable in half and strip the insulation off of both ends to expose the center conductor;
+- screw the SMA heads of the cut SMA cable to Vp and Vm SMA heads on the low-frequency differential amplifier, screwing on the SMA cables now will limit the torsion on our delicate soldering in the next steps;
+- and take the SMA cables attached to the low-frequency differential amplifier and solder them to the RFSoC4x2.
+    - Vp should be solder to the top right solder pad.
+    - Vm should be soldered to the middle right solder pad.
 
-The image below is the circuit diagram for the RFSoC4x2. The top right solder pad--the pad for Vp--is labeled `6`. The middle right solder pad--the pad for Vm--is labeled `5`
+The image below is the circuit diagram for the RFSoC4x2. The top right solder pad (the pad for Vp) is labeled `6`. The middle right solder pad (the pad for Vm) is labeled `5`
 
 
 <div style="text-align: center;">
@@ -202,12 +202,12 @@ Note that you can instead leave the balun in place and directly solder coax cabl
 ### 2d. BNC to PMOD TTL ###
 
 To use the PMOD to control a laser with digital TTLs we need to connect the PMOD to BNC on the front panel of the enclosure. To do so,
-- select a BNC pass-through to be inserted to the front panel
-- take a PMOD male to male connector and cut off one end
-- strip the insulation from the cut end of the PMOD connector 
-- solder the exposed PMOD connector wire to the cup of the BNC connector 
-- secure the BNC pass-through to the enclosure front panel using the provided washer and nut
-- the remaining PMOD connector male end can be plugged into the RFSoC4x2 PMOD 
+- select a BNC pass-through to be inserted to the front panel;
+- take a PMOD male to male connector and cut off one end;
+- strip the insulation from the cut end of the PMOD connector ;
+- solder the exposed PMOD connector wire to the cup of the BNC connector ;
+- secure the BNC pass-through to the enclosure front panel using the provided washer and nut;
+- and the remaining PMOD connector male end can be plugged into the RFSoC4x2 PMOD.
 
 
 <div style="display: flex; align-items: center;">
@@ -215,10 +215,10 @@ To use the PMOD to control a laser with digital TTLs we need to connect the PMOD
         <img src="./../_static/BNC_to_ttl.jpg" alt="BNC to TTL Physical" style="max-width: 300px;">
         <p>BNC to TTl connection in the RFSoC4x2 enclosure</p>
     </div>
-    <div style="flex: 1; text-align: center;">
+    <!-- <div style="flex: 1; text-align: center;">
         <img src="./../_static/BNC_to_ttl_handdrawn.png" alt="BNC to TTL Drawing" style="max-width: 300px;">
         <p>Schematic for soldering PMOD cable to BNC head. Single ended male PMOD soldered to BNC cup. </p>
-    </div>
+    </div> -->
 </div>
 
 
@@ -227,13 +227,12 @@ To use the PMOD to control a laser with digital TTLs we need to connect the PMOD
 
 
 ### 3a. Power 
-A single power source is plugged into the power pass-through in the back of the enclosure and pig-tail power splitters are used to power the RFSoC4x2, router, and optional internal low-frequency differential amplifier voltage supply. The power cord supplied with the RFSoC4x2 provides more voltage than necessary thus this source can be used to power the RFSoC4x2, router, and optional internal low-frequency differential amplifier voltage supply. To create the single power plug in:
+A single power source is plugged into the power pass-through in the back of the enclosure and pig-tail power splitters are used to power the RFSoC4x2, router, and optional  internal power supply for the low-frequency differential amplifier. The power cord supplied with the RFSoC4x2 provides more voltage than necessary thus this source can be used to power the RFSoC4x2, router, and optional internal low-frequency differential amplifier voltage supply. To create the single power plug in:
 
-- remove the hex nut and washer from the power pass-through jack (1 in schematic below)
-- push the power pass-through jack through drill hole G (schematic 2a above) from the outside of the enclosure to the inside
-- place washer back on the power pass-through jack and tighten the hex nut, the pass-through should be secured to the wall of the enclosure now
-- measure and trim the two or three pigtail power cords (2 in schematic below). The power cords need to reach the router power input, RFSoC4x2 power input, and optional voltage supply. Refer to  schematic 2a above. to estimate distances. 
-- solder two or three pigtails to the head of the power pass-through, connecting positive wires to the center jack and negative wires to the outer loop (3 and 4, respectively, in schematic below)
+- push the power pass-through jack through drill hole G (schematic 2a above) from the outside of the enclosure to the inside;
+- place washer back on the power pass-through jack and tighten the hex nut, the pass-through should be secured to the wall of the enclosure now;
+- measure and trim the two or three pigtail power cords (2 in schematic below) (the power cords need to reach the router power input, RFSoC4x2 power input, and optional voltage supply, refer to  schematic 2a above to estimate distances);
+- and solder two or three pigtails to the head of the power pass-through, connecting positive wires to the center jack and negative wires to the outer loop (3 and 4, respectively, in schematic below). 
 
 
 <div style="text-align: center;">
@@ -255,31 +254,26 @@ A single power source is plugged into the power pass-through in the back of the 
 
 ### 3b. Securing the RFSoC4x2
 Screws and hex standoff pillars are used to support and secure the RFSoC4x2 in the enclosure. To do so,
-- pass a screw through an edge screw hole in the RFSoC4x2 into a hex pillar placed underneath the board, repeat for each of the 8 perimeter screw holes
-- place the RFSoC4x2 in the enclosure in spot A (schematic 2a) with the PMODs facing the open end of the enclosure
-- screw 8 x 4-40 0.25" up through the bottom of the enclosure into the bottom of the 8 x 0.5" hex pillars 
-- tighten the screws until the RFSoC4x2 is secure 
+- pass a screw through an edge screw hole in the RFSoC4x2 into a hex pillar placed underneath the board, repeat for each of the 8 perimeter screw holes;
+- place the RFSoC4x2 in the enclosure in spot A (schematic 2a) with the PMODs facing the open end of the enclosure;
+- screw 8 x 4-40 0.25" up through the bottom of the enclosure into the bottom of the 8 x 0.5" hex pillars.
+
 
 
 ### 3c. Securing 3D Printed Cages
 
 To secure the 3D printed cage for the router,
-- place the router inside enclosure in spot B (schematic 2a above) with the ethernet ports facing the RFSoC4x2
-- place the 3D printed router cage on top of the router
-- screw 4 4-40 0.25" screws through the bottom of the enclosure into the legs of the 3D printed router cage. Tighten the screws until the router is secure
+- place the router inside enclosure in spot B (schematic 2a above) with the ethernet ports facing the RFSoC4x2;
+- place the 3D printed router cage on top of the router;
+- and screw 4 4-40 0.25" screws through the bottom of the enclosure into the legs of the 3D printed router cage. 
 
 To secure the 3D printed support for the low-frequency differential amplifier,
-- place the low-frequency differential amplifier in the 3D printed base in the enclosure in spot E (schematic 2a above))
-- screw 4 4-40 0.25" screws through the bottom of the enclosure into the legs of the 3D printed low-frequency differential amplifier. Tighten the screws until the router is secure 
+- place the low-frequency differential amplifier in the 3D printed base in the enclosure in spot E (schematic 2a above));
+- and screw 4 4-40 0.25" screws through the bottom of the enclosure into the legs of the 3D printed low-frequency differential amplifier.
 
 ### 3d. Front Panel Assembly
 
-With the holes drilled in the CH-14404 enclosure front panel BNC and SMA pass-throughs can be secured in place. To do so, 
-- remove the washers and nuts from 6 SMA pass-throughs and 8 BNC pass-throughs
-- through the front pass of the panel, place 6 SMA in the smaller left hand drill holes and 8 BNC in the right hand drill holes (schematic 2a)
-- from the backside of the panel put the washers and nuts back on the SMA and BNC pass-throughs and tighten to secure
-
-The SMA and BNC pass-throughs should be secured in place on the front enclosure panel now. 
+With the holes drilled in the CH-14404 enclosure front panel BNC and SMA pass-throughs can be secured in place. 6 SMA pass-throughs are placed through the drill holes on the left and 8 BNC pass-throughs are place in the drill holes on the right on the front panel (schematic 2a). 
 
 
 <div style="text-align: center;">
@@ -313,16 +307,13 @@ To connect the input signal to the RFSoC4x2,
 
 ### 3f. Router and Ethernet Connection 
 
-To add the ethernet pass-through to the enclosure:
-- remove the washer from the ethernet pass-through base
-- push the base of the ethernet pass-through through drill hole F from the outside of the enclosure
-- screw the washer back on the ethernet-pass through from the inside of the enclosure
+Now add the Ethernet pass-through to the enclosure by pushing it through drill hole F from the outside of the enclosure to the inside (schematic 2a). 
 
-The ethernet-pass through should now be secured to the wall of the enclosure. To connect the lab control computer to the RFSoC4x2, 
+To connect the lab control computer to the RFSoC4x2, 
 
-- connect the router from the lab control computer to the ethernet pass through 
-- connect an ethernet cord from the ethernet pass through to the router
-- connect an ethernet cord from the router to the RFSoC4x2
+- connect the router from the lab control computer to the ethernet pass through;
+- connect an ethernet cord from the ethernet pass through to the router;
+- and connect an ethernet cord from the router to the RFSoC4x2.
 
 Now the lab control computer can be used to communicate with and control with RFSoC4x2. 
 

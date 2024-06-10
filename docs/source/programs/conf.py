@@ -12,11 +12,12 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
+
 
 # -- Project information -----------------------------------------------------
 
-project = 'qick-dawg'
+project = 'qickdawg'
 copyright = '2024, Andy Mounce, Emmeline Riendeau'
 author = 'Andy Mounce'
 
@@ -42,8 +43,14 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 autodoc_typehints = "none"
-autoautodoc_docstring_signature = True
+autodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
+
+# myst_parser options
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # -- Options for HTML output -------------------------------------------------
 
