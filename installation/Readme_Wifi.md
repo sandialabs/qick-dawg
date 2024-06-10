@@ -1,4 +1,4 @@
-# RFSoC4x2 setup (RFSoC4x2 Wifi)
+# RFSoC4x2 setup (RFSoC4x2 on Wifi)
 This Readme supports setting up your RFSoC4x2 where the RFSoC4x2 is connected directly to the internet. We have an alternative Readme for labs where the RFSoC4x2 is not permitted to be connected directly to the internet.s
 
 The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has eight digital-to-analog converters (DACs) and analog-to-digital converters (ADCs), the RFSOC4x2 only uses four DACs (5 GSa/s) and two ADCs (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is typically too high frequency for our measurements and thus must be modified.
@@ -15,7 +15,7 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Specifically, we show how to:
 
 1. Setup RFSoC4x2 Hardware<br>
-    a. Bypass/Remove the balun & capacitors<br>
+    a. Remove the balun and bypass capacitors<br>
     b. Connect the low frequency differential amplifier<br>
     c. Connect PMOD digital outputs<br>
     d. Assembling and powering on your RFSoC4x2 
@@ -51,9 +51,10 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Speci
     - [Pyro4](https://pypi.org/project/Pyro4/)
     - [Serpent](https://pypi.org/project/serpent/) 
 
-## 1a. Bypass/Remove the Balun & Capacitors
 
-The signal measured by the photodiodes cannot be directly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at low frequency thus the balun and capacitors on the board need to be removed or bypassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential voltage signal, we have to add a differential amplifier which takes the signal from the photodetector in and outputs a biased signal to the ADCs for digitization (see section 1.b below). 
+## 1a. Remove the balun and bypass capacitors
+
+The signal measured by the photodiodes cannot be directly connected to the ADCs on the board, thus requiring modification the to the RFSoC4x2. The ADCs on the RFSoC4x2 have baluns and capacitors that act as high pass filters. When using photodiodes for photoluminesence detection, the signal is at low frequency thus the balun needs to be removed and the capacitors need to be bypassed in order to get the signal into the ADC. Furthermore, as the ADCs take in a differential voltage signal, we have to add a differential amplifier which takes the signal from the photodetector in and outputs a biased signal to the ADCs for digitization (see section 1.b below). 
 
 The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure below.  
 
@@ -63,10 +64,11 @@ The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure
             alt="Balun Surgery"
             width="1000px"/>
     </p>
-    <figcaption align="center">Circuit diagram for the RFSoC4x2 ADC D. (Left - Circled) Balun to be removed (Right - Circled) Capacitors to be removed </figcaption>
+    <figcaption align="center">Circuit diagram for the RFSoC4x2 ADC D. (Left - Circled) Balun to be removed (Right - Circled) Solder input leads to the far side of the capacitors </figcaption>
 </figure>
 
-The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to bypass or remove these components. Our clumsy method is to pull off the balun (under an RF shield) and desolder the capacitors as shown in the following image.  The capacitors are then replaced with either two zero ohm resistors or two short lengths of wire. 
+The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 and C303) result in a high pass filter. In order to collect the signal, we need to remove the balun and bypass the capacitors. Our clumsy method is to pull off the balun (under an RF shield) and solder input wires on the down current side of the capacitors. 
+
 
 <p align="center">
     <img src="graphics/balun_surgery_1.PNG"
@@ -75,6 +77,7 @@ The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 an
 </p>
 
 ## 1b. Connect the low frequency differential amplifier
+
 
 To properly condition our signal for digitization, we use a Texas Instruments  [Texas Instruments LMH5401 EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A) evaluation board. This board takes in one or two signals and outputs two voltages above (V<sub>p</sub>) and below (V<sub>m</sub>) a common voltage (V<sub>cm</sub>). For full scale, the RFSoC4x2 requires an offset voltage of V<sub>cm</sub> = 0.7V (note that this is also true for the ZCU216 evaluation board, but the ZCU111 evaluation board requires V<sub>cm</sub> = 1.2 V). Additionally, the differential amplifier requires two voltages for power, which are optimally set to (V<sub>cm</sub> + 2.5) = 3.2V and (V<sub>cm</sub> - 2.5 )= -1.8.  A labeled diagram of the LMH5401EVN is shown in the figure below.  
 
@@ -92,11 +95,10 @@ To connect the low frequency differential amplifier to the RFSoC4x2,
 - cut a semi-flexible SMA cable in half and strip the insulation off of both ends to expose the center conductor ;
 - screw the SMA heads of the cut SMA cable to Vp and Vm SMA heads on the low frequency differential amplifier--screwing on the SMA cables now will limit the torsion on our delicate soldering in the next steps;
 - take the SMA cables attached to the low frequency differential amplifier and solder them to the RFSoC4x2.
-    - Vp should be solder to the top right solder pad.
-    - Vm should be soldered to the middle right solder pad. 
+    - Vp should be soldered to the far side of the top capacitor
+    - Vm should be soldered to the far side of the bottom capacitor
 
-The image below is the circuit diagram for the RFSoC4x2. The top right solder pad (the pad for Vp) is labeled `6`. The middle right solder pad (the pad for Vm) is labeled `5`
-
+The image below is the circuit diagram for the RFSoC4x2 ADC modification.
 <p align="center">
     <img src="graphics/balun_surgery_2.PNG"
         alt="Balun Surgery"
@@ -106,7 +108,8 @@ The image below is the circuit diagram for the RFSoC4x2. The top right solder pa
 
 RFSoC4x2 Schematic <sup>[1](#RFSoc4x2_Schematic)</sup>
 
-Note that you can instead leave the balun in place and directly solder coax cables to the capacitor terminals, however, this is more difficult and it is easy to destroy the capacitor terminals with the solder iron. 
+Note if you are worried about removing the balun from your RFSoC4x2, marketplaces such as Digikey sell replacement baluns, if you wanted to restore the functionality of the ADC in the future. 
+
 
 
 ## 1c. Connect PMOD digial outputs
@@ -118,11 +121,11 @@ To control the laser through TTL you must connect your laser to the PMOD located
         width="800px"/>
 </p>
 
-## 1d. Assembling and powering on your RFSoC4x2
+## 1d. Assemble and power on your RFSoC4x2 board
 
 With the hardware modified and differential amplifier connected, the RFSoC4x2 can be assembled to be connected to your computer. This connection is made through a managed Ethernet router and by using the Pyro4 python package. To do so:
 
-- slide your micro SD card into its slot on the RFSoC4x2 and check that the BOOT switch is on SD mode; 
+- slide your micro SD card into its slot on the RFSoC4x2 board and check that the BOOT switch is on SD mode; 
 - connect an Ethernet cable from the board to the router and connect an Ethernet cable from the router to your computer;
 - connect the router and board to their respective power supplies (be sure to use the 12 volt 50 watt power supply for the RFSoC4x2 board not the router);
 - and finally flip the power switch on the RFSoC4x2 on. 
