@@ -157,14 +157,14 @@ class LockinODMR(NVAveragerProgram):
         self.pulse(ch=self.cfg.mw_channel, t=0)
 
         self.trigger(
-            adcs=[0],
+            adcs=[self.cfg.adc_channel],
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=0)
 
         self.trigger(
-            adcs=[0],
+            adcs=[self.cfg.adc_channel],
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
