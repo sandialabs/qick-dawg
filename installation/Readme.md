@@ -1,9 +1,7 @@
-# RFSoC4x2 Setup (RFSoC4x2 no Wifi - managed router connection)
-
-This Readme supports setting up your RFSoC4x2 where the RFSoC4x2 is not connected directly to the internet. Instead, here, the RFSoC4x2 is connected to a lab control computer through a managed router connection. There is an alternative Readme in the installation folder for labs where the RFSoC4x2 is permitted to be connected directly to the internet. 
+# RFSoC4x2 setup (WAN - direct internet connection)
+This Readme supports setting up your RFSoC4x2 where the RFSoC4x2 is connected directly to the internet--wide area network (WAN). We have an alternative Readme for labs where the RFSoC4x2 is not permitted to be directly connected to the internet.
 
 The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Digital](https://www.realdigital.org/) using AMD’s ZYNQ Ultrascale+ Gen 3 RFSoC ZU48DR chip.  While the ZU48DR has eight digital-to-analog converters (DACs) and analog-to-digital converters (ADCs), the RFSOC4x2 only uses four DACs (5 GSa/s) and two ADCs (9.85 GSa/s). Nonetheless, this number of inputs and outputs is nearly perfect for NV and quantum defect control. However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is typically too high frequency for our measurements and thus must be modified.
-
 
 
 <p align="center">
@@ -16,31 +14,34 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 
 In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Specifically, we show how to:
 
-
 1. Setup RFSoC4x2 Hardware<br>
     a. Remove the balun and bypass capacitors<br>
-    b. Connect the low-frequency differential amplifier<br>
+    b. Connect the low frequency differential amplifier<br>
     c. Connect PMOD digital outputs<br>
-    d. Assemble and power on your RFSoC4x2 board
+    d. Assemble and power on your RFSoC4x2 
     e. (Optional) Full enclosure
 
-2. Upload and install QICK-DAWG and other software to you RFSoC4x2 board<br>
+2. Setup lab control computer
+    a. Download/clone QICK-DAWG
+    b. Install necessary packages
+
+3. Upload and install QICK-DAWG and other software to you RFSoC4x2<br>
     a. Flash your microSD card<br>
-    b. Remotely connect to your RFSoC4x2 through SSH<br>
-    c. Copy required files<br>
-    d. Install necessary packages<br>
+    b. Clone QICK-DAWG on your RFSoC4x2 
+    c. Install necessary packages on your RFSOC4x2
+    d. Run the Pyro server to remotely connect to QICK and the RFSoC4x2
+    e. (Supplemental) Establish SSH Remote Connection with the RFSoC4x2
 
 
 
-# 1. Setup RFSoC4x2 hardware 
+
+# 1. Setup RFSoC4x2 Hardware 
 ## ***Prerequisites***
 
 - [RFSoC4x2](https://www.xilinx.com/support/university/xup-boards/RFSoC4x2.html) (with 12 volt 50 watt power supply) 
-- Managed router [(example)](https://www.amazon.com/TP-Link-Integrated-Lightening-Protection-TL-R605/dp/B08QTXNWZ1/ref=asc_df_B08QTXNWZ1/?tag=hyprod-20&linkCode=df0&hvadid=475692076734&hvpos=&hvnetw=g&hvrand=3761702075041011209&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1022494&hvtargid=pla-1149738264234&psc=1)
 - Low frequency differential amplifier [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A)
 - 3 x DC output voltage supply (+3.2, +0.7, -1.8V for biasing the differential amplifier)
 - SMA cables
-- Computer with Ethernet port or Ethernet adaptor
 - Ethernet cord(s) (at least one from RFSoC to router)
 - Micro SD card reader
 ### Software 
@@ -138,8 +139,10 @@ You should hear the fan above the RFSoC chip begin to whir and you should see gr
 
 ## 1e. (Optional) Full enclosure
 
-In our lab, we have assembled all the necessary components into a custom rack box with screw holes and 3D printed cages for fastening components down. We modified [Bud Industries CH-14404 Enclosure](https://www.digikey.com/en/products/detail/bud-industries/CH-14404/428959). The following files are found in `qickdawg/installation/enclosure`
-- Enclosure_Front.SLDPRT, CAD for custom enclsoure front panel holes for SMA and BNC pass through
+
+In our lab, we have assembled all the necessary components into a custom rack box ([Bud Industries CH-14404 Enclosure](https://www.digikey.com/en/products/detail/bud-industries/CH-14404/428959)) with screw holes and 3D printed cages for fastening components. Hardware setup instructions for the enclosure can be found on our [QICK-DAWG Read the Docs](https://qick-dawg.readthedocs.io/en/latest/index.html). The following CAD files for the enclosure are found in `qickdawg/installation/enclosure`:
+
+- Enclosure_Front.SLDPRT, CAD for custom enclosure front panel holes for SMA and BNC pass through
 - Enclosure_Main.SLDPRT, CAD for custom enclosure drill holes to secure components
 - Low_Freq_Diff_Amp_Base.SLDRT, CAD for 3D printable differential amplifier support for mounting the differential amplifier near the RFSoC 4x2 board
 - Low-Freq_Diff_Amp_Top.SLDPRT, CAD for 3D printable differential amplifier top
@@ -151,11 +154,26 @@ In our lab, we have assembled all the necessary components into a custom rack bo
         width="800px"/>
 </p>
 
-# 2. Install QICK-DAWG and other software to you RFSoC4x2 board
+
+# 2. Setup lab control computer
+
+## 2a. Download/clone QICK-DAWG
+You need a local copy of QICK-DAWG on your lab control computer. There are two options 1) use a git manager to clone QICK-DAWG, found at `https://github.com/sandialabs/qick-dawg` or 2) download QICK-DAWG as a .zip file from the [GitHub repository](https://github.com/sandialabs/qick-dawg) and unzip it. 
+
+## 2b. Install Necessary Packages
+To run your RFSoC4x2 from your lab computer you need to install QICK-DAWG. To install QICK-DAWG, on your lab computer:
+
+- Install Setuptools if not installed --> `pip install Setuptools`
+- In the command prompt navigate to `*\qick-dawg`
+- Enter `pip install -e ./`
+
+This will install QICK-DAWG and it's dependent packages. 
+
+# 3. Install QICK-DAWG and other software to your RFSoC4x2 
 
 (Getting started directions adapted from [QICK ZCU111 quick-start-guide](https://github.com/openquantumhardware/qick/blob/main/quick_start/README_ZCU111.md))
 
-## 2a. ***Flash your Micro SD Card*** 
+## 3a. ***Flash your Micro SD Card*** 
 - First, you will need to flash the micro SD card with the **RFSoC4x2 PYNQ** image found [here](http://www.pynq.io/board.html). Download the RFSoC4x2 PYNQ image and unzip the file if it is a .zip file. 
 
 (Windows)
@@ -167,27 +185,18 @@ In our lab, we have assembled all the necessary components into a custom rack bo
         width="500px"/>
 </p>
 
-## 2b. Remotely connect to your RFSoC4x2
+## 3b. Clone QICK-DAWG on your RFSoC4x2
+We clone QICK-DAWG from the GitHub repository by establishing a ssh connect with the RFSoC4x2 and running a git clone command. To simplify the process we have a batch file that you can run FPGA_SETUP_WAN.bat. 
 
-To connect to your RFSoC4x2, you first need to find the IP address assigned to your board. Conveniently, the RFSoC4x2 has an LED screen on the top of the board that displays the IP address. 
-Alternatively, you can log into your router and find the IP address and/or assign a static IP address. 
+To run this file
+- open the command prompt in your computer
+- change directories to `*\qick-dawg\installation`
+- enter `FPFA_SETUP.bat`
+- enter the IP address of your RFSoC4x2 when prompted
 
-### Copy Necessary Files to the RFSoC4x2 ###
-We have written our own .bat file and jupyter notebook to streamline the installation process. The first step is to run the .bat file which copies all of the required files to the RFSoC4x2. To do so:
 
-- clone QICK-DAWG to your computer;
-- open the command prompt;
-- navigate to the folder that contains the QICK-DAWG file `FPGA_SETUP.bat`;
-- in the command prompt type `FPGA_SETUP.bat` and hit enter;
-- and when prompted enter the IP address of your FPGA and password (`xilinx`). 
 
-`FPGA_SETUP.bat` copies the following files to your RFSoC4x2:
-- QICK
-- Serpent and Pyro4 packages
-- run_server and qick_daemon Jupyter Notebook files
-- QICK-DAWG specific firmware
-
-### Connect to the Jupyter server 
+### 3c. Install necessary Packages on your RFSoC4x2
 With the required files copied to your RFSoC4x2, we will now install the required packages by running an .ipynb though the RFSoC4x2's Jupyter Notebook server. To connect to the jupyter notebook server:
 
 - In a browser window type your RFSoC4x2 IP address as shown on the board's LED screen and use password `xilinx` as shown in the graphic below
@@ -198,9 +207,11 @@ With the required files copied to your RFSoC4x2, we will now install the require
         width="800px"/>
 </p>
  
-From the home page, navigate to the installation folder, open Installation_Packages.ipynb and run all of the cells in install the packages. This should install QICK, Serpent, and Pyro4 to your python environment, which should be sufficient to run a Pyro server and remotely connect to your RFSoC4x2
+From the home page, navigate to the installation folder, open Installation_Packages.ipynb and run all of the cells to install the packages. This should install QICK, Serpent, and Pyro4 to your python environment, which should be sufficient to run a Pyro server and remotely connect to your RFSoC4x2
 
-### Run the Pyro server to remotely connect to QICK and the RFSoC4x2
+
+
+### 3d. Run the Pyro server to remotely connect to QICK and the RFSoC4x2
 
 With all of the packages installed, you can now run your Pyro server to connect to an instance of QICK. This is accomplished by running two jupyter notebooks. 
 
@@ -212,7 +223,6 @@ With all of the packages installed, you can now run your Pyro server to connect 
 </p>
 
 
-
 - Second, we run the `run_server/qick_daemon.ipynb` notebook, which uploads firmware to the RFSoC4x2 and creates a python socket to communicate with the board. This notebook has a string which contains the path to our alternative firmware and has a `ns_host` variable which needs to be assigned to the IP address of your RFSoC4x2 board. 
 <p align="center">
     <img src="graphics/qick_daemon.jpg"
@@ -221,6 +231,16 @@ With all of the packages installed, you can now run your Pyro server to connect 
 </p>
 
 With these two notebooks running you can now start communicating with your RFSoC4x2 from a python kernel on your main computer. From here, we recommend running through `qickdawg/jupyter_notebooks/NVDemo_RFSoC4x2.ipynb` which contains significant documentation on how to run our basic NV characterization notebooks. 
+
+## 3e. (Supplemental) Establish SSH Remote Connection with the RFSoC4x2
+
+To connect to your RFSoC4x2, you first need to find the IP address assigned to your board. Conveniently, the RFSoC4x2 has an LED screen on the top of the board that displays the IP address. 
+Alternatively, you can log into your router and find the IP address and/or assign a static IP address. 
+
+To connect:
+- Open the command prompt on your lab computer 
+- Enter the following command `ssh xilinx@[insert IP address]
+- When prompted, enter the password `xilinx`
 
 # References
 <a name="RFSoc4x2_Schematic">1</a>: [RFSoC4x2 Schematic](https://www.realdigital.org/downloads/3ae3a2552d7da46e9041196c654cd63d.pdf)

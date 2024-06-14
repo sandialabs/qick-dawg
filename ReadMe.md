@@ -16,13 +16,17 @@ In this package we supply specific mw, laser, and readout pulsing code to charac
 ## Hardware
 
 - Either [RFSoC4x2](https://www.xilinx.com/support/university/xup-boards/RFSoC4x2.html)  or [ZCU111](https://www.xilinx.com/products/boards-and-kits/zcu111.html)
-- Router [(example)](https://www.amazon.com/TP-Link-Integrated-Lightening-Protection-TL-R605/dp/B08QTXNWZ1/ref=asc_df_B08QTXNWZ1/?tag=hyprod-20&linkCode=df0&hvadid=475692076734&hvpos=&hvnetw=g&hvrand=3761702075041011209&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1022494&hvtargid=pla-1149738264234&psc=1) and ethernet cords
 - Control Computer 
 - Low Frequency Differential Amplifier such as  [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A)
 - 3 Voltage supplies to power the differential amplifier
+- Router (required if using LAN connection) [(example)](https://www.amazon.com/TP-Link-Integrated-Lightening-Protection-TL-R605/dp/B08QTXNWZ1/ref=asc_df_B08QTXNWZ1/?tag=hyprod-20&linkCode=df0&hvadid=475692076734&hvpos=&hvnetw=g&hvrand=3761702075041011209&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1022494&hvtargid=pla-1149738264234&psc=1) and ethernet cords
 
 ## Installation
 To install QICKDAWG software follow the README found [here](./installation/Readme.md). Software installation includes:
+- necessary hardware modifications to the RFSoC4x2
+- cloning QICK-DAWG
+- installing necessary packages for the control computer/RFSoC4x2
+- connecting to the RFSoC4x2 
 
 ## Usage
 QICKDAWG has programs for the characterization of:
@@ -32,6 +36,7 @@ QICKDAWG has programs for the characterization of:
 - Rabi Oscillations 
 - Hanhn Echo T<sub>2</sub>
 - T<sub>1</sub> Relaxation
+- Ramsey Interferometry 
 
 using a ZCU111 or RFSoC4x2. Support for the ZCU216 coming soon. 
 
@@ -74,10 +79,11 @@ To raise an issue use the Issues button on the side bar. Email Andy Mounce at am
 
 
 ## Authors and acknowledgment
-Andy Mounce<sup>[1](#CINT)</sup>, Emmeline Riendeau<sup>[1](#CINT),[2](#Hav)</sup> 
+Andy Mounce<sup>[1](#CINT)</sup>, Emmeline Riendeau<sup>[1](#CINT),[2](#Hav),[3](#Chi)</sup> 
 
 <a name="CINT">1</a>: Center for Integrated Nanotechnology (CINT), Sandia National Laboratories<br>
-<a name="Hav">2</a>: Haverford College '24
+<a name="Hav">2</a>: Haverford College '24 <br>
+<a name="Chi">3</a>: UChicago Physics Graduate Program
 
 Thank you to Sho Uemura at Fermi Labs for helping us edit the QICK firmware. 
 
