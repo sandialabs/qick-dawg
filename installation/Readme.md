@@ -131,7 +131,7 @@ With the hardware modified and differential amplifier connected, the RFSoC4x2 ca
 
 You should hear the fan above the RFSoC chip begin to whir and you should see green LED lights blinking all over the board. After about 30 seconds the boot light should turn green and the LED screen will display the board's IP address. Your setup should resemble the schematic below. 
 <p align="center">
-    <img src="graphics/RFSoC_Diagram.PNG"
+    <img src="graphics/RFSoC_Diagram_WAN.PNG"
         alt="Diagram of the RFSoC4x2 Board"
         width="800px"/>
 </p>
