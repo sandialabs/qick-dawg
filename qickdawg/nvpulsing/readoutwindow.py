@@ -150,7 +150,7 @@ class ReadoutWindow(NVAveragerProgram):
             t += self.cfg.laser_readout_offset_treg
 
         self.trigger(
-            adcs=[0],
+            adcs=[self.cfg.adc_channel],
             adc_trig_offset=0,
             pins=[self.cfg.laser_gate_pmod],
             t=t,

@@ -344,7 +344,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
 
         # measure and laser trigger at laser_readout_offset
         self.trigger_no_off(
-            adcs=[0],
+            adcs=[self.cfg.adc_channel],
             pins=[self.cfg.laser_gate_pmod],
             adc_trig_offset=0,
             t=self.cfg.laser_readout_offset_treg)
@@ -358,7 +358,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
 
         # laser and measure second time at readout_reference_start
         self.trigger_no_off(
-            adcs=[0],
+            adcs=[self.cfg.adc_channel],
             pins=[self.cfg.laser_gate_pmod],
             adc_trig_offset=0,
             t=self.cfg.readout_reference_start_treg)
