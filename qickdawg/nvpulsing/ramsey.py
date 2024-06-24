@@ -99,7 +99,7 @@ class Ramsey(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=0,
+        self.declare_readout(ch=self.cfg.adc_channel,
                              freq=0,
                              length=self.cfg.readout_integration_treg,
                              sel="input")
