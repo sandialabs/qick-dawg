@@ -30,6 +30,7 @@ QICK-DAWG
    :caption: Setup
 
    installation/Readme.md
+   installation/Readme_LAN.md
    hardware/Readme.md
    
 Indices and tables
