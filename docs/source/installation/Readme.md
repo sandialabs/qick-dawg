@@ -28,7 +28,7 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Speci
     a. Download/clone QICK-DAWG <br>
     b. Install necessary packages<br>
 
-3. Upload and install QICK-DAWG and other software to you RFSoC4x2<br>
+3. Install QICK-DAWG and other software to your RFSoC4x2 <br>
     a. Flash your microSD card<br>
     b. Clone QICK-DAWG on your RFSoC4x2 <br>
     c. Install necessary packages on your RFSOC4x2<br>
@@ -175,7 +175,7 @@ This will install QICK-DAWG and it's dependent packages.
 
 (Getting started directions adapted from [QICK ZCU111 quick-start-guide](https://github.com/openquantumhardware/qick/blob/main/quick_start/README_ZCU111.md))
 
-## 3a. ***Flash your Micro SD Card*** 
+## 3a. Flash your Micro SD Card ##
 - First, you will need to flash the micro SD card with the **RFSoC4x2 PYNQ** image found [here](http://www.pynq.io/board.html). Download the RFSoC4x2 PYNQ image and unzip the file if it is a .zip file. 
 
 (Windows)
@@ -187,7 +187,7 @@ This will install QICK-DAWG and it's dependent packages.
         width="500px"/>
 </p>
 
-## 3b. Clone QICK-DAWG on your RFSoC4x2
+## 3b. Clone QICK-DAWG on your RFSoC4x2 ##
 We clone QICK-DAWG from the GitHub repository by establishing a ssh connect with the RFSoC4x2 and running a git clone command. To simplify the process we have a batch file that you can run `FPGA_SETUP_WAN.bat`.
 
 To run this file
@@ -198,7 +198,7 @@ To run this file
 
 
 
-### 3c. Install necessary Packages on your RFSoC4x2
+## 3c. Install necessary Packages on your RFSoC4x2 ##
 With the required files copied to your RFSoC4x2, we will now install the required packages by running an .ipynb though the RFSoC4x2's Jupyter Notebook server. To connect to the jupyter notebook server:
 
 - in a browser window type your RFSoC4x2 IP address as shown on the board's LED screen and use password `xilinx` as shown in the graphic below
@@ -213,7 +213,7 @@ From the home page, navigate to the installation folder, open Installation_Packa
 
 
 
-### 3d. Run the Pyro server to remotely connect to QICK and the RFSoC4x2
+## 3d. Run the Pyro server to remotely connect to QICK and the RFSoC4x2 ##
 
 With all of the packages installed, you can now run your Pyro server to connect to an instance of QICK. This is accomplished by running two jupyter notebooks. 
 
@@ -234,7 +234,7 @@ With all of the packages installed, you can now run your Pyro server to connect 
 
 With these two notebooks running you can now start communicating with your RFSoC4x2 from a python kernel on your main computer. From here, we recommend running through `qickdawg/jupyter_notebooks/NVDemo_RFSoC4x2.ipynb` which contains significant documentation on how to run our basic NV characterization notebooks. 
 
-## 3e. (Supplemental) Establish SSH Remote Connection with the RFSoC4x2
+## 3e. (Supplemental) Establish SSH Remote Connection with the RFSoC4x2 ##
 
 You can also connect to your RFSoC4x2 through an Secure Shell (SSH) connection. To do so:
 - open the command prompt on your lab computer;
