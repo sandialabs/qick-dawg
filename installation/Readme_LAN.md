@@ -7,7 +7,7 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 
 
 <p align="center">
-    <img src="graphicsRFSoC4x2_base_image.png"
+    <img src="graphics/RFSoC4x2_base_image.png"
         alt="RFSoC4x2 with inputs and outputs labelled"
         width="600px"/>
 
@@ -64,7 +64,7 @@ The input electronics for one ADC channel on the RFSoC4x2 is shown in the figure
 
 <figure>
     <p align="center">
-        <img src="graphicsbalun_circuit.PNG"
+        <img src="graphics/balun_circuit.PNG"
             alt="Balun Surgery"
             width="1000px"/>
     </p>
@@ -75,7 +75,7 @@ The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 an
 
 
 <p align="center">
-    <img src="graphicsbalun_surgery_1.PNG"
+    <img src="graphics/balun_surgery_1.PNG"
         alt="Balun Surgery"
         width="1000px"/>
 </p>
@@ -86,7 +86,7 @@ The combination of the balun (MABA-011118) and the two 100nF capacitors (C302 an
 To properly condition our signal for digitization, we use a Texas Instruments  [Texas Instruments LMH5401 EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A) evaluation board. This board takes in one or two signals and outputs two voltages above (V<sub>p</sub>) and below (V<sub>m</sub>) a common voltage (V<sub>cm</sub>). For full scale, the RFSoC4x2 requires an offset voltage of V<sub>cm</sub> = 0.7V (note that this is also true for the ZCU216 evaluation board, but the ZCU111 evaluation board requires V<sub>cm</sub> = 1.2 V). Additionally, the differential amplifier requires two voltages for power, which are optimally set to (V<sub>cm</sub> + 2.5) = 3.2V and (V<sub>cm</sub> - 2.5 )= -1.8.  A labeled diagram of the LMH5401EVN is shown in the figure below.  
 
 <p align="center">
-    <img src="graphicsdifferential_amp.PNG"
+    <img src="graphics/differential_amp.PNG"
         alt="Balun Surgery"
         width="450px"/>
 </p>
@@ -104,7 +104,7 @@ To connect the low frequency differential amplifier to the RFSoC4x2,
 
 The image below is the circuit diagram for the RFSoC4x2 ADC modification.
 <p align="center">
-    <img src="graphicsbalun_surgery_2.PNG"
+    <img src="graphics/balun_surgery_2.PNG"
         alt="Balun Surgery"
         width="1000px"/>     
 </p>
@@ -120,7 +120,7 @@ Note if you are worried about removing the balun from your RFSoC4x2, marketplace
 To control the laser with TTL pulses you must connect your laser to the PMOD located on the corner of the board. To connect, we cut the female head off a PMOD cable and soldered on a female BNC head instead. PMOD A 0-7 are enabled for QICK-DAWG (in the demo we use PMOD 0). The image below provides a schematic of the PMOD on the RFSoC4x2.
 
 <p align="center">
-    <img src="graphicsPMOD.png"
+    <img src="graphics/PMOD.png"
         alt="PMOD diagram"
         width="800px"/>
 </p>
@@ -136,7 +136,7 @@ With the hardware modified and differential amplifier connected, the RFSoC4x2 ca
 
 You should hear the fan above the RFSoC chip begin to whir and you should see green LED lights blinking all over the board. After about 30 seconds the boot light should turn green and the LED screen will display the board's IP address. Your setup should resemble the schematic below. 
 <p align="center">
-    <img src="graphicsRFSoC_Diagram.PNG"
+    <img src="graphics/RFSoC_Diagram.PNG"
         alt="Diagram of the RFSoC4x2 Board"
         width="800px"/>
 </p>
@@ -152,7 +152,7 @@ In our lab, we have assembled all the necessary components into a custom rack bo
 - Router_Holder.SLDPRT, CAD for 3D printable router cage for holding the router in the enclosure
 
 <p align="center">
-    <img src="graphicsFull_enclosure.jpg"
+    <img src="graphics/Full_enclosure.jpg"
         alt="Full Enclosure "
         width="800px"/>
 </p>
@@ -184,7 +184,7 @@ This will install QICK-DAWG and it's dependent packages.
 - With your micro SD card plugged in to your computer, open Win32DiskImager. Select the PYNQ file as your image file and select your micro SD card as the device. Double check you are not flashing the image file to the wrong drive (**not your computer hard drive**)! To execute, click `Write`. 
 
 <p align="center">
-    <img src="graphicsFlash_SD_Card.PNG"
+    <img src="graphics/Flash_SD_Card.PNG"
         alt="Flashing your micro SD card using Win 32 Disk Imager"
         width="500px"/>
 </p>
@@ -215,7 +215,7 @@ With the required files copied to your RFSoC4x2, we will now install the require
 - In a browser window type your RFSoC4x2 IP address as shown on the board's LED screen and use password `xilinx` as shown in the graphic below
 
 <p align="center">
-    <img src="graphicsjupyter_initial.PNG"
+    <img src="graphics/jupyter_initial.PNG"
         alt="Initial view of Jupyter Hub"
         width="800px"/>
 </p>
@@ -228,7 +228,7 @@ With all of the packages installed, you can now run your Pyro server to connect 
 
 - First we run `run_server/name_server.ipynb` which starts a Pyro server. In this notebook, you need to change the IP address to the IP address of the board. 
 <p align="center">
-    <img src="graphicsname_server.jpg"
+    <img src="graphics/name_server.jpg"
         alt="Name Server"
         width="800px"/>
 </p>
@@ -237,7 +237,7 @@ With all of the packages installed, you can now run your Pyro server to connect 
 
 - Second, we run the `run_server/qick_daemon.ipynb` notebook, which uploads firmware to the RFSoC4x2 and creates a python socket to communicate with the board. This notebook has a string which contains the path to our alternative firmware and has a `ns_host` variable which needs to be assigned to the IP address of your RFSoC4x2 board. 
 <p align="center">
-    <img src="graphicsqick_daemon.jpg"
+    <img src="graphics/qick_daemon.jpg"
         alt="Name Server"
         width="800px"/>
 </p>
