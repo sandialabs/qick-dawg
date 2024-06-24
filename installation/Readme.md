@@ -151,7 +151,8 @@ In our lab, we have assembled all the necessary components into a custom rack bo
 - Router_Holder.SLDPRT, CAD for 3D printable router cage for holding the router in the enclosure
 
 <p align="center">
-    <img src="./../_static/Full_enclosure.jpg"
+
+    <img src="graphics/WAN_enclosure.jpg"
         alt="Full Enclosure "
         width="800px"/>
 </p>
