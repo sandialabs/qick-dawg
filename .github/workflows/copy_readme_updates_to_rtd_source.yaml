@@ -10,30 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: copy module sample
-      hosts: all 
-      tasks: 
-    - name: Copy file task
-      copy:
-        src: ../../../temp.text
-        dest: ../../docs/source/installation/temp.text
-      register: result
-  - debug:
-       var: result
-    # - name: Checkout repository
-    #   uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-    # - name: Copy file
-    #   run: |
-    #     mkdir -p ../../docs/source/installation
-    #     cp ../../../temp.text ../../docs/source/installation/temp.text
+    - name: Create destination directory
+      run: mkdir -p ../../docs/source/installation
 
-    # - name: Commit changes
-    #   run: |
-    #     git config --global user.name "github-actions[bot]"
-    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    #     git add destination_folder/your_file.txt
-    #     git commit -m "Copy file to destination folder on push"
-    #     git push
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Copy file
+      run: cp ../../../temp.text ../../docs/source/installation/temp.text
+
+    - name: Commit changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add ../../docs/source/installation/temp.text
+        git commit -m "Copy file to destination folder on push"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
