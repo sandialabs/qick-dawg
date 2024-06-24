@@ -12,6 +12,9 @@ The RFSoC4x2, as shown in the image below, is a board built and sold by [Real Di
 </p>
 
 
+
+
+
 In this document we outline the setup for using QICK-DAWG with a RFSoC4x2. Specifically, we show how to:
 
 1. Setup RFSoC4x2 Hardware<br>
