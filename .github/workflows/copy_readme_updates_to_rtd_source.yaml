@@ -10,13 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: copy module sample
+      hosts: all 
+      tasks: 
+    - name: Copy file task
+      copy:
+        src: ../../../temp.text
+        dest: ../../docs/source/installation/temp.text
+      register: result
+  - debug:
+       var: result
+    # - name: Checkout repository
+    #   uses: actions/checkout@v2
 
-    - name: Copy file
-      run: |
-        mkdir -p ../../docs/source/installation
-        cp ../../../temp.text ../../docs/source/installation/temp.text
+    # - name: Copy file
+    #   run: |
+    #     mkdir -p ../../docs/source/installation
+    #     cp ../../../temp.text ../../docs/source/installation/temp.text
 
     # - name: Commit changes
     #   run: |
