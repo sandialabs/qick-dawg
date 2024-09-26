@@ -12,7 +12,7 @@ dependencies = [
     "serpent",
     "tqdm",
     "scipy",
-    "qick==0.2.160"
+    "qick==0.2.287"
     ]
 requires-python = ">=3.7"
 description = """
