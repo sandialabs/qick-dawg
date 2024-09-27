@@ -6,7 +6,7 @@ qick.NDAverageProgram
 """
 
 from qick import QickProgram
-from qick.qick_asm import QickRegisterManagerMixin
+from qick.asm_v1 import QickRegisterManagerMixin, AcquireProgram
 from qick.averager_program import AbsQickSweep
 from tqdm.auto import tqdm
 import qickdawg as qd
@@ -21,8 +21,11 @@ import numpy as np
 from typing import List
 from ..util.itemattribute import ItemAttribute
 
+import logging
+logger = logging.getLogger(__name__)
 
-class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
+
+class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
     """
     NVAveragerProgram class, for experiments that sweep over multiple variables
     in qick-dawg ordered in reps, sweep_n,... sweep_0.
@@ -31,8 +34,6 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
 
     Parameters
     --------------------------------------------------------------------------
-    soccfg
-        an instance of QickConfig
     cfg
         an instance of NVConfiguration
 
@@ -50,6 +51,8 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
 
     """
 
+    COUNTER_ADDR = 1
+
     def __init__(self, cfg):
         """
         Constructor for the NVAveragerProgram. Make the ND sweep asm commands.
@@ -65,17 +68,20 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
             self.rounds = cfg['soft_avgs']
         if "rounds" in cfg:
             self.rounds = cfg['rounds']
+        # reps loop is the outer loop, first-added sweep is innermost loop
+        loop_dims = [cfg['reps'], *self.sweep_axes[::-1]]
+        # average over the reps axis
+        self.setup_acquire(counter_addr=self.COUNTER_ADDR, loop_dims=loop_dims, avg_level=0)
 
     def initialize(self):
         """
-        Abstract method for initializing the program. Should include the instructions that will be executed once at the
-        beginning of the qick program. This is filled in by child classes to make a pulse program.
+        Abstract method for initializing the program and can include any instructions that are executed once at the beginning of the program.
         """
         pass
 
     def body(self):
         """
-        Abstract method for the body of the program. This is filled in by child classes to make a pulse program.
+        Abstract method for the body of the program
         """
         pass
 
@@ -94,7 +100,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
         """
         Method that makes the assmebly code for an N dimensional sweep pogram. The steps are as follows:
         1. run the overloaded self.initialize() method to initialize the mw and adc channels etc.
-        2. asserts N <7
+        2. asserts N < 5
         3. sets the run count to 0
         4. sets and labels repitition counter
         5. Adds reset and start for each sweep, with label
@@ -111,9 +117,9 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
         rep_count = 14  # repetition counter
 
         n_sweeps = len(self.qick_sweeps)
-        if n_sweeps > 7:  # to be safe, only register 15-21 in page 0 can be used as sweep counters
+        if n_sweeps > 5:  # to be safe, only register 15-21 in page 0 can be used as sweep counters
             raise OverflowError(f"too many qick inner loops ({n_sweeps}), run out of counter registers")
-        counter_regs = (np.arange(n_sweeps) + 15).tolist()  # not sure why this has to be a list (np.array doesn't work)
+        counter_regs = (np.arange(n_sweeps) + 17).tolist()  # not sure why this has to be a list (np.array doesn't work)
 
         self.regwi(0, rcount, 0)  # reset total run count
 
@@ -130,12 +136,11 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
         # run body and total_run_counter++
         self.body()
         self.mathi(0, rcount, rcount, "+", 1)
-        self.memwi(0, rcount, 1)
+        self.memwi(0, rcount, self.COUNTER_ADDR)
 
         # add update and stop condition for each sweep
         for creg, swp in zip(counter_regs, self.qick_sweeps):
             swp.update()
-            # pass
             self.loopnz(0, creg, f"LOOP_{swp.label if swp.label is not None else creg}")
 
         # stop condition for repetition
@@ -145,14 +150,16 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
 
     def get_expt_pts(self):
         """
-        Method that returns the swept values for each sweep as a 2D array.
+        :return:
         """
         sweep_pts = []
         for swp in self.qick_sweeps:
             sweep_pts.append(swp.get_sweep_pts())
         return sweep_pts
 
-    def acquire(self, reads_per_rep=1, load_pulses=True, start_src="internal", progress=False, debug=False):
+    def acquire(self, soc, load_pulses=True, readouts_per_experiment: int = 1,
+                save_experiments: List = None, start_src: str = "internal",
+                progress=False, remove_offset=True):
         """
         Method that exectues the qick program and accumulates data from the data buffer until the proram is complete
         For NV measurements, the results are DC values and thus only have I values (rather than I and Q)
@@ -161,16 +168,19 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
         ----------
         soc : QickSoc
             qick.QickSoc instance
-        reads_per_rep
+        readouts_per_experiment : int
             int number of readout triggers in the loop body
         load_pulses
             bool: if True, load pulse envelopes
-        start_src
-            str: "internal" (tProc starts immediately) or "external" (each round waits for an external trigger)
-        progress
+        start_src: str
+            "internal" (tProc starts immediately) or
+            "external" (each round waits for an external trigger)
+        progress: bool
             bool: if true, displays progress bar
-        debug
-            bool: if true, displays assembly code for tProc program
+        remove_offset : bool
+            Some readouts (muxed and tProc-configured) introduce a small fixed offset to the I and Q 
+            values of every decimated sample. This subtracts that offset, if any, before returning the
+            averaged IQ values or rotating to apply software thresholding.
 
         Returns
         -------
@@ -186,15 +196,19 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
             dimensions for a simple averaging program: (n_ch, n_reads, 2)
             dimensions for a program with multiple expts/steps: (n_ch, n_reads, n_expts, 2)
         """
-        self.config_all(qd.soc, load_pulses=load_pulses, start_src=start_src, debug=debug)
+
+        if readouts_per_experiment is not None:
+            self.set_reads_per_shot(readouts_per_experiment)
+
+        self.config_all(qd.soc, load_pulses=load_pulses, load_mem=False)
+
+        if any([x is None for x in [self.counter_addr, self.loop_dims, self.avg_level]]):
+            raise RuntimeError("data dimensions need to be defined with setup_acquire() before calling acquire()")
 
         n_ro = len(self.ro_chs)
 
-        expts = self.expts
-        if expts is None:
-            expts = 1
-        total_reps = expts * self.reps
-        total_count = total_reps * reads_per_rep
+        total_reps = self.expts * self.reps
+        total_count = total_reps * readouts_per_experiment
         d_buf = np.zeros((n_ro, total_count, 2), dtype=np.int32)
         self.stats = []
 
@@ -204,17 +218,92 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
         # select which tqdm progress bar to show
         hiderounds = True
         hidereps = True
+
         if progress:
-            if self.rounds > 1:
+            if self.soft_avgs > 1:
                 hiderounds = False
             else:
                 hidereps = False
 
-        # avg_d doesn't have a specific shape here, so that it's easier for child programs to write custom _average_buf
+        # avg_d doesn't have a specific shape here, so that it's easier for child programs
+        # to write custom _average_buf
+        self.get_data_shape(readouts_per_experiment)
+
+        # Actual data acquisition
+
+        for ir in tqdm(range(self.cfg['soft_avgs']), disable=hiderounds):
+            # Configure and enable buffer capture.
+            self.config_bufs(soc, enable_avg=True, enable_buf=False)
+
+            # Reload data memory.
+            soc.reload_mem()
+
+            count = 0
+            with tqdm(total=total_count, disable=hidereps) as pbar:
+                soc.start_readout(total_count, counter_addr=self.counter_addr,
+                                       ch_list=list(self.ro_chs), reads_per_shot=self.reads_per_shot)
+                while count<total_count:
+                    new_data = obtain(soc.poll_data())
+                    for new_points, (d, s) in new_data:
+                        for ii, nreads in enumerate(self.reads_per_shot):
+                            #print(count, new_points, nreads, d[ii].shape, total_count)
+                            if new_points*nreads != d[ii].shape[0]:
+                                logger.error("data size mismatch: new_points=%d, nreads=%d, data shape %s"%(new_points, nreads, d[ii].shape))
+                            if count+new_points > total_count:
+                                logger.error("got too much data: count=%d, new_points=%d, total_count=%d"%(count, new_points, total_count))
+                            # use reshape to view the d_buf array in a shape that matches the raw data
+                            self.d_buf[ii].reshape((-1,2))[count*nreads:(count+new_points)*nreads] = d[ii]
+                        count += new_points
+                        self.stats.append(s)
+                        pbar.update(new_points)
+
+        # for i, ir in enumerate(tqdm(range(self.soft_avgs), disable=hiderounds)):
+        #     # Configure and enable buffer capture.
+        #     self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
+
+        #     count = 0
+        #     with tqdm(total=total_count, disable=hidereps) as pbar:
+        #         qd.soc.start_readout(
+        #             total_reps,
+        #             counter_addr=self.counter_addr,
+        #             ch_list=list(self.ro_chs),
+        #             readouts_per_experiment=readouts_per_experiment)
+        #         while count < total_count:
+        #             new_data = obtain(qd.soc.poll_data())
+        #             for d, s in new_data:
+        #                 # print(len(new_data), count, total_count)
+        #                 new_points = d.shape[1]
+        #                 d_buf[:, count:count + new_points] = d
+        #                 count += new_points
+        #                 self.stats.append(s)
+        #                 pbar.update(new_points)
+
+            # if i == 0:
+            #     data = np.array(d_buf[0][:, 0])
+            # else:
+            #     data = np.append(data, [np.array(d_buf[0][:, 0])])
+        # return data
+        return self.d_buf
+
+
+    def get_data_shape(self, readouts_per_experiment):
+        '''
+        Determines the shape of the data to be returned and stores as an attribute
+
+        Parameters
+        ----------
+        readouts_per_experiment : int
+            The number of readouts per experimental cycle
+        
+        Returns
+        -------
+        None
+        '''
+        
         self.dbuf_shape = []
 
-        if reads_per_rep > 1:
-            self.dbuf_shape.append(reads_per_rep)
+        if readouts_per_experiment > 1:
+            self.dbuf_shape.append(readouts_per_experiment)
 
         for swp in self.qick_sweeps:
             self.dbuf_shape = [swp.expts] + self.dbuf_shape
@@ -222,37 +311,12 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
         if self.cfg.reps > 1:
             self.dbuf_shape = [self.cfg.reps] + self.dbuf_shape
 
-        if self.cfg.rounds > 1:
-            self.data_shape = [self.cfg.rounds] + self.dbuf_shape
+        if self.cfg.soft_avgs > 1:
+            self.data_shape = [self.cfg.soft_avgs] + self.dbuf_shape
         else:
             self.data_shape = self.dbuf_shape
 
-        for i, ir in enumerate(tqdm(range(self.rounds), disable=hiderounds)):
-            # Configure and enable buffer capture.
-            self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
 
-            count = 0
-            with tqdm(total=total_count, disable=hidereps) as pbar:
-                qd.soc.start_readout(
-                    total_reps,
-                    counter_addr=self.counter_addr,
-                    ch_list=list(self.ro_chs),
-                    reads_per_rep=reads_per_rep)
-                while count < total_count:
-                    new_data = obtain(qd.soc.poll_data())
-                    for d, s in new_data:
-                        # print(len(new_data), count, total_count)
-                        new_points = d.shape[1]
-                        d_buf[:, count:count + new_points] = d
-                        count += new_points
-                        self.stats.append(s)
-                        pbar.update(new_points)
-
-            if i == 0:
-                data = np.array(d_buf[0][:, 0])
-            else:
-                data = np.append(data, [np.array(d_buf[0][:, 0])])
-        return data
 
     def acquire_decimated(self, *arg, **kwarg):
         '''
@@ -317,10 +381,10 @@ class NVAveragerProgram(QickRegisterManagerMixin, QickProgram):
                     print("Readout time %d appears to conflict with previous readout ending at %f?" % (t, ts))
                 # convert from readout clock to tProc clock
                 ro_length = self.ro_chs[adc]['length']
-                ro_length *= self.soccfg['fs_proc'] / self.soccfg['readouts'][adc]['f_fabric']
+                ro_length *= self.soccfg['refclk_freq'] / self.soccfg['readouts'][adc]['f_fabric']
                 self.set_timestamp(t_start + ro_length, ro_ch=adc)
 
-        trig_output = self.soccfg['tprocs'][0]['trig_output']
+        trig_output = self.soccfg['tprocs'][0]['output_pins']
 
         self.regwi(rp, r_out, out, f'out = 0b{out:>016b}')
         self.seti(trig_output, rp, r_out, t_start, f'ch =0 out = ${r_out} @t = {t}')
