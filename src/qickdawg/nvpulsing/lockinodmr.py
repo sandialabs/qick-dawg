@@ -176,7 +176,7 @@ class LockinODMR(NVAveragerProgram):
 
     def acquire(self, raw_data=False, *arg, **kwarg):
 
-        data = super().acquire(reads_per_rep=2, *arg, **kwarg)
+        data = super().acquire(readouts_per_experiment=2, *arg, **kwarg)
 
         if raw_data is False:
             data = self.analyze_results(data)

@@ -81,7 +81,7 @@ class PLIntensity(NVAveragerProgram):
 
         data = np.mean(data) / self.cfg.readout_integration_treg
 
-        return data
+        return float(data)
 
     def plot_sequence(cfg=None):
         '''

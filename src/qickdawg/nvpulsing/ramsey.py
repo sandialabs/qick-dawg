@@ -192,7 +192,7 @@ class Ramsey(NVAveragerProgram):
 
     def acquire(self, raw_data=False, *arg, **kwarg):
 
-        data = super().acquire(reads_per_rep=4, *arg, **kwarg)
+        data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
             data = self.analyze_pulse_sequence_results(data)

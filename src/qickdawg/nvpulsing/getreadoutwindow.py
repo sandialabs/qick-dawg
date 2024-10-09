@@ -46,13 +46,13 @@ def get_readout_window(config, n_time_bins):
             laser_readout_offset_treg = config.laser_readout_offset_treg
             prog = ReadoutWindow(config)
             data_off = prog.acquire_decimated(progress=False)
-            print(i, config.laser_readout_offset_treg)
+            # print(i, config.laser_readout_offset_treg)
         else:
             config.laser_readout_offset_treg += 1020
             prog = ReadoutWindow(config)
             data = prog.acquire_decimated(progress=False)
             data_off = np.append(data_off, data)
-            print(i, config.laser_readout_offset_treg)
+            # print(i, config.laser_readout_offset_treg)
 
     config.laser_readout_offset_treg = laser_readout_offset_treg
     config.mw_pi2_tus = pi2
@@ -63,12 +63,12 @@ def get_readout_window(config, n_time_bins):
             laser_readout_offset_treg = config.laser_readout_offset_treg
             prog = ReadoutWindow(config)
             data_on = prog.acquire_decimated(progress=False)
-            print(i, config.laser_readout_offset_treg)
+            # print(i, config.laser_readout_offset_treg)
         else:
             config.laser_readout_offset_treg += 1020
             prog = ReadoutWindow(config)
             data = prog.acquire_decimated(progress=False)
             data_on = np.append(data_on, data)
-            print(i, config.laser_readout_offset_treg)
+            # print(i, config.laser_readout_offset_treg)
 
     return data_on, data_off, prog
