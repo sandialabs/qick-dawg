@@ -1,0 +1,43 @@
+# This workflow will auto-version when pull-requests are merged to main.
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Version, Changelog, and Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  vcr:
+    runs-on: ubuntu-latest
+
+    steps:    
+    - name: Git checkout
+      uses: actions/checkout@v4
+      with:
+          token: ${{ secrets.AMM }}
+          fetch-depth: 0
+
+    - name: Conventional Changelog Action
+      id: changelog
+      uses: TriPSs/conventional-changelog-action@v5.2.1
+      with:
+        github-token: ${{ secrets.AMM }}
+        version-file: 'src/qickdawg/version.json'
+        release-count: 0
+        git-message: ${{ github.event.head_commit.message }}
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.AMM }}
+      with:
+        tag_name: ${{ steps.changelog.outputs.tag }}
+        release_name: ${{ steps.changelog.outputs.tag }}
+        body: ${{ steps.changelog.outputs.clean_changelog }}

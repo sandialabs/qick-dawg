@@ -1,10 +1,11 @@
 [build-system]
-requires = ["setuptools>=43.0.0", "wheel"]
+requires = ["setuptools >= 64.0", "setuptools-scm[toml]>=8.0"]
 build-backend = "setuptools.build_meta"
 
 
 [project]
 name = "qickdawg"
+dynamic = ["version"]
 dependencies = [
     "numpy",
     "matplotlib",
@@ -12,7 +13,7 @@ dependencies = [
     "serpent",
     "tqdm",
     "scipy",
-    "qick==0.2.160"
+    "qick==0.2.289"
     ]
 requires-python = ">=3.7"
 description = """
@@ -25,15 +26,16 @@ keywords = ["quantum control", "nitrogen vacancy", "fpga", "xilinx", "rfsoc", "q
 authors = [
     {name = "Andy Mounce", email = "amounce@sandia.gov"},
     {name = "Emmeline Riendeau", email = "eriendeau@uchicago.edu"}]
-dynamic = ["version"]
+
+[tool.setuptools_scm]
 
 [project.urls]
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/sandialabs/qick-dawg.git"
 "Bug Tracker" = "https://github.com/sandialabs/qick-dawg/issues"
 
-[tool.semantic_release]
-version_variables = ["pyproject.toml:data.project.version"]
+[tools.setuptools]
+packages = ["qickdawg"]
 
 [tool.setuptools.packages.find]
 exclude = ["qick", "graphics*", "installation*", "jupyter_notebooks*"]
