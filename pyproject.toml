@@ -1,11 +1,11 @@
 [build-system]
-requires = ["setuptools>=43.0.0", "wheel"]
+requires = ["setuptools>=43.0.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 
 [project]
 name = "qickdawg"
-dynamic=["versioln"]
+dynamic=["version"]
 dependencies = [
     "numpy",
     "matplotlib",
@@ -33,7 +33,7 @@ Repository = "https://github.com/sandialabs/qick-dawg.git"
 "Bug Tracker" = "https://github.com/sandialabs/qick-dawg/issues"
 
 [tool.setuptools.packages.find]
-exclude = ["qick", "graphics*", "installation*", "jupyter_notebooks*"]
+where = ["./src"]
 
 [tool.setuptools.dynamic]
 version = {attr = "qickdawg.__verison__"}
