@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qickdawg"
+dynamic=["versioln"]
 dependencies = [
     "numpy",
     "matplotlib",
@@ -25,15 +26,14 @@ keywords = ["quantum control", "nitrogen vacancy", "fpga", "xilinx", "rfsoc", "q
 authors = [
     {name = "Andy Mounce", email = "amounce@sandia.gov"},
     {name = "Emmeline Riendeau", email = "eriendeau@uchicago.edu"}]
-dynamic = ["version"]
 
 [project.urls]
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/sandialabs/qick-dawg.git"
 "Bug Tracker" = "https://github.com/sandialabs/qick-dawg/issues"
 
-[tool.semantic_release]
-version_variables = ["pyproject.toml:data.project.version"]
-
 [tool.setuptools.packages.find]
 exclude = ["qick", "graphics*", "installation*", "jupyter_notebooks*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "qickdawg.__verison__}
