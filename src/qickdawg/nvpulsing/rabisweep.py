@@ -13,8 +13,6 @@ from .nvqicksweep import NVQickSweep
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
-import numpy as np
-
 
 
 class RabiSweep(NVAveragerProgram):
@@ -216,12 +214,12 @@ class RabiSweep(NVAveragerProgram):
             plt.imshow(mpimg.imread(image_path))
             plt.text(420, 510, "Repeat {} times".format(cfg.reps), fontsize=14)
             plt.text(350, 440, "laser_on_tus = {} us".format(str(cfg.laser_on_tus)[:4]), fontsize=14)
-            
+
             string = f"Sweep pi/2 pulse time linearly from {int(cfg.mw_start_treg)} time register"
             string += f" to {int(cfg.mw_end_treg)} time register in steps of "
             string += f"{str(cfg.mw_delta_treg)[:4]} time register"
             plt.text(195, 580, string, fontsize=12)
-            
+
             plt.text(265, 370, "readout_integration  \n       = {} ns".format(
                 int(cfg.readout_integration_tns)), fontsize=14)
             plt.text(527, 370, "readout_integration  \n      = {} ns".format(

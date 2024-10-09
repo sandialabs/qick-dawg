@@ -175,7 +175,6 @@ class ReadoutWindow(NVAveragerProgram):
         '''
         graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
         image_path = os.path.join(graphics_folder, 'READOUT.png')
-        
 
         if cfg is None:
             plt.figure(figsize=(10, 10))

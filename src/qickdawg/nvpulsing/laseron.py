@@ -29,11 +29,10 @@ def laser_on(config, reps=1, readout_integration_treg=1020):
     prog = LaserOn(config)
 
     data = prog.acquire()
-    # data = np.mean(data)
-    # data /= readout_integration_treg
-    # data = data.astype('float')
+    data = np.mean(data)
+    data /= readout_integration_treg
 
-    return data
+    return float(data)
 
 
 class LaserOn(NVAveragerProgram):

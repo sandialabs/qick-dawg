@@ -31,7 +31,7 @@ def laser_off(config, reps=1, readout_integration_treg=65535):
     data = np.mean(data)
     data /= readout_integration_treg
 
-    return data
+    return float(data)
 
 
 class LaserOff(NVAveragerProgram):

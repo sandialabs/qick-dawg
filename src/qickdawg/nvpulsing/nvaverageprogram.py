@@ -5,7 +5,6 @@ An abstract class for generating qick-dawg programs modified from
 qick.NDAverageProgram
 """
 
-from qick import QickProgram
 from qick.asm_v1 import QickRegisterManagerMixin, AcquireProgram
 from qick.averager_program import AbsQickSweep
 from tqdm.auto import tqdm
@@ -17,7 +16,7 @@ try:
 except ModuleNotFoundError:
     def obtain(i):
         return i
-    
+
 import operator
 import functools
 import numpy as np
@@ -79,7 +78,8 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
     def initialize(self):
         """
-        Abstract method for initializing the program and can include any instructions that are executed once at the beginning of the program.
+        Abstract method for initializing the program and can include any instructions
+        that are executed once at the beginning of the program.
         """
         pass
 
@@ -208,7 +208,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         # configure tproc for internal/external start
         qd.soc.start_src(start_src)
 
-        n_ro = len(self.ro_chs)
+        # n_ro = len(self.ro_chs)
 
         total_count = functools.reduce(operator.mul, self.loop_dims)
         self.d_buf = [np.zeros((*self.loop_dims, nreads, 2), dtype=np.int64) for nreads in self.reads_per_shot]
@@ -218,7 +218,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         hiderounds = True
         hidereps = True
         if progress:
-            if self.cfg.rounds>1:
+            if self.cfg.rounds > 1:
                 hiderounds = False
             else:
                 hidereps = False
@@ -229,7 +229,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         # Actual data acquisition
 
-        avg_d = None
+        # avg_d = None
         for ir in tqdm(range(self.cfg.rounds), disable=hiderounds):
             # Configure and enable buffer capture.
             self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
@@ -240,19 +240,23 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             count = 0
             with tqdm(total=total_count, disable=hidereps) as pbar:
                 qd.soc.start_readout(total_count, counter_addr=self.counter_addr,
-                                       ch_list=list(self.ro_chs), reads_per_shot=self.reads_per_shot)
-                while count<total_count:
+                                     ch_list=list(self.ro_chs), reads_per_shot=self.reads_per_shot)
+                while count < total_count:
                     new_data = obtain(qd.soc.poll_data())
                     for new_points, (d, s) in new_data:
                         # print(new_points, (d, s))
                         for ii, nreads in enumerate(self.reads_per_shot):
-                            #print(count, new_points, nreads, d[ii].shape, total_count)
-                            if new_points*nreads != d[ii].shape[0]:
-                                logger.error("data size mismatch: new_points=%d, nreads=%d, data shape %s"%(new_points, nreads, d[ii].shape))
-                            if count+new_points > total_count:
-                                logger.error("got too much data: count=%d, new_points=%d, total_count=%d"%(count, new_points, total_count))
+                            # print(count, new_points, nreads, d[ii].shape, total_count)
+                            if new_points * nreads != d[ii].shape[0]:
+                                logger.error(
+                                    "data size mismatch: new_points=%d, nreads=%d, data shape %s" %
+                                    (new_points, nreads, d[ii].shape))
+                            if count + new_points > total_count:
+                                logger.error(
+                                    "got too much data: count=%d, new_points=%d, total_count=%d" %
+                                    (count, new_points, total_count))
                             # use reshape to view the d_buf array in a shape that matches the raw data
-                            self.d_buf[ii].reshape((-1,2))[count*nreads:(count+new_points)*nreads] = d[ii]
+                            self.d_buf[ii].reshape((-1, 2))[count * nreads:(count + new_points) * nreads] = d[ii]
                         count += new_points
                         self.stats.append(s)
                         pbar.update(new_points)
@@ -267,12 +271,12 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         ----------
         readouts_per_experiment : int
             The number of readouts per experimental cycle
-        
+
         Returns
         -------
         None
         '''
-        
+
         self.dbuf_shape = []
 
         if readouts_per_experiment > 1:
@@ -288,8 +292,6 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             self.data_shape = [self.cfg.rounds] + self.dbuf_shape
         else:
             self.data_shape = self.dbuf_shape
-
-
 
     def acquire_decimated(self, *arg, **kwarg):
         '''
@@ -310,7 +312,17 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         return data[0][:, 0]
 
-    def trigger_no_off(self, adcs=None, pins=None, ddr4=False, mr=False, adc_trig_offset=270, t=0, width=10, rp=0, r_out=16):
+    def trigger_no_off(
+            self,
+            adcs=None,
+            pins=None,
+            ddr4=False,
+            mr=False,
+            adc_trig_offset=270,
+            t=0,
+            width=10,
+            rp=0,
+            r_out=16):
         """Pulse the readout(s) and marker pin(s) with a specified pulse width at a specified time t+adc_trig_offset.
         If no readouts are specified, the adc_trig_offset is not applied.
 
@@ -340,7 +352,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             adcs = []
         if pins is None:
             pins = []
-        #if not any([adcs, pins, ddr4]):
+        # if not any([adcs, pins, ddr4]):
         #    raise RuntimeError("must pulse at least one readout or pin")
 
         outdict = defaultdict(int)
@@ -366,12 +378,12 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             for ro in adcs:
                 ts = self.get_timestamp(ro_ch=ro)
                 if t_start < ts:
-                    logger.warning("Readout time %d appears to conflict with previous readout ending at %f?"%(t, ts))
+                    logger.warning("Readout time %d appears to conflict with previous readout ending at %f?" % (t, ts))
                 # convert from readout clock to tProc clock
                 ro_length = self.ro_chs[ro]['length']
-                ro_length *= self.tproccfg['f_time']/self.soccfg['readouts'][ro]['f_output']
+                ro_length *= self.tproccfg['f_time'] / self.soccfg['readouts'][ro]['f_output']
                 self.set_timestamp(t_start + ro_length, ro_ch=ro)
-        t_end = t_start + width
+        # t_end = t_start + width
 
         for outport, out in outdict.items():
             self.regwi(rp, r_out, out, f'out = 0b{out:>016b}')

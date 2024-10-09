@@ -227,7 +227,7 @@ class T1DelaySweep(NVAveragerProgram):
             plt.text(650, 340, "config.readout_integration", fontsize=10)
             plt.text(850, 340, "config.relax_delay", fontsize=10)
             plt.text(400, 430, "config.laser_on", fontsize=10)
-            
+
             string = "Sweep delay from config.delay_start to config.delay_end in "
             string += "config.nsweep_points \n"
             string += "                            with scaling given by config.scaling_mode"

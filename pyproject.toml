@@ -1,11 +1,11 @@
 [build-system]
-requires = ["setuptools>=43.0.0", "setuptools-scm"]
+requires = ["setuptools >= 64.0", "setuptools-scm[toml]>=8.0"]
 build-backend = "setuptools.build_meta"
 
 
 [project]
 name = "qickdawg"
-dynamic=["version"]
+dynamic = ["version"]
 dependencies = [
     "numpy",
     "matplotlib",
@@ -27,13 +27,15 @@ authors = [
     {name = "Andy Mounce", email = "amounce@sandia.gov"},
     {name = "Emmeline Riendeau", email = "eriendeau@uchicago.edu"}]
 
+[tool.setuptools_scm]
+
 [project.urls]
 Documentation = "https://readthedocs.org"
 Repository = "https://github.com/sandialabs/qick-dawg.git"
 "Bug Tracker" = "https://github.com/sandialabs/qick-dawg/issues"
 
-[tool.setuptools.packages.find]
-where = ["./src"]
+[tools.setuptools]
+packages = ["qickdawg"]
 
-[tool.setuptools.dynamic]
-version = {attr = "qickdawg.__verison__"}
+[tool.setuptools.packages.find]
+exclude = ["qick", "graphics*", "installation*", "jupyter_notebooks*"]
