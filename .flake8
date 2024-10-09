@@ -38,5 +38,5 @@ per-file-ignores =
     src/qickdawg/util/__init__.py:F401
 
 # 120 characters is a more agreeable max line length for modern displays
-max-line-length=120
+max-line-length=127
 
