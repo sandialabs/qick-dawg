@@ -13,6 +13,8 @@ from .nvqicksweep import NVQickSweep
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
+import numpy as np
+
 
 class RabiSweep(NVAveragerProgram):
     '''
@@ -102,6 +104,7 @@ class RabiSweep(NVAveragerProgram):
         initiailzes the spin state with a laser pulse
         '''
         self.check_cfg()
+
         self.declare_readout(ch=self.cfg.adc_channel,
                              freq=0,
                              length=self.cfg.readout_integration_treg,
@@ -124,7 +127,7 @@ class RabiSweep(NVAveragerProgram):
 
         # configure the sweep
         self.mw_length_register = self.new_gen_reg(self.cfg.mw_channel, 
-                                                   name='length', 
+                                                   name='mw_length', 
                                                    init_val=self.cfg.mw_start_treg)
 
         self.add_sweep(NVQickSweep(self, 
@@ -132,7 +135,7 @@ class RabiSweep(NVAveragerProgram):
                                    start=self.cfg.mw_start_treg, 
                                    stop=self.cfg.mw_end_treg, 
                                    expts=self.cfg.nsweep_points,
-                                   label='length',
+                                   label='mw_length',
                                    mw_channel=self.cfg.mw_channel))
 
         self.synci(400)  # give processor some time to configure pulses
@@ -167,7 +170,7 @@ class RabiSweep(NVAveragerProgram):
 
     def acquire(self, raw_data=False, *arg, **kwarg):
 
-        data = super().acquire(reads_per_rep=4, *arg, **kwarg)
+        data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
             data = self.analyze_pulse_sequence_results(data)

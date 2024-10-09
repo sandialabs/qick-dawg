@@ -11,14 +11,18 @@ from qick.averager_program import AbsQickSweep
 from tqdm.auto import tqdm
 import qickdawg as qd
 
+
 try:
     from rpyc.utils.classic import obtain
 except ModuleNotFoundError:
     def obtain(i):
         return i
-
+    
+import operator
+import functools
 import numpy as np
 from typing import List
+from collections import defaultdict
 from ..util.itemattribute import ItemAttribute
 
 import logging
@@ -120,9 +124,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if n_sweeps > 5:  # to be safe, only register 15-21 in page 0 can be used as sweep counters
             raise OverflowError(f"too many qick inner loops ({n_sweeps}), run out of counter registers")
         counter_regs = (np.arange(n_sweeps) + 17).tolist()  # not sure why this has to be a list (np.array doesn't work)
-
         self.regwi(0, rcount, 0)  # reset total run count
-
         # set repetition counter and tag
         self.regwi(0, rep_count, self.cfg["reps"] - 1)
         self.label("LOOP_rep")
@@ -157,7 +159,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             sweep_pts.append(swp.get_sweep_pts())
         return sweep_pts
 
-    def acquire(self, soc, load_pulses=True, readouts_per_experiment: int = 1,
+    def acquire(self, load_pulses=True, readouts_per_experiment: int = 1,
                 save_experiments: List = None, start_src: str = "internal",
                 progress=False, remove_offset=True):
         """
@@ -166,8 +168,6 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         Parameters
         ----------
-        soc : QickSoc
-            qick.QickSoc instance
         readouts_per_experiment : int
             int number of readout triggers in the loop body
         load_pulses
@@ -205,22 +205,20 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if any([x is None for x in [self.counter_addr, self.loop_dims, self.avg_level]]):
             raise RuntimeError("data dimensions need to be defined with setup_acquire() before calling acquire()")
 
+        # configure tproc for internal/external start
+        qd.soc.start_src(start_src)
+
         n_ro = len(self.ro_chs)
 
-        total_reps = self.expts * self.reps
-        total_count = total_reps * readouts_per_experiment
-        d_buf = np.zeros((n_ro, total_count, 2), dtype=np.int32)
+        total_count = functools.reduce(operator.mul, self.loop_dims)
+        self.d_buf = [np.zeros((*self.loop_dims, nreads, 2), dtype=np.int64) for nreads in self.reads_per_shot]
         self.stats = []
-
-        if 'rounds' not in self.cfg:
-            self.cfg.rounds = 1
 
         # select which tqdm progress bar to show
         hiderounds = True
         hidereps = True
-
         if progress:
-            if self.soft_avgs > 1:
+            if self.cfg.rounds>1:
                 hiderounds = False
             else:
                 hidereps = False
@@ -231,20 +229,22 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         # Actual data acquisition
 
-        for ir in tqdm(range(self.cfg['soft_avgs']), disable=hiderounds):
+        avg_d = None
+        for ir in tqdm(range(self.cfg.rounds), disable=hiderounds):
             # Configure and enable buffer capture.
-            self.config_bufs(soc, enable_avg=True, enable_buf=False)
+            self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
 
             # Reload data memory.
-            soc.reload_mem()
+            qd.soc.reload_mem()
 
             count = 0
             with tqdm(total=total_count, disable=hidereps) as pbar:
-                soc.start_readout(total_count, counter_addr=self.counter_addr,
+                qd.soc.start_readout(total_count, counter_addr=self.counter_addr,
                                        ch_list=list(self.ro_chs), reads_per_shot=self.reads_per_shot)
                 while count<total_count:
-                    new_data = obtain(soc.poll_data())
+                    new_data = obtain(qd.soc.poll_data())
                     for new_points, (d, s) in new_data:
+                        # print(new_points, (d, s))
                         for ii, nreads in enumerate(self.reads_per_shot):
                             #print(count, new_points, nreads, d[ii].shape, total_count)
                             if new_points*nreads != d[ii].shape[0]:
@@ -257,34 +257,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
                         self.stats.append(s)
                         pbar.update(new_points)
 
-        # for i, ir in enumerate(tqdm(range(self.soft_avgs), disable=hiderounds)):
-        #     # Configure and enable buffer capture.
-        #     self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
-
-        #     count = 0
-        #     with tqdm(total=total_count, disable=hidereps) as pbar:
-        #         qd.soc.start_readout(
-        #             total_reps,
-        #             counter_addr=self.counter_addr,
-        #             ch_list=list(self.ro_chs),
-        #             readouts_per_experiment=readouts_per_experiment)
-        #         while count < total_count:
-        #             new_data = obtain(qd.soc.poll_data())
-        #             for d, s in new_data:
-        #                 # print(len(new_data), count, total_count)
-        #                 new_points = d.shape[1]
-        #                 d_buf[:, count:count + new_points] = d
-        #                 count += new_points
-        #                 self.stats.append(s)
-        #                 pbar.update(new_points)
-
-            # if i == 0:
-            #     data = np.array(d_buf[0][:, 0])
-            # else:
-            #     data = np.append(data, [np.array(d_buf[0][:, 0])])
-        # return data
-        return self.d_buf
-
+        return self.d_buf[0][..., 0]
 
     def get_data_shape(self, readouts_per_experiment):
         '''
@@ -311,8 +284,8 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if self.cfg.reps > 1:
             self.dbuf_shape = [self.cfg.reps] + self.dbuf_shape
 
-        if self.cfg.soft_avgs > 1:
-            self.data_shape = [self.cfg.soft_avgs] + self.dbuf_shape
+        if self.cfg.rounds > 1:
+            self.data_shape = [self.cfg.rounds] + self.dbuf_shape
         else:
             self.data_shape = self.dbuf_shape
 
@@ -333,26 +306,31 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
 
         '''
-        data = super().acquire_decimated(qd.soc, *arg, **kwarg)
+        data = super().acquire_decimated(qd.soc, soft_avgs=self.cfg['soft_avgs'], *arg, **kwarg)
 
         return data[0][:, 0]
 
-    def trigger_no_off(self, adcs=None, pins=None, adc_trig_offset=0, t=0, rp=0, r_out=31):
-        """
-        Method that is a slight modificaiton of qick.QickProgram.trigger().
-        This method does not turn off the PMOD pins, thus also does not require a width parameter
+    def trigger_no_off(self, adcs=None, pins=None, ddr4=False, mr=False, adc_trig_offset=270, t=0, width=10, rp=0, r_out=16):
+        """Pulse the readout(s) and marker pin(s) with a specified pulse width at a specified time t+adc_trig_offset.
+        If no readouts are specified, the adc_trig_offset is not applied.
 
         Parameters
         ----------
         adcs : list of int
-            List of readout channels to trigger (index in 'readouts' list) [0], [1], or [0, 1]
+            List of readout channels to trigger (index in 'readouts' list)
         pins : list of int
-            List of marker pins to pulsem, i.e. PMOD channels.
+            List of marker pins to pulse.
             Use the pin numbers in the QickConfig printout.
+        ddr4 : bool
+            If True, trigger the DDR4 buffer.
+        mr : bool
+            If True, trigger the MR buffer.
         adc_trig_offset : int, optional
             Offset time at which the ADC is triggered (in tProc cycles)
         t : int, optional
             The number of tProc cycles at which the ADC trigger starts
+        width : int, optional
+            The width of the trigger pulse, in tProc cycles
         rp : int, optional
             Register page
         r_out : int, optional
@@ -362,33 +340,43 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             adcs = []
         if pins is None:
             pins = []
-        if not adcs and not pins:
-            raise RuntimeError("must pulse at least one ADC or pin")
+        #if not any([adcs, pins, ddr4]):
+        #    raise RuntimeError("must pulse at least one readout or pin")
 
-        out = 0
-        for adc in adcs:
-            out |= (1 << self.soccfg['readouts'][adc]['trigger_bit'])
+        outdict = defaultdict(int)
+        for ro in adcs:
+            rocfg = self.soccfg['readouts'][ro]
+            outdict[rocfg['trigger_port']] |= (1 << rocfg['trigger_bit'])
+            # update trigger count for this readout
+            self.ro_chs[ro]['trigs'] += 1
         for pin in pins:
-            out |= (1 << pin)
+            pincfg = self.soccfg['tprocs'][0]['output_pins'][pin]
+            outdict[pincfg[1]] |= (1 << pincfg[2])
+        if ddr4:
+            rocfg = self.soccfg['ddr4_buf']
+            outdict[rocfg['trigger_port']] |= (1 << rocfg['trigger_bit'])
+        if mr:
+            rocfg = self.soccfg['mr_buf']
+            outdict[rocfg['trigger_port']] |= (1 << rocfg['trigger_bit'])
 
         t_start = t
-        if adcs:
+        if any([adcs, ddr4, mr]):
             t_start += adc_trig_offset
             # update timestamps with the end of the readout window
-            for adc in adcs:
-                ts = self.get_timestamp(ro_ch=adc)
+            for ro in adcs:
+                ts = self.get_timestamp(ro_ch=ro)
                 if t_start < ts:
-                    print("Readout time %d appears to conflict with previous readout ending at %f?" % (t, ts))
+                    logger.warning("Readout time %d appears to conflict with previous readout ending at %f?"%(t, ts))
                 # convert from readout clock to tProc clock
-                ro_length = self.ro_chs[adc]['length']
-                ro_length *= self.soccfg['refclk_freq'] / self.soccfg['readouts'][adc]['f_fabric']
-                self.set_timestamp(t_start + ro_length, ro_ch=adc)
+                ro_length = self.ro_chs[ro]['length']
+                ro_length *= self.tproccfg['f_time']/self.soccfg['readouts'][ro]['f_output']
+                self.set_timestamp(t_start + ro_length, ro_ch=ro)
+        t_end = t_start + width
 
-        trig_output = self.soccfg['tprocs'][0]['output_pins']
-
-        self.regwi(rp, r_out, out, f'out = 0b{out:>016b}')
-        self.seti(trig_output, rp, r_out, t_start, f'ch =0 out = ${r_out} @t = {t}')
-        # self.seti(trig_output, rp, 0, t_end, f'ch =0 out = 0 @t = {t}')
+        for outport, out in outdict.items():
+            self.regwi(rp, r_out, out, f'out = 0b{out:>016b}')
+            self.seti(outport, rp, r_out, t_start, f'ch =0 out = ${r_out} @t = {t}')
+            # self.seti(outport, rp, 0, t_end, f'ch =0 out = 0 @t = {t}')
 
     def ttl_readout(self):
         '''

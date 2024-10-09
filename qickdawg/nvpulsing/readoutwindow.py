@@ -10,6 +10,7 @@ from .nvaverageprogram import NVAveragerProgram
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import os
 
 
 class ReadoutWindow(NVAveragerProgram):
@@ -172,11 +173,14 @@ class ReadoutWindow(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
+        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        image_path = os.path.join(graphics_folder, 'READOUT.png')
+        
 
         if cfg is None:
             plt.figure(figsize=(10, 10))
             plt.axis('off')
-            plt.imshow(mpimg.imread('../graphics/READOUT.png'))
+            plt.imshow(mpimg.imread(image_path))
             plt.text(265, 440, "config.soft_avgs", fontsize=14)
             plt.text(205, 305, "config.readout_length_t#", fontsize=12)
             plt.text(445, 305, "config.relax_delay_t#", fontsize=14)
@@ -186,7 +190,7 @@ class ReadoutWindow(NVAveragerProgram):
         else:
             plt.figure(figsize=(10, 10))
             plt.axis('off')
-            plt.imshow(mpimg.imread('../graphics/READOUT.png'))
+            plt.imshow(mpimg.imread(image_path))
             plt.text(265, 440, "Repeat {} times".format(cfg.soft_avgs), fontsize=14)
             plt.text(205, 305, "readout_length = {} treg".format(int(cfg.readout_length_treg)), fontsize=12)
             plt.text(445, 305, "relax_delay = {} us".format(str(cfg.relax_delay_tus)[:4]), fontsize=14)
