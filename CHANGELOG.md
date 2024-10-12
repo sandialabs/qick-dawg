@@ -1,3 +1,12 @@
+## [1.0.1](https://github.com/sandialabs/qick-dawg/compare/v0.0.6...v1.0.1) (2024-10-12)
+
+
+### Bug Fixes
+
+* **meta:** fixed import so it's no longer broken ([98db853](https://github.com/sandialabs/qick-dawg/commit/98db853614c61325841e4fc83b7cc3555bbff4d5))
+
+
+
 ## [0.0.6](https://github.com/sandialabs/qick-dawg/compare/v0.2.0...v0.0.6) (2024-10-09)
 
 
