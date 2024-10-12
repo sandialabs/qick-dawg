@@ -36,6 +36,3 @@ Repository = "https://github.com/sandialabs/qick-dawg.git"
 
 [tools.setuptools]
 packages = ["qickdawg"]
-
-[tool.setuptools.packages.find]
-exclude = ["qick", "graphics*", "installation*", "jupyter_notebooks*"]
