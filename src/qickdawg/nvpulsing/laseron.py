@@ -29,10 +29,13 @@ def laser_on(config, reps=1, readout_integration_treg=1020):
     prog = LaserOn(config)
 
     data = prog.acquire()
-    data = np.mean(data)
-    data /= readout_integration_treg
 
-    return float(data)
+    if prog.cfg.edge_counting:
+        return int(data)
+    else:
+        data = np.mean(data)
+        data /= readout_integration_treg
+        return float(data)
 
 
 class LaserOn(NVAveragerProgram):
@@ -61,10 +64,9 @@ class LaserOn(NVAveragerProgram):
         Method that generates the assembly code that initializes the pulse sequence.
         For LaserOn this simply sets up the adc to integrate for self.cfg.readout_intregration_t#
         """
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+
+        # Inherited from qd.NVAveragerProgram
+        self.setup_readout()
 
         self.synci(400)  # give processor some time to configure pulses
 
