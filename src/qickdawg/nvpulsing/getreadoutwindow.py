@@ -20,11 +20,7 @@ def get_readout_window(config, n_time_bins):
 
     Parameters
     ----------
-    soc : ::class:`~qick.QickSoc`
-    soccfg : ::class:`~qick.QickConfig`
-    config : ::class:`~qickdawg.nvpulsing.NVConfiguration
-        qickdawg.NVconfiguraiton instance for required attributes
-        see qickdawg.ReadoutWindow for required attributes
+    config : qick_dawg.NVConfiguration
     n_time_bins : int
         Number of windows to combine to take the full readoutwindow
 
@@ -72,3 +68,25 @@ def get_readout_window(config, n_time_bins):
             # print(i, config.laser_readout_offset_treg)
 
     return data_on, data_off, prog
+
+
+def check_readout(config, reps=1, readout_integration_treg=1020):
+    '''
+    Quick look at the readout with just the laser output on
+
+    Parameters
+    ----------
+    config : `.NVConfig`
+    reps : int (optional, 1)
+    readout_integration_treg (option, 3)
+
+    Returns
+    -------
+    int
+        integrated ADC value over time readout_integration_treg
+    '''
+
+    prog = ReadoutWindow(config)
+    data = prog.acquire_decimated(progress=False)
+
+    return data
