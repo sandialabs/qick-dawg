@@ -50,10 +50,7 @@ class PLIntensity(NVAveragerProgram):
 
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+        self.setup_readout()
 
         self.synci(200)  # give processor some time to cfgure pulses
 
@@ -71,17 +68,43 @@ class PLIntensity(NVAveragerProgram):
         self.wait_all()
         self.sync_all(self.cfg.relax_delay_treg)
 
-    def acquire(self, *arg, **kwarg):
+    def acquire(self, counting_return='rate', *arg, **kwarg):
         '''
         Method that overloads the qickdawg.NVAvergerProgram.acquire() method to analyze the output
         to a single point which is the mean of the returned data points divided by
         self.cfg.readout_integration_treg
+
+        Parameters
+        ----------
+        counting_return : str
+            'rate' will return the average counts/s
+            'totalize' will return the total counts over all reps
+
+        Returns
+        -------
+        float 
+            if config.edge_counting
+                counting_return == 'rate', returns count rate in cts/s
+                counting_return == 'totalize', returns total counts
+            if not edge coutning
+                returns average analog ADC level
         '''
+        
+        assert counting_return in ['rate', 'totalize'], "'counting_return parameter can only be 'rate' or 'totalize"
+        if counting_return == 'totalize':
+            assert self.cfg.edge_counting, "For 'counting_return' config.edge_counting must be True"
+
         data = super().acquire(*arg, **kwarg)
 
-        data = np.mean(data) / self.cfg.readout_integration_treg
-
-        return float(data)
+        if self.cfg.edge_counting:
+            if counting_return == 'totalize':
+                return int(np.sum(data))
+            elif counting_return == 'rate':
+                data = float(np.mean(data) / self.cfg.readout_integration_tus * 1e6)
+                return data
+        else:
+            data = np.mean(data) / self.cfg.readout_integration_tus
+            return float(data)
 
     def plot_sequence(cfg=None):
         '''
