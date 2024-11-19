@@ -218,7 +218,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         hiderounds = True
         hidereps = True
         if progress:
-            if self.cfg.rounds > 1:
+            if self.cfg.soft_avgs > 1:
                 hiderounds = False
             else:
                 hidereps = False
@@ -230,7 +230,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         # Actual data acquisition
 
         # avg_d = None
-        for ir in tqdm(range(self.cfg.rounds), disable=hiderounds):
+        for ir in tqdm(range(self.cfg.soft_avgs), disable=hiderounds):
             # Configure and enable buffer capture.
             self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
 
@@ -288,7 +288,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if self.cfg.reps > 1:
             self.dbuf_shape = [self.cfg.reps] + self.dbuf_shape
 
-        if self.cfg.rounds > 1:
+        if self.cfg.soft_avgs > 1:
             self.data_shape = [self.cfg.rounds] + self.dbuf_shape
         else:
             self.data_shape = self.dbuf_shape
@@ -537,3 +537,24 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         if self.cfg.mw_gain > 32767:
             assert self.cfg.mw_gain < 32767, "config.mw_gain should be between 0 and 32,767"
+
+    def setup_readout(self):
+        '''
+        Sets up readout depending on self.cfg.edge_counting
+        '''
+
+        if self.cfg.edge_counting:
+            self.declare_readout(
+                ch=self.cfg.adc_channel,
+                length=self.cfg.readout_integration_treg,
+                freq=0,
+                sel='input',
+                edge_counting=True,
+                high_threshold=self.cfg.high_threshold,
+                low_threshold=self.cfg.low_threshold)
+        else:
+            self.declare_readout(
+                ch=self.cfg.adc_channel,
+                freq=0,
+                length=self.cfg.readout_integration_treg,
+                sel="input")
