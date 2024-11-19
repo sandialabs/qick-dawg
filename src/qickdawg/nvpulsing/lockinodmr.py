@@ -10,7 +10,7 @@ while taking the difference between PL for microwave drive on or off
 from qick.averager_program import QickSweep
 from .nvaverageprogram import NVAveragerProgram
 from ..util import ItemAttribute
-
+from ..util import apply_on_axis_0_n_times
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -107,12 +107,11 @@ class LockinODMR(NVAveragerProgram):
         qickdawg.NVQickSweep to sweep over frequencies
         """
         self.check_cfg()
+
         if self.cfg.mw_gain > 30000:
             assert 0, 'Microwave gain exceeds maximum value'
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+        
+        self.setup_readout()
 
         # Get registers for mw
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
@@ -202,34 +201,74 @@ class LockinODMR(NVAveragerProgram):
             .odmr_contrast (nfrequency np.array, % units) - (.signal - .reference)/.reference *100
         """
         data = np.reshape(data, self.data_shape)
+        
+        if self.cfg.edge_counting is False:
+            d = self.analyze_analog(data)
+        else:
+            d = self.analyze_digital(data)
+
+        d.frequencies = self.qick_sweeps[0].get_sweep_pts()
+
+        return d
+
+    def analyze_analog(self, data):
+
         data = data / self.cfg.readout_integration_treg
 
-        if len(self.data_shape) == 2:
-            signal = data[:, 0]
-            reference = data[:, 1]
-        elif len(self.data_shape) == 3:
-            signal = data[:, :, 0]
-            reference = data[:, :, 1]
-        elif len(self.data_shape) == 4:
-            signal = data[:, :, :, 0]
-            reference = data[:, :, :, 1]
+        signal = data[..., 0]
+        reference = data[..., 1]
 
         odmr = (signal - reference)
         odmr_contrast = (signal - reference) / reference * 100
 
-        for _ in range(len(odmr.shape) - 1):
-            odmr = np.mean(odmr, axis=0)
-            signal = np.mean(signal, axis=0)
-            reference = np.mean(reference, axis=0)
-            odmr_contrast = np.mean(odmr_contrast, axis=0)
+        n = len(odmr.shape) - 1
 
         d = ItemAttribute()
-        d.odmr = odmr
-        d.signal = signal
-        d.reference = reference
-        d.odmr_contrast = odmr_contrast
 
-        d.frequencies = self.qick_sweeps[0].get_sweep_pts()
+        d.odmr = apply_on_axis_0_n_times(
+            odmr, np.mean, n)
+        d.odmr /= self.cfg.readout_integration_treg
+        d.odmr_contrast = apply_on_axis_0_n_times(
+            odmr_contrast, np.mean, n)
+        d.odmr_contrast /= self.cfg.readout_integration_treg
+        d.signal = apply_on_axis_0_n_times(
+            signal, np.mean, n)
+        d.signal /= self.cfg.readout_integration_treg
+        d.reference = apply_on_axis_0_n_times(
+            reference, np.mean, n)
+        d.reference /= self.cfg.readout_integration_treg
+
+        return d
+
+    def analyze_digital(self, data):
+
+        d = ItemAttribute()
+
+        signal = data[..., 0]
+        reference = data[..., 1]
+
+        odmr = signal - reference
+        n = len(odmr.shape) - 1
+        d.odmr_total = apply_on_axis_0_n_times(
+            odmr, np.sum, n)
+        d.signal_total = apply_on_axis_0_n_times(
+            signal, np.sum, n)
+        d.reference_total = apply_on_axis_0_n_times(
+            reference, np.sum, n)
+
+        d.odmr_rate = apply_on_axis_0_n_times(
+            odmr.astype(float), np.mean, n)
+        d.odmr_rate /= self.cfg.readout_integration_tus / 1e6
+
+        d.signal_rate = apply_on_axis_0_n_times(
+            signal.astype(float), np.mean, n)
+        d.signal_rate /= self.cfg.readout_integration_tus / 1e6
+
+        d.reference_rate = apply_on_axis_0_n_times(
+            reference.astype(float), np.mean, n)
+        d.reference_rate /= self.cfg.readout_integration_tus / 1e6
+
+        d.odmr_contrast = d.odmr_total / d.reference_total * 100
 
         return d
 
