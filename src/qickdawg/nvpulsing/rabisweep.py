@@ -104,10 +104,7 @@ class RabiSweep(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+        self.setup_readout()
 
         # configure pulse defaults and initial parameters for microwave
         self.declare_gen(
@@ -172,7 +169,7 @@ class RabiSweep(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_pulse_sequence_results(data)
+            data = self.analyze_digital_pulse_sequence_results(data)
 
         return data
 
