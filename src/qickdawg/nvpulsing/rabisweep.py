@@ -169,7 +169,7 @@ class RabiSweep(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_digital_pulse_sequence_results(data)
+            data = self.analyze_pulse_sequence(data)
 
         return data
 

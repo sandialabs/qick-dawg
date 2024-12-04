@@ -68,7 +68,7 @@ class PLIntensity(NVAveragerProgram):
         self.wait_all()
         self.sync_all(self.cfg.relax_delay_treg)
 
-    def acquire(self, counting_return='rate', *arg, **kwarg):
+    def acquire(self, *arg, **kwarg):
         '''
         Method that overloads the qickdawg.NVAvergerProgram.acquire() method to analyze the output
         to a single point which is the mean of the returned data points divided by
@@ -89,21 +89,13 @@ class PLIntensity(NVAveragerProgram):
             if not edge coutning
                 returns average analog ADC level
         '''
-        
-        assert counting_return in ['rate', 'totalize'], "'counting_return parameter can only be 'rate' or 'totalize"
-        if counting_return == 'totalize':
-            assert self.cfg.edge_counting, "For 'counting_return' config.edge_counting must be True"
 
         data = super().acquire(*arg, **kwarg)
 
         if self.cfg.edge_counting:
-            if counting_return == 'totalize':
-                return int(np.sum(data))
-            elif counting_return == 'rate':
-                data = float(np.mean(data) / self.cfg.readout_integration_tus * 1e6)
-                return data
+            return int(np.sum(data))
         else:
-            data = np.mean(data) / self.cfg.readout_integration_tus
+            data = np.mean(data.astype('float')) / self.cfg.readout_integration_treg
             return float(data)
 
     def plot_sequence(cfg=None):

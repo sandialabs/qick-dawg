@@ -444,7 +444,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         self.wait_all()
         self.sync_all(self.cfg.relax_delay_treg + remaining_time)
 
-    def analyze_analog_pulse_sequence_results(self, data):
+    def analyze_pulse_sequence(self, data):
         """
         Method that takes in a 1D array of data points from self.acquire() and analyzes the
         results based on the number of reps, rounds, and frequency points
@@ -474,9 +474,8 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         d.signal1 = data[..., 0]
         d.reference1 = data[..., 1]
-        if self.data_shape[-1] == 4:
-            d.signal2 = data[..., 2]
-            d.reference2 = data[..., 3]
+        d.signal2 = data[..., 2]
+        d.reference2 = data[..., 3]
 
         n = len(d.signal1.shape) - 1
 
@@ -487,92 +486,21 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             ret_type = int
             func = np.sum
 
-        if self.data_shape[-1] >= 2:
-            if self.cfg.edge_counting is False:
-                d.contrast1 = ((d.signal1 - d.reference1) / d.reference1 * 100)
-            else:
-                d.contrast1 = d.signal1 - d.reference1
-            d.contrast1 = apply_on_axis_0_n_times(d.contrast1.astype(float), np.mean, n)
-            d.signal1 = apply_on_axis_0_n_times(d.signal1.astype(float), np.mean, n)
-            d.reference1 = apply_on_axis_0_n_times(d.reference1.astype(float), np.mean, n)
+        if self.cfg.edge_counting is False:
+            d.contrast1 = ((d.signal1 - d.reference1) / d.reference1 * 100)
+        else:
+            d.contrast1 = d.signal1 - d.reference1
+        d.contrast1 = apply_on_axis_0_n_times(d.contrast1.astype(ret_type), func, n)
+        d.signal1 = apply_on_axis_0_n_times(d.signal1.astype(ret_type), func, n)
+        d.reference1 = apply_on_axis_0_n_times(d.reference1.astype(ret_type), func, n)
         
-        if self.data_shape[-1] == 4:
-            d.contrast2 = ((d.signal2 - d.reference2) / d.reference2 * 100)
-            d.contrast = d.contrast1 - d.contrast2
+        d.contrast2 = ((d.signal2 - d.reference2) / d.reference2 * 100)
+        d.contrast = d.contrast1 - d.contrast2
 
-            d.contrast = apply_on_axis_0_n_times(d.contrast.astype(float), np.mean, n)
-            d.contrast2 = apply_on_axis_0_n_times(d.contrast2.astype(float), np.mean, n)
-            d.signal2 = apply_on_axis_0_n_times(d.signal2.astype(float), np.mean, n)
-            d.reference2 = apply_on_axis_0_n_times(d.reference2.astype(float), np.mean, n)
-        else:
-            d.contrast = d.contrast1
-            d.signal = d.signal1
-            d.reference = d.reference1
-            del d.contrast1, d.signal1, d.reference1
-
-
-        d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
-        d.sweep_tus = self.qick_sweeps[0].get_sweep_pts() * self.cycles2us(1)
-
-        return d
-
-    def analyze_digital_pulse_sequence_results(self, data):
-        """
-        Method that takes in a 1D array of data points from self.acquire() and analyzes the
-        results based on the number of reps, rounds, and frequency points
-
-        Parameters
-        ----------
-        data
-            (1D np.array) data returned from self.acquire()
-
-        returns
-            (qickdawg.ItemAttribute instance) with attributes
-            .sweep_treg (len(nsweep_points) np array, reg units) - sweep lengths
-            .sweep_tus (len(nsweep_points) np array, us units) - sweep lengths
-            .signal1, .signal2 (nfrequency np.array, adc units)
-                - average adc signal for microwave on, off
-            .reference1, .reference2 (nfrequency np.array, adc units)
-                - average referenceadc signal for microwave on, off
-            .contrast1, contrast2 (nfrequency np.array, adc units))
-                - (.signal1(2) minus .refrence1(2))/reference1(2)*100
-            .contrast (nfrequency np.array, adc units)
-                - .contrast1 - .contrast2
-        """
-
-        data = np.reshape(data, self.data_shape)
-
-        d = ItemAttribute()
-
-        d.signal_total1 = data[..., 0]
-        d.reference_total1 = data[..., 1]
-
-        if self.data_shape[-1] == 4:
-            d.signal_total2 = data[..., 2]
-            d.reference_total2 = data[..., 3]
-
-        n = len(d.signal_total1.shape) - 1
-
-        if self.data_shape[-1] >= 2:
-            d.contrast1 = d.signal_total1 - d.reference_total1
-
-            d.contrast1 = apply_on_axis_0_n_times(d.contrast1.astype(int), np.sum, n)
-            d.signal_total1 = apply_on_axis_0_n_times(d.signal_total1.astype(int), np.sum, n)
-            d.reference_total1 = apply_on_axis_0_n_times(d.reference_total1.astype(int), np.sum, n)
-
-        if self.data_shape[-1] == 4:
-            d.contrast2 = d.signal_total2 - d.reference_total2
-            d.contrast = d.contrast1 - d.contrast2
-
-            d.contrast = apply_on_axis_0_n_times(d.contrast.astype(int), np.sum, n)
-            d.contrast2 = apply_on_axis_0_n_times(d.contrast2.astype(int), np.sum, n)
-            d.signal_total2 = apply_on_axis_0_n_times(d.signal_total2.astype(int), np.sum, n)
-            d.reference_total2 = apply_on_axis_0_n_times(d.reference_total2.astype(int), np.sum, n)
-        else:
-            d.contrast = d.contrast1
-            d.signal_total = d.signal_total1
-            d.reference_total = d.reference_total1
-            del d.contrast1, d.signal_total1, d.reference_total1
+        d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
+        d.contrast2 = apply_on_axis_0_n_times(d.contrast2.astype(ret_type), func, n)
+        d.signal2 = apply_on_axis_0_n_times(d.signal2.astype(ret_type), func, n)
+        d.reference2 = apply_on_axis_0_n_times(d.reference2.astype(ret_type), func, n)
 
         d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
         d.sweep_tus = self.qick_sweeps[0].get_sweep_pts() * self.cycles2us(1)

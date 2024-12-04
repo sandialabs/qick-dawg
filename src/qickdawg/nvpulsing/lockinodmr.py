@@ -156,19 +156,31 @@ class LockinODMR(NVAveragerProgram):
 
         self.pulse(ch=self.cfg.mw_channel, t=0)
 
-        self.trigger(
+        self.trigger_no_off(
             adcs=[self.cfg.adc_channel],
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=0)
 
-        self.trigger(
+        self.trigger_no_off(
+            pins=[self.cfg.laser_gate_pmod],
+            width=self.cfg.relax_delay_treg,
+            adc_trig_offset=0,
+            t=self.cfg.readout_integration_treg)
+
+        self.trigger_no_off(
             adcs=[self.cfg.adc_channel],
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
+
+        self.trigger(
+            pins=[self.cfg.laser_gate_pmod],
+            width=self.cfg.relax_delay_treg,
+            adc_trig_offset=0,
+            t=2 * self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
 
         self.sync_all(self.cfg.relax_delay_treg)
         self.wait_all()
@@ -201,74 +213,44 @@ class LockinODMR(NVAveragerProgram):
             .odmr_contrast (nfrequency np.array, % units) - (.signal - .reference)/.reference *100
         """
         data = np.reshape(data, self.data_shape)
-        
-        if self.cfg.edge_counting is False:
-            d = self.analyze_analog(data)
-        else:
-            d = self.analyze_digital(data)
+
+        d = self.analyze_data(data)
 
         d.frequencies = self.qick_sweeps[0].get_sweep_pts()
 
         return d
 
-    def analyze_analog(self, data):
+    def analyze_data(self, data):
 
-        data = data / self.cfg.readout_integration_treg
+        if self.cfg.edge_counting is False:
+            data = data / self.cfg.readout_integration_treg
 
         signal = data[..., 0]
         reference = data[..., 1]
 
-        odmr = (signal - reference)
-        odmr_contrast = (signal - reference) / reference * 100
+        contrast = (signal - reference)
+        if self.cfg.edge_counting is False:
+            contrast_percent = (signal - reference) / reference * 100
 
-        n = len(odmr.shape) - 1
+        n = len(contrast.shape) - 1
 
         d = ItemAttribute()
 
-        d.odmr = apply_on_axis_0_n_times(
-            odmr, np.mean, n)
-        d.odmr /= self.cfg.readout_integration_treg
-        d.odmr_contrast = apply_on_axis_0_n_times(
-            odmr_contrast, np.mean, n)
-        d.odmr_contrast /= self.cfg.readout_integration_treg
+        if self.cfg.edge_counting is False:
+            func = np.mean
+        else:
+            func = np.sum
+
+        d.contrast = apply_on_axis_0_n_times(
+            contrast, func, n)
         d.signal = apply_on_axis_0_n_times(
-            signal, np.mean, n)
-        d.signal /= self.cfg.readout_integration_treg
+            signal, func, n)
         d.reference = apply_on_axis_0_n_times(
-            reference, np.mean, n)
-        d.reference /= self.cfg.readout_integration_treg
+            reference, func, n)
 
-        return d
-
-    def analyze_digital(self, data):
-
-        d = ItemAttribute()
-
-        signal = data[..., 0]
-        reference = data[..., 1]
-
-        odmr = signal - reference
-        n = len(odmr.shape) - 1
-        d.odmr_total = apply_on_axis_0_n_times(
-            odmr, np.sum, n)
-        d.signal_total = apply_on_axis_0_n_times(
-            signal, np.sum, n)
-        d.reference_total = apply_on_axis_0_n_times(
-            reference, np.sum, n)
-
-        d.odmr_rate = apply_on_axis_0_n_times(
-            odmr.astype(float), np.mean, n)
-        d.odmr_rate /= self.cfg.readout_integration_tus / 1e6
-
-        d.signal_rate = apply_on_axis_0_n_times(
-            signal.astype(float), np.mean, n)
-        d.signal_rate /= self.cfg.readout_integration_tus / 1e6
-
-        d.reference_rate = apply_on_axis_0_n_times(
-            reference.astype(float), np.mean, n)
-        d.reference_rate /= self.cfg.readout_integration_tus / 1e6
-
-        d.odmr_contrast = d.odmr_total / d.reference_total * 100
+        if self.cfg.edge_counting is False:
+            d.contrast_percent = apply_on_axis_0_n_times(
+                contrast_percent, func, n)
 
         return d
 
