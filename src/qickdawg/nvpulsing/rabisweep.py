@@ -125,16 +125,16 @@ class RabiSweep(NVAveragerProgram):
                                  length=self.cfg.mw_start_treg)
 
         # configure the sweep
-        self.mw_length_register = self.new_gen_reg(self.cfg.mw_channel, 
-                                                   name='mw_length', 
+        self.mw_length_register = self.new_gen_reg(self.cfg.mw_channel,
+                                                   name='mw_length',
                                                    init_val=self.cfg.mw_start_treg)
 
-        self.add_sweep(NVQickSweep(self, 
-                                   reg=self.mw_length_register, 
-                                   start=self.cfg.mw_start_treg, 
-                                   stop=self.cfg.mw_end_treg, 
+        self.add_sweep(NVQickSweep(self,
+                                   reg=self.mw_length_register,
+                                   start=self.cfg.mw_start_treg,
+                                   stop=self.cfg.mw_end_treg,
                                    expts=self.cfg.nsweep_points,
-                                   label='mw_length',
+                                   label='length',
                                    mw_channel=self.cfg.mw_channel))
 
         self.synci(400)  # give processor some time to configure pulses
