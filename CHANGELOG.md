@@ -1,9 +1,21 @@
+## [1.0.2](https://github.com/sandialabs/qick-dawg/compare/v1.0.1...v1.0.2) (2024-12-18)
+
+
+### Bug Fixes
+
+* **pulse_readout:** pulse readout end was slightly off ([68eb37b](https://github.com/sandialabs/qick-dawg/commit/68eb37bbc09b0becce2c9c51757ab560665bcc9a))
+* **rabi:** fixed rabi sequence, dropped 'length' syntax ([bdb7407](https://github.com/sandialabs/qick-dawg/commit/bdb7407917c73408db28b36c23d1107017f970ad))
+* **readoutwindow:** modified readoutwindow so that it doesn't use sycnall ([b1bdc86](https://github.com/sandialabs/qick-dawg/commit/b1bdc86db1e95ef05f6c863b5a5d07347a42a6c7))
+
+
+
 ## [1.0.1](https://github.com/sandialabs/qick-dawg/compare/v0.0.6...v1.0.1) (2024-10-12)
 
 
 ### Bug Fixes
 
 * **meta:** fixed import so it's no longer broken ([98db853](https://github.com/sandialabs/qick-dawg/commit/98db853614c61325841e4fc83b7cc3555bbff4d5))
+* **meta:** fixed import so it's no longer broken ([#47](https://github.com/sandialabs/qick-dawg/issues/47)) [skip ci] ([4c4ef57](https://github.com/sandialabs/qick-dawg/commit/4c4ef57527fa38b323606968fb581aa23d2860ff))
 
 
 
