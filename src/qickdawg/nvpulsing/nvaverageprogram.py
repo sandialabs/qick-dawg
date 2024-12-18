@@ -431,8 +431,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         remaining_time = (
             self.cfg.laser_on_treg
             - 2 * self.cfg.readout_integration_treg
-            - self.cfg.readout_reference_start_treg
-            - self.cfg.laser_readout_offset_treg)
+            - self.cfg.readout_reference_start_treg)
 
         self.trigger(
             pins=[self.cfg.laser_gate_pmod],
