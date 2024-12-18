@@ -136,13 +136,16 @@ class ReadoutWindow(NVAveragerProgram):
             t += self.cfg.laser_initialize_treg           
 
         t += self.cfg.relax_delay_treg
+        self.synci(t)
 
-        if self.cfg.mw_pi2_treg > 0:
+        t = 0
+        if self.cfg.mw_pi2_treg > 4:
             self.pulse(ch=self.cfg.mw_channel, t=t)
             t += self.cfg.mw_pi2_treg
 
-        self.sync_all(self.cfg.mw_readout_delay_treg)
-
+        t += self.cfg.mw_readout_delay_treg
+        self.synci(t)
+        t = 0
         if self.cfg.laser_readout_offset_treg > 3:
             self.trigger_no_off(
                 pins=[self.cfg.laser_gate_pmod],
