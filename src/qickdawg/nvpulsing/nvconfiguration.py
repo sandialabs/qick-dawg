@@ -66,7 +66,7 @@ class NVConfiguration(ItemAttribute):
         Overloaded class method which handles converting properties
         related to units used by the qick-dawg program
         """
-        
+
         if name.split('_')[-1] == 'tus':
 
             treg = self.soccfg.us2cycles(value)
@@ -163,6 +163,8 @@ class NVConfiguration(ItemAttribute):
         if 'reg' in unit:
             assert np.all([isinstance(var, int) for var in (start, stop, delta)]), \
                 "reg units require int start, stop, and delta"
+
+        self.scaling_mode = 'linear'
 
         if 'f' == unit[0]:
             ounit = unit
