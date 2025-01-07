@@ -6,7 +6,7 @@ Starts qickdawg pyro client or locally
 """
 
 import Pyro4
-from qick import QickConfig, QickSoc
+from qick import QickConfig
 import qickdawg as qd
 
 
@@ -34,5 +34,6 @@ def start_client(host_ip_address=None, host_port=8888, server_name="myqick", *ar
         qd.soc = Pyro4.Proxy(ns.lookup(server_name))
         qd.soccfg = QickConfig(qd.soc.get_cfg())
     else:
+        from qick import QickSoc
         qd.soc = QickSoc(*arg, **kwarg)
         qd.soccfg = qd.soc
