@@ -1,7 +1,5 @@
 from .nvqicksweep import NVQickSweep
 from .nvaverageprogram import NVAveragerProgram
-from ..util import ItemAttribute
-
 import numpy as np
 
 

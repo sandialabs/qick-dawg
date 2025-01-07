@@ -1,7 +1,6 @@
 from .nvqicksweep import NVQickSweep
 from .nvaverageprogram import NVAveragerProgram
-from ..util import ItemAttribute
-
+from itemattribute import ItemAttribute
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
