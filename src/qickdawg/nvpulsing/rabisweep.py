@@ -85,7 +85,6 @@ class RabiSweep(NVAveragerProgram):
                     "pre_init",
                     "laser_gate_pmod",
                     "laser_on_treg",
-                    "adc_trigger_offset_treg",
                     "relax_delay_treg",
                     "mw_readout_delay_treg",
                     "reps",
@@ -108,6 +107,14 @@ class RabiSweep(NVAveragerProgram):
                              freq=0,
                              length=self.cfg.readout_integration_treg,
                              sel="input")
+
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
 
         # configure pulse defaults and initial parameters for microwave
         self.declare_gen(
@@ -137,14 +144,17 @@ class RabiSweep(NVAveragerProgram):
                                    label='length',
                                    mw_channel=self.cfg.mw_channel))
 
-        self.synci(400)  # give processor some time to configure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
 
             self.trigger(
                 pins=[self.cfg.laser_gate_pmod],
                 width=self.cfg.laser_on_treg, 
-                adc_trig_offset=self.cfg.adc_trigger_offset_treg)
+                adc_trig_offset=0)
             self.sync_all(self.cfg.laser_on_treg)
 
         self.wait_all()

@@ -105,7 +105,14 @@ class T1DelaySweep(NVAveragerProgram):
                              length=self.cfg.readout_integration_treg,
                              sel="input")
 
-        ## Setup Microwave Channel
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
+
 
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
 
@@ -141,7 +148,10 @@ class T1DelaySweep(NVAveragerProgram):
                 self.cfg.delay_end_treg,
                 self.cfg.nsweep_points))
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.trigger(

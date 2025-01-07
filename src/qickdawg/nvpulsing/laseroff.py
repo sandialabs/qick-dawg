@@ -63,14 +63,17 @@ class LaserOff(NVAveragerProgram):
                              length=self.cfg.readout_integration_treg,
                              sel="input")
 
-        self.synci(400)  # give processor some time to configure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         self.trigger(
             pins=[self.cfg.laser_gate_pmod],
             adc_trig_offset=0,
             t=0)
 
-        self.synci(self.cfg.relax_delay_treg + self.cfg.readout_integration_treg)
+        self.synci(self.cfg.readout_integration_treg)
 
     def body(self):
         '''
@@ -82,4 +85,5 @@ class LaserOff(NVAveragerProgram):
                      adc_trig_offset=0,
                      t=0)
 
-        self.synci(self.cfg.relax_delay_treg + self.cfg.relax_delay_treg)
+        self.wait_all()
+        self.synci(self.cfg.relax_delay_treg)

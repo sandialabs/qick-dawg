@@ -84,7 +84,6 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         "laser_gate_pmod",
         "laser_on_treg",
         "relax_delay_treg",
-        "readout_delay_treg",
         "reps",
         "readout_reference_start_treg",
         "laser_readout_offset_treg",
@@ -105,6 +104,14 @@ class HahnEchoDelaySweep(NVAveragerProgram):
                              freq=0,
                              length=self.cfg.readout_integration_treg,
                              sel="input")
+
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
 
         # Get registers for mw
 
@@ -149,7 +156,10 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         else:
             assert 0, 'cfg.scaling_mode must be "linear" or "exponential"'
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.trigger(
