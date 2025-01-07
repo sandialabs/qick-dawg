@@ -14,3 +14,5 @@ from .rabisweep import RabiSweep
 from .hahnechodelaysweep import HahnEchoDelaySweep
 from .t1delaysweep import T1DelaySweep
 from .ramsey import Ramsey
+from .cpmgxy8ndelaysweep import CPMGXY8nDelaySweep
+from .cpmgxy8nsweep import CPMGXY8nSweep
