@@ -247,7 +247,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
             If None, this plots the sequence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuration value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'HAHN_ECHO.png')
 
         if cfg is None:

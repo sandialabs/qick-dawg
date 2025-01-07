@@ -53,8 +53,9 @@ class NVConfiguration(ItemAttribute):
         self.ddr4 = False
         self.mr = False
         self.n_ddr4_bins = 10
+        self.test = False
 
-        self.rounds = 1
+        self.soft_avgs = 1
         self.reps = 1
 
     def __setattribute__(self, name, value):
@@ -193,7 +194,7 @@ class NVConfiguration(ItemAttribute):
         elif (delta == 0) & (nsweep_points != 0):
 
             self.nsweep_points = nsweep_points
-            self.__setattr__(name + '_delta_' + ounits, int(
+            self.__setattr__(name + '_delta_' + ounit, int(
                 floor((start - stop)
                 / (nsweep_points - 1))))
             self.__setattr__(name + '_end_' + runit, (

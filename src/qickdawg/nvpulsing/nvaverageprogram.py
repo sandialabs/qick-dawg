@@ -67,11 +67,8 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         self.sweep_axes = []
         self.make_program()
         self.reps = cfg['reps']
-
         if "soft_avgs" in cfg:
-            self.rounds = cfg['soft_avgs']
-        if "rounds" in cfg:
-            self.rounds = cfg['rounds']
+            self.soft_avgs = cfg['soft_avgs']
         
         # reps loop is the outer loop, first-added sweep is innermost loop
         loop_dims = [cfg['reps'], *self.sweep_axes[::-1]]
@@ -188,12 +185,11 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         -------
         ndarray
             raw accumulated IQ values (int32)
-            if rounds>1, only the last round is kept
             dimensions : (n_ch, n_expts*n_reps*n_reads, 2)
 
         ndarray
             averaged IQ values (float)
-            divided by the length of the RO window, and averaged over reps and rounds
+            divided by the length of the RO window, and averaged over reps and soft_avgs
             if shot_threshold is defined, the I values will be the fraction of points over threshold
             dimensions for a simple averaging program: (n_ch, n_reads, 2)
             dimensions for a program with multiple expts/steps: (n_ch, n_reads, n_expts, 2)
@@ -222,11 +218,11 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         self.stats = []
 
         # select which tqdm progress bar to show
-        hiderounds = True
+        hide_soft_avgs = True
         hidereps = True
         if progress:
-            if self.rounds > 1:
-                hiderounds = False
+            if self.soft_avgs > 1:
+                hide_soft_avgs = False
             else:
                 hidereps = False
 
@@ -237,7 +233,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         # Actual data acquisition
 
         # avg_d = None
-        for ir in tqdm(range(self.rounds), disable=hiderounds):
+        for ir in tqdm(range(self.soft_avgs), disable=hide_soft_avgs):
             # Configure and enable buffer capture.
             self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
 
@@ -465,7 +461,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
     def analyze_pulse_sequence_results(self, data):
         """
         Method that takes in a 1D array of data points from self.acquire() and analyzes the
-        results based on the number of reps, rounds, and frequency points
+        results based on the number of reps, soft_avgs, and frequency points
 
         Parameters
         ----------
