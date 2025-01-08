@@ -28,6 +28,7 @@ def laser_on(config, reps=1, readout_integration_treg=1020):
     config.readout_integration_treg = readout_integration_treg
     prog = LaserOn(config)
 
+    _ = prog.acquire()
     data = prog.acquire()
     data = np.mean(data)
     data /= readout_integration_treg

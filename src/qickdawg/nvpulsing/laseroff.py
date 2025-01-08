@@ -27,6 +27,7 @@ def laser_off(config, reps=1, readout_integration_treg=65535):
     config.readout_integration_treg = readout_integration_treg
     prog = LaserOff(config)
 
+    _ = prog.acquire()
     data = prog.acquire()
     data = np.mean(data)
     data /= readout_integration_treg
