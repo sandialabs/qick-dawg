@@ -300,7 +300,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         else:
             self.data_shape = self.dbuf_shape
 
-    def acquire_decimated(self, readouts_per_experiment=None, *arg, **kwarg):
+    def acquire_decimated(self, readouts_per_experiment=None, raw_data=False, *arg, **kwarg):
         '''
         Overloaded qick.QickProgram method that drops the Q channel of the time domain readout
 
@@ -326,7 +326,10 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         data = super().acquire_decimated(qd.soc, soft_avgs=self.cfg['soft_avgs'], *arg, **kwarg)
 
-        return data[0][:, 0]
+        if raw_data:
+            return data
+        else:
+            return data[0][:, 0]
 
     def trigger_no_off(
             self,

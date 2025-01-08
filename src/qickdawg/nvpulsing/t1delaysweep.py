@@ -178,9 +178,9 @@ class T1DelaySweep(NVAveragerProgram):
         ## First pulse sequence
         ## pi(x) - delay - readout
         # pi2(x)
-        self.pulse(ch=self.cfg.mw_channel, t=0)
-        self.pulse(ch=self.cfg.mw_channel, t=self.cfg.mw_pi2_treg)
-        self.synci(self.cfg.mw_pi2_treg * 2)
+        self.pulse(ch=self.cfg.mw_channel)
+        self.pulse(ch=self.cfg.mw_channel)
+        self.sync_all()
         # delay
         self.sync(self.delay_register.page, self.delay_register.addr)
         # readout

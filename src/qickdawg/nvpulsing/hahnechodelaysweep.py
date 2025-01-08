@@ -222,7 +222,6 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         # pi/2 - x
         self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(180))
         self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
         self.sync_all(self.cfg.mw_readout_delay_treg)
 
         # Readout
