@@ -80,7 +80,7 @@ class ReadoutWindow(NVAveragerProgram):
         "pre_init",
         "relax_delay_treg",
         "laser_gate_pmod",
-        "readout_length_treg",
+        "readout_integration_treg",
         "mw_pi2_treg",
         "mw_fMHz",
         "laser_initialize_treg",
@@ -97,10 +97,7 @@ class ReadoutWindow(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_length_treg,
-                             sel="input")
+        self.setup_readout()
 
         # Setup pulse defaults microwave
         if self.cfg.mw_pi2_treg > 0:

@@ -488,22 +488,29 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         if self.cfg.edge_counting is False:
             d.contrast1 = ((d.signal1 - d.reference1) / d.reference1 * 100)
+            d.contrast2 = ((d.signal2 - d.reference2) / d.reference2 * 100)
         else:
             d.contrast1 = d.signal1 - d.reference1
+            d.contrast2 = d.signal2 - d.reference2
+
+        d.contrast = d.contrast1 - d.contrast2
+
         d.contrast1 = apply_on_axis_0_n_times(d.contrast1.astype(ret_type), func, n)
         d.signal1 = apply_on_axis_0_n_times(d.signal1.astype(ret_type), func, n)
         d.reference1 = apply_on_axis_0_n_times(d.reference1.astype(ret_type), func, n)
         
-        d.contrast2 = ((d.signal2 - d.reference2) / d.reference2 * 100)
-        d.contrast = d.contrast1 - d.contrast2
-
-        d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
         d.contrast2 = apply_on_axis_0_n_times(d.contrast2.astype(ret_type), func, n)
         d.signal2 = apply_on_axis_0_n_times(d.signal2.astype(ret_type), func, n)
         d.reference2 = apply_on_axis_0_n_times(d.reference2.astype(ret_type), func, n)
 
-        d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
-        d.sweep_tus = self.qick_sweeps[0].get_sweep_pts() * self.cycles2us(1)
+        d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
+
+
+        try:
+            d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
+            d.sweep_tus = self.qick_sweeps[0].get_sweep_pts() * self.cycles2us(1)
+        except IndexError:
+            pass
 
         return d
 

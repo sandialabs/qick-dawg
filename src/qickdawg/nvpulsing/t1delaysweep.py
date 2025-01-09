@@ -100,10 +100,8 @@ class T1DelaySweep(NVAveragerProgram):
         '''
 
         self.check_cfg()
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+
+        self.setup_readout()
 
         ## Setup Microwave Channel
 
@@ -194,8 +192,7 @@ class T1DelaySweep(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_pulse_sequence_results(data)
-            data.contrast = data.contrast * -1
+            data = self.analyze_pulse_sequence(data)
 
         return data
 
