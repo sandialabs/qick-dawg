@@ -99,6 +99,14 @@ class ReadoutWindow(NVAveragerProgram):
 
         self.setup_readout()
 
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_length_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
+
         # Setup pulse defaults microwave
         if self.cfg.mw_pi2_treg > 0:
 
@@ -113,7 +121,10 @@ class ReadoutWindow(NVAveragerProgram):
 
             self.set_pulse_registers(ch=self.cfg.mw_channel)
 
-        self.synci(400)  # give processor some time to configure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
     def body(self):
         '''
@@ -132,14 +143,17 @@ class ReadoutWindow(NVAveragerProgram):
             )
             t += self.cfg.laser_initialize_treg           
 
-        t += self.cfg.relax_delay_treg
+            t += self.cfg.relax_delay_treg
+            self.synci(t)
 
-        if self.cfg.mw_pi2_treg > 0:
+        t = 0
+        if self.cfg.mw_pi2_treg > 4:
             self.pulse(ch=self.cfg.mw_channel, t=t)
             t += self.cfg.mw_pi2_treg
 
-        self.sync_all(self.cfg.mw_readout_delay_treg)
-
+        t += self.cfg.mw_readout_delay_treg
+        self.synci(t)
+        t = 0
         if self.cfg.laser_readout_offset_treg > 3:
             self.trigger_no_off(
                 pins=[self.cfg.laser_gate_pmod],
@@ -148,7 +162,7 @@ class ReadoutWindow(NVAveragerProgram):
             t += self.cfg.laser_readout_offset_treg
 
         self.trigger(
-            adcs=[self.cfg.adc_channel],
+            adcs=self.cfg.adcs,
             adc_trig_offset=0,
             pins=[self.cfg.laser_gate_pmod],
             t=t,
@@ -170,7 +184,7 @@ class ReadoutWindow(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'READOUT.png')
 
         if cfg is None:

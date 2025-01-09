@@ -28,6 +28,7 @@ def laser_on(config, reps=1, readout_integration_treg=1020):
     config.readout_integration_treg = readout_integration_treg
     prog = LaserOn(config)
 
+    _ = prog.acquire()
     data = prog.acquire()
 
     if prog.cfg.edge_counting:
@@ -68,7 +69,10 @@ class LaserOn(NVAveragerProgram):
         # Inherited from qd.NVAveragerProgram
         self.setup_readout()
 
-        self.synci(400)  # give processor some time to configure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
     def body(self):
         '''
@@ -77,6 +81,8 @@ class LaserOn(NVAveragerProgram):
         '''
         self.trigger_no_off(
             adcs=[self.cfg.adc_channel],
-            pins=[self.cfg.laser_gate_pmod])
-        self.sync_all()
-        self.synci(self.cfg.relax_delay_treg + self.cfg.readout_integration_treg)
+            pins=[self.cfg.laser_gate_pmod],
+            adc_trig_offset=0)
+
+        self.wait_all()
+        self.synci(self.cfg.relax_delay_treg)

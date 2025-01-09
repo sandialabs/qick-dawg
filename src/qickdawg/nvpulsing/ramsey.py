@@ -83,7 +83,6 @@ class Ramsey(NVAveragerProgram):
         "laser_gate_pmod",
         "laser_on_treg",
         "relax_delay_treg",
-        "readout_delay_treg",
         "reps",
         "readout_reference_start_treg",
         "laser_readout_offset_treg",
@@ -104,6 +103,14 @@ class Ramsey(NVAveragerProgram):
                              freq=0,
                              length=self.cfg.readout_integration_treg,
                              sel="input")
+
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
 
         # Get registers for mw
 
@@ -135,7 +142,10 @@ class Ramsey(NVAveragerProgram):
             self.cfg.delay_end_treg,
             self.cfg.nsweep_points))
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.trigger(
@@ -213,7 +223,7 @@ class Ramsey(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'Ramsey.png')
 
         if cfg is None:

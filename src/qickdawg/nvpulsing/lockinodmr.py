@@ -9,8 +9,9 @@ while taking the difference between PL for microwave drive on or off
 
 from qick.averager_program import QickSweep
 from .nvaverageprogram import NVAveragerProgram
-from ..util import ItemAttribute
+from itemattribute import ItemAttribute
 from ..util import apply_on_axis_0_n_times
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -113,6 +114,14 @@ class LockinODMR(NVAveragerProgram):
         
         self.setup_readout()
 
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_start_freg,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
+
         # Get registers for mw
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
 
@@ -134,7 +143,10 @@ class LockinODMR(NVAveragerProgram):
                                  self.cfg.mw_end_fMHz,
                                  self.cfg.nsweep_points))
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.pulse(ch=self.cfg.mw_channel)
@@ -157,7 +169,7 @@ class LockinODMR(NVAveragerProgram):
         self.pulse(ch=self.cfg.mw_channel, t=0)
 
         self.trigger_no_off(
-            adcs=[self.cfg.adc_channel],
+            adcs=self.cfg.adcs,
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
@@ -169,21 +181,15 @@ class LockinODMR(NVAveragerProgram):
             adc_trig_offset=0,
             t=self.cfg.readout_integration_treg)
 
-        self.trigger_no_off(
-            adcs=[self.cfg.adc_channel],
+        self.trigger(
+            adcs=self.cfg.adcs,
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
 
-        self.trigger(
-            pins=[self.cfg.laser_gate_pmod],
-            width=self.cfg.relax_delay_treg,
-            adc_trig_offset=0,
-            t=2 * self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
-
-        self.sync_all(self.cfg.relax_delay_treg)
         self.wait_all()
+        self.sync_all(self.cfg.relax_delay_treg)
 
     def acquire(self, raw_data=False, *arg, **kwarg):
 
@@ -287,7 +293,7 @@ class LockinODMR(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'ODMR.png')
 
         if cfg is None:

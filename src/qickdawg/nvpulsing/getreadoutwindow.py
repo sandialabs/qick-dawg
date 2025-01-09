@@ -36,6 +36,8 @@ def get_readout_window(config, n_time_bins):
     laser_readout_offset_treg = config.laser_readout_offset_treg
     config.mw_pi2_tus = 0
 
+    assert (n_time_bins * config.readout_length_treg) <= config.laser_initialize_treg, "More time bins than laser on time"
+
     for i in range(n_time_bins):
         prog = ReadoutWindow(config)
         if i == 0:

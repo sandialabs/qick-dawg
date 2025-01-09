@@ -109,7 +109,7 @@ class PLIntensity(NVAveragerProgram):
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
 
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'PL.png')
 
         if cfg is None:

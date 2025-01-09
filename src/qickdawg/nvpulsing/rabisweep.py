@@ -85,7 +85,6 @@ class RabiSweep(NVAveragerProgram):
                     "pre_init",
                     "laser_gate_pmod",
                     "laser_on_treg",
-                    "adc_trigger_offset_treg",
                     "relax_delay_treg",
                     "mw_readout_delay_treg",
                     "reps",
@@ -106,6 +105,14 @@ class RabiSweep(NVAveragerProgram):
 
         self.setup_readout()
 
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
+
         # configure pulse defaults and initial parameters for microwave
         self.declare_gen(
             ch=self.cfg.mw_channel,
@@ -122,26 +129,29 @@ class RabiSweep(NVAveragerProgram):
                                  length=self.cfg.mw_start_treg)
 
         # configure the sweep
-        self.mw_length_register = self.new_gen_reg(self.cfg.mw_channel, 
-                                                   name='mw_length', 
+        self.mw_length_register = self.new_gen_reg(self.cfg.mw_channel,
+                                                   name='mw_length',
                                                    init_val=self.cfg.mw_start_treg)
 
-        self.add_sweep(NVQickSweep(self, 
-                                   reg=self.mw_length_register, 
-                                   start=self.cfg.mw_start_treg, 
-                                   stop=self.cfg.mw_end_treg, 
+        self.add_sweep(NVQickSweep(self,
+                                   reg=self.mw_length_register,
+                                   start=self.cfg.mw_start_treg,
+                                   stop=self.cfg.mw_end_treg,
                                    expts=self.cfg.nsweep_points,
-                                   label='mw_length',
+                                   label='length',
                                    mw_channel=self.cfg.mw_channel))
 
-        self.synci(400)  # give processor some time to configure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
 
             self.trigger(
                 pins=[self.cfg.laser_gate_pmod],
                 width=self.cfg.laser_on_treg, 
-                adc_trig_offset=self.cfg.adc_trigger_offset_treg)
+                adc_trig_offset=0)
             self.sync_all(self.cfg.laser_on_treg)
 
         self.wait_all()
@@ -183,7 +193,7 @@ class RabiSweep(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'RABI.png')
 
         if cfg is None:
