@@ -58,6 +58,10 @@ class NVConfiguration(ItemAttribute):
         self.soft_avgs = 1
         self.reps = 1
 
+        self.edge_counting = False
+        self.high_threshold = 0
+        self.low_threshold = 0
+
     def __setattribute__(self, name, value):
 
         super().__setattribute__(self, name, value)

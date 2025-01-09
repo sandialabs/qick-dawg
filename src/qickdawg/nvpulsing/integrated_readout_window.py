@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
 import numpy as np
-from ..util.itemattribute import ItemAttribute
+from itemattribute import ItemAttribute
 from ..util import apply_on_axis_0_n_times
 
 
