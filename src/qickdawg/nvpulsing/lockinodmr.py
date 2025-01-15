@@ -111,16 +111,8 @@ class LockinODMR(NVAveragerProgram):
 
         if self.cfg.mw_gain > 30000:
             assert 0, 'Microwave gain exceeds maximum value'
-        
+
         self.setup_readout()
-
-        self.cfg.adcs = [self.cfg.adc_channel]
-
-        if self.cfg.test:
-            self.declare_readout(ch=self.cfg.mw_readout_channel,
-                                freq=self.cfg.mw_start_freg,
-                                length=self.cfg.readout_integration_treg)
-            self.cfg.adcs.append(self.cfg.mw_readout_channel)
 
         # Get registers for mw
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
@@ -134,7 +126,7 @@ class LockinODMR(NVAveragerProgram):
             length=self.cfg.readout_integration_treg,
             phase=0)
 
-        ## Get frequency register and convert frequency values to integers
+        # Get frequency register and convert frequency values to integers
         self.mw_frequency_register = self.get_gen_reg(self.cfg.mw_channel, "freq")
 
         self.add_sweep(QickSweep(self,

@@ -90,7 +90,8 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         "mw_readout_delay_treg"]
 
     def initialize(self):
-        '''Method that generates the assembly code that is sets up adcs and sources.
+        '''
+        Method that generates the assembly code that is sets up adcs and sources.
 
         For HahnEchoDelaySweep this:
         1. Configures the adc to acquire points for self.cfg.readout_integration_t#
@@ -100,18 +101,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
-
-        self.cfg.adcs = [self.cfg.adc_channel]
-
-        if self.cfg.test:
-            self.declare_readout(ch=self.cfg.mw_readout_channel,
-                                freq=self.cfg.mw_fMHz,
-                                length=self.cfg.readout_integration_treg)
-            self.cfg.adcs.append(self.cfg.mw_readout_channel)
+        self.setup_readout()
 
         # Get registers for mw
 
@@ -157,7 +147,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
             assert 0, 'cfg.scaling_mode must be "linear" or "exponential"'
 
         self.synci(100)  # give processor some time to configure pulses
-        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+        if (self.cfg.ddr4 is True) or (self.cfg.mr is True):
             self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
         self.synci(100)
 
@@ -232,7 +222,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_pulse_sequence_results(data)
+            data = self.analyze_pulse_sequence(data)
 
         return data
 

@@ -92,19 +92,7 @@ class CPMGXY8nSweep(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
-
-        self.cfg.adcs = [self.cfg.adc_channel]
-
-        if self.cfg.test:
-            self.declare_readout(ch=self.cfg.mw_readout_channel,
-                                freq=self.cfg.mw_fMHz,
-                                length=self.cfg.readout_integration_treg)
-            self.cfg.adcs.append(self.cfg.mw_readout_channel)
-
+        self.setup_readout()
         # Get registers for mw
 
         self.declare_gen(ch=self.cfg.mw_channel,

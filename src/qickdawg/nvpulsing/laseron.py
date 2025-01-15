@@ -70,7 +70,7 @@ class LaserOn(NVAveragerProgram):
         self.setup_readout()
 
         self.synci(100)  # give processor some time to configure pulses
-        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+        if (self.cfg.ddr4 is True) or (self.cfg.mr is True):
             self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
         self.synci(100)
 
