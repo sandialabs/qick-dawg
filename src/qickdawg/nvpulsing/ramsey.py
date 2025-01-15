@@ -12,7 +12,7 @@ from .nvqicksweep import NVQickSweep
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import os 
+import os
 
 
 class Ramsey(NVAveragerProgram):
@@ -83,7 +83,6 @@ class Ramsey(NVAveragerProgram):
         "laser_gate_pmod",
         "laser_on_treg",
         "relax_delay_treg",
-        "readout_delay_treg",
         "reps",
         "readout_reference_start_treg",
         "laser_readout_offset_treg",
@@ -100,11 +99,7 @@ class Ramsey(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
-
+        self.setup_readout()
         # Get registers for mw
 
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)        
@@ -135,7 +130,10 @@ class Ramsey(NVAveragerProgram):
             self.cfg.delay_end_treg,
             self.cfg.nsweep_points))
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.trigger(
@@ -195,7 +193,7 @@ class Ramsey(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_pulse_sequence_results(data)
+            data = self.analyze_pulse_sequence(data)
 
         return data
 
@@ -213,7 +211,7 @@ class Ramsey(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'Ramsey.png')
 
         if cfg is None:

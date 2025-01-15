@@ -9,6 +9,7 @@ from qick.asm_v1 import QickRegisterManagerMixin, AcquireProgram
 from qick.averager_program import AbsQickSweep
 from tqdm.auto import tqdm
 import qickdawg as qd
+from ..util import apply_on_axis_0_n_times
 
 
 try:
@@ -22,7 +23,7 @@ import functools
 import numpy as np
 from typing import List
 from collections import defaultdict
-from ..util.itemattribute import ItemAttribute
+from itemattribute import ItemAttribute
 
 import logging
 logger = logging.getLogger(__name__)
@@ -68,9 +69,8 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         self.make_program()
         self.reps = cfg['reps']
         if "soft_avgs" in cfg:
-            self.rounds = cfg['soft_avgs']
-        if "rounds" in cfg:
-            self.rounds = cfg['rounds']
+            self.soft_avgs = cfg['soft_avgs']
+        
         # reps loop is the outer loop, first-added sweep is innermost loop
         loop_dims = [cfg['reps'], *self.sweep_axes[::-1]]
         # average over the reps axis
@@ -186,16 +186,20 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         -------
         ndarray
             raw accumulated IQ values (int32)
-            if rounds>1, only the last round is kept
             dimensions : (n_ch, n_expts*n_reps*n_reads, 2)
 
         ndarray
             averaged IQ values (float)
-            divided by the length of the RO window, and averaged over reps and rounds
+            divided by the length of the RO window, and averaged over reps and soft_avgs
             if shot_threshold is defined, the I values will be the fraction of points over threshold
             dimensions for a simple averaging program: (n_ch, n_reads, 2)
             dimensions for a program with multiple expts/steps: (n_ch, n_reads, n_expts, 2)
         """
+
+        if self.cfg.ddr4 == True:
+            qd.soc.arm_ddr4(ch=self.cfg.ddr4_channel, nt=self.cfg.n_ddr4_chunks)
+        if self.cfg.mr == True:
+            qd.soc.arm_mr(ch=self.cfg.ddr4_channel)
 
         if readouts_per_experiment is not None:
             self.set_reads_per_shot(readouts_per_experiment)
@@ -215,11 +219,11 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         self.stats = []
 
         # select which tqdm progress bar to show
-        hiderounds = True
+        hide_soft_avgs = True
         hidereps = True
         if progress:
-            if self.cfg.rounds > 1:
-                hiderounds = False
+            if self.soft_avgs > 1:
+                hide_soft_avgs = False
             else:
                 hidereps = False
 
@@ -230,7 +234,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         # Actual data acquisition
 
         # avg_d = None
-        for ir in tqdm(range(self.cfg.rounds), disable=hiderounds):
+        for ir in tqdm(range(self.soft_avgs), disable=hide_soft_avgs):
             # Configure and enable buffer capture.
             self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
 
@@ -262,6 +266,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
                         pbar.update(new_points)
 
         return self.d_buf[0][..., 0]
+        # return self.d_buf
 
     def get_data_shape(self, readouts_per_experiment):
         '''
@@ -288,12 +293,15 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if self.cfg.reps > 1:
             self.dbuf_shape = [self.cfg.reps] + self.dbuf_shape
 
-        if self.cfg.rounds > 1:
-            self.data_shape = [self.cfg.rounds] + self.dbuf_shape
+        if 'soft_avgs' not in self.cfg:
+            self.cfg.soft_avgs = 1
+
+        if self.cfg.soft_avgs > 1:
+            self.data_shape = [self.cfg.soft_avgs] + self.dbuf_shape
         else:
             self.data_shape = self.dbuf_shape
 
-    def acquire_decimated(self, *arg, **kwarg):
+    def acquire_decimated(self, readouts_per_experiment=None, raw_data=False, *arg, **kwarg):
         '''
         Overloaded qick.QickProgram method that drops the Q channel of the time domain readout
 
@@ -308,9 +316,21 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
 
         '''
+
+        if self.cfg.ddr4 == True:
+            qd.soc.arm_ddr4(ch=self.cfg.ddr4_channel, nt=self.cfg.n_ddr4_chunks)
+        if self.cfg.mr == True:
+            qd.soc.arm_mr(ch=self.cfg.ddr4_channel)
+
+        if readouts_per_experiment is not None:
+            self.set_reads_per_shot(readouts_per_experiment)
+
         data = super().acquire_decimated(qd.soc, soft_avgs=self.cfg['soft_avgs'], *arg, **kwarg)
 
-        return data[0][:, 0]
+        if raw_data:
+            return data
+        else:
+            return data[0][:, 0]
 
     def trigger_no_off(
             self,
@@ -408,7 +428,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         # measure and laser trigger at laser_readout_offset
         self.trigger_no_off(
-            adcs=[self.cfg.adc_channel],
+            adcs=self.cfg.adcs,
             pins=[self.cfg.laser_gate_pmod],
             adc_trig_offset=0,
             t=self.cfg.laser_readout_offset_treg)
@@ -422,16 +442,16 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         # laser and measure second time at readout_reference_start
         self.trigger_no_off(
-            adcs=[self.cfg.adc_channel],
+            adcs=self.cfg.adcs,
             pins=[self.cfg.laser_gate_pmod],
             adc_trig_offset=0,
             t=self.cfg.readout_reference_start_treg)
 
         # just laser for the rest of the time = remaining_time
         remaining_time = (
-            self.cfg.laser_on_treg
-            - 2 * self.cfg.readout_integration_treg
-            - self.cfg.readout_reference_start_treg)
+            self.cfg.laser_on_treg -
+            self.cfg.readout_integration_treg -
+            self.cfg.readout_reference_start_treg)
 
         self.trigger(
             pins=[self.cfg.laser_gate_pmod],
@@ -439,13 +459,13 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             adc_trig_offset=0,
             t=self.cfg.readout_reference_start_treg + self.cfg.readout_integration_treg)
 
-        self.wait_all()
-        self.sync_all(self.cfg.relax_delay_treg + remaining_time)
+        self.wait_all(remaining_time)
+        self.sync_all(remaining_time + self.cfg.relax_delay_treg)
 
-    def analyze_pulse_sequence_results(self, data):
+    def analyze_pulse_sequence(self, data):
         """
         Method that takes in a 1D array of data points from self.acquire() and analyzes the
-        results based on the number of reps, rounds, and frequency points
+        results based on the number of reps, soft_avgs, and frequency points
 
         Parameters
         ----------
@@ -470,47 +490,50 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         d = ItemAttribute()
 
-        if len(self.data_shape) == 2:
-            d.signal1 = data[:, 0]
-            d.reference1 = data[:, 1]
-            if self.data_shape[-1] == 4:
-                d.signal2 = data[:, 2]
-                d.reference2 = data[:, 3]
-        elif len(self.data_shape) == 3:
-            d.signal1 = data[:, :, 0]
-            d.reference1 = data[:, :, 1]
-            if self.data_shape[-1] == 4:
-                d.signal2 = data[:, :, 2]
-                d.reference2 = data[:, :, 3]
-        elif len(self.data_shape) == 4:
-            d.signal1 = data[:, :, :, 0]
-            d.reference1 = data[:, :, :, 1]
-            if self.data_shape[-1] == 4:
-                d.signal2 = data[:, :, 2]
-                d.reference2 = data[:, :, 3]
+        d.signal1 = data[..., 0]
+        d.reference1 = data[..., 1]
+        d.signal2 = data[..., 2]
+        d.reference2 = data[..., 3]
 
-        if self.data_shape[-1] == 2:
-            d.contrast = ((d.signal1 - d.reference1) / d.reference1 * 100)
-            for _ in range(len(d.contrast.shape) - 1):
-                d.contrast = np.mean(d.contrast, axis=0)
-                d.signal1 = np.mean(d.signal1, axis=0)
-                d.reference1 = np.mean(d.reference1, axis=0)
-        elif self.data_shape[-1] == 4:
-            d.contrast1 = ((d.signal1 - d.reference1) / d.reference1 * 100)
-            d.contrast2 = ((d.signal2 - d.reference2) / d.reference2 * 100)
-            d.contrast = d.contrast1 - d.contrast2
-            for _ in range(len(d.contrast1.shape) - 1):
-                d.contrast1 = np.mean(d.contrast1, axis=0)
-                d.signal1 = np.mean(d.signal1, axis=0)
+        n = len(d.signal1.shape) - 1
 
-                d.reference1 = np.mean(d.reference1, axis=0)
-                d.contrast2 = np.mean(d.contrast2, axis=0)
-                d.signal2 = np.mean(d.signal2, axis=0)
-                d.reference2 = np.mean(d.reference2, axis=0)
-                d.contrast = np.mean(d.contrast, axis=0)
+        if self.cfg.edge_counting is False:
+            ret_type = float
+            func = np.mean
 
-        d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
-        d.sweep_tus = self.qick_sweeps[0].get_sweep_pts() * self.cycles2us(1)
+            for key in ['signal1', 'signal2', 'reference1', 'reference2']:
+                d[key] = d[key] / self.cfg.readout_integration_treg
+        else:
+            ret_type = int
+            func = np.sum
+
+        if self.cfg.edge_counting is False:
+            d.contrast1_percent = ((d.signal1 - d.reference1) / d.reference1 * 100)
+            d.contrast2_percent = ((d.signal2 - d.reference2) / d.reference2 * 100)
+
+            d.contrast1 = (d.signal1 - d.reference1)
+            d.contrast2 = (d.signal2 - d.reference2)
+        else:
+            d.contrast1 = d.signal1 - d.reference1
+            d.contrast2 = d.signal2 - d.reference2
+
+        d.contrast = d.contrast1 - d.contrast2
+        d.contrast_percent = d.contrast1_percent - d.contrast2_percent
+
+        for i in range(1, 3):
+            for key in ['contrast{}', 'signal{}', 'reference{}', 'contrast{}_percent']:
+                key = key.format(i)
+
+                d[key] = apply_on_axis_0_n_times(d[key].astype(ret_type), func, n)
+
+        d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
+        d.contrast_percent = apply_on_axis_0_n_times(d.contrast_percent.astype(ret_type), func, n)
+
+        try:
+            d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
+            d.sweep_tus = self.qick_sweeps[0].get_sweep_pts() * self.cycles2us(1)
+        except IndexError:
+            pass
 
         return d
 
@@ -536,3 +559,34 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         if self.cfg.mw_gain > 32767:
             assert self.cfg.mw_gain < 32767, "config.mw_gain should be between 0 and 32,767"
+
+    def setup_readout(self):
+        '''
+        Sets up readout depending on self.cfg.edge_counting
+        '''
+
+        if self.cfg.edge_counting:
+            self.declare_readout(
+                ch=self.cfg.adc_channel,
+                length=self.cfg.readout_integration_treg,
+                freq=0,
+                sel='input',
+                edge_counting=True,
+                high_threshold=self.cfg.high_threshold,
+                low_threshold=self.cfg.low_threshold)
+
+        else:
+            self.declare_readout(
+                ch=self.cfg.adc_channel,
+                freq=0,
+                length=self.cfg.readout_integration_treg,
+                sel="input")
+
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(
+                ch=self.cfg.mw_readout_channel,
+                freq=self.cfg.mw_fMHz,
+                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)

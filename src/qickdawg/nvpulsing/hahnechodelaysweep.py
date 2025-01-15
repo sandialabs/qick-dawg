@@ -84,14 +84,14 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         "laser_gate_pmod",
         "laser_on_treg",
         "relax_delay_treg",
-        "readout_delay_treg",
         "reps",
         "readout_reference_start_treg",
         "laser_readout_offset_treg",
         "mw_readout_delay_treg"]
 
     def initialize(self):
-        '''Method that generates the assembly code that is sets up adcs and sources.
+        '''
+        Method that generates the assembly code that is sets up adcs and sources.
 
         For HahnEchoDelaySweep this:
         1. Configures the adc to acquire points for self.cfg.readout_integration_t#
@@ -101,10 +101,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         '''
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+        self.setup_readout()
 
         # Get registers for mw
 
@@ -149,7 +146,10 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         else:
             assert 0, 'cfg.scaling_mode must be "linear" or "exponential"'
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 is True) or (self.cfg.mr is True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.trigger(
@@ -212,7 +212,6 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         # pi/2 - x
         self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(180))
         self.pulse(ch=self.cfg.mw_channel)
-        self.sync_all()
         self.sync_all(self.cfg.mw_readout_delay_treg)
 
         # Readout
@@ -223,7 +222,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_pulse_sequence_results(data)
+            data = self.analyze_pulse_sequence(data)
 
         return data
 
@@ -237,7 +236,7 @@ class HahnEchoDelaySweep(NVAveragerProgram):
             If None, this plots the sequence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuration value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'HAHN_ECHO.png')
 
         if cfg is None:

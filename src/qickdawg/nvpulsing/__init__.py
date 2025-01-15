@@ -9,8 +9,12 @@ from .plintensity import PLIntensity
 from .lockinodmr import LockinODMR
 from .readoutwindow import ReadoutWindow
 from .getreadoutwindow import get_readout_window
+from .check_readout import check_readout
 
+from .integrated_readout_window import IntegratedReadoutWindow
 from .rabisweep import RabiSweep
 from .hahnechodelaysweep import HahnEchoDelaySweep
 from .t1delaysweep import T1DelaySweep
 from .ramsey import Ramsey
+from .cpmgxy8ndelaysweep import CPMGXY8nDelaySweep
+from .cpmgxy8nsweep import CPMGXY8nSweep

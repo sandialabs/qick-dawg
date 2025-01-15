@@ -50,10 +50,7 @@ class PLIntensity(NVAveragerProgram):
 
         self.check_cfg()
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+        self.setup_readout()
 
         self.synci(200)  # give processor some time to cfgure pulses
 
@@ -76,12 +73,30 @@ class PLIntensity(NVAveragerProgram):
         Method that overloads the qickdawg.NVAvergerProgram.acquire() method to analyze the output
         to a single point which is the mean of the returned data points divided by
         self.cfg.readout_integration_treg
+
+        Parameters
+        ----------
+        counting_return : str
+            'rate' will return the average counts/s
+            'totalize' will return the total counts over all reps
+
+        Returns
+        -------
+        float 
+            if config.edge_counting
+                counting_return == 'rate', returns count rate in cts/s
+                counting_return == 'totalize', returns total counts
+            if not edge coutning
+                returns average analog ADC level
         '''
+
         data = super().acquire(*arg, **kwarg)
 
-        data = np.mean(data) / self.cfg.readout_integration_treg
-
-        return float(data)
+        if self.cfg.edge_counting:
+            return int(np.sum(data))
+        else:
+            data = np.mean(data.astype('float')) / self.cfg.readout_integration_treg
+            return float(data)
 
     def plot_sequence(cfg=None):
         '''
@@ -94,7 +109,7 @@ class PLIntensity(NVAveragerProgram):
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
 
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'PL.png')
 
         if cfg is None:

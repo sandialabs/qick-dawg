@@ -9,7 +9,7 @@ import numpy as np
 from .nvaverageprogram import NVAveragerProgram
 
 
-def laser_off(config, reps=1, readout_integration_treg=65535):
+def laser_off(config, reps=1, readout_integration_treg=1020):
     '''Sets laser PMOD to low
 
     Parameters
@@ -27,11 +27,15 @@ def laser_off(config, reps=1, readout_integration_treg=65535):
     config.readout_integration_treg = readout_integration_treg
     prog = LaserOff(config)
 
+    _ = prog.acquire()
     data = prog.acquire()
-    data = np.mean(data)
-    data /= readout_integration_treg
+    if prog.cfg.edge_counting:
+        return int(data)
+    else:
+        data = np.mean(data)
+        data /= readout_integration_treg
 
-    return float(data)
+        return float(data)
 
 
 class LaserOff(NVAveragerProgram):
@@ -58,19 +62,20 @@ class LaserOff(NVAveragerProgram):
         For LaserOff this simply sets up the adc to integrate for self.cfg.readout_intregration_t#
         """
 
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+        # Inherited from qd.NVAveragerProgram
+        self.setup_readout()
 
-        self.synci(400)  # give processor some time to configure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         self.trigger(
             pins=[self.cfg.laser_gate_pmod],
             adc_trig_offset=0,
             t=0)
 
-        self.synci(self.cfg.relax_delay_treg + self.cfg.readout_integration_treg)
+        self.synci(self.cfg.readout_integration_treg)
 
     def body(self):
         '''
@@ -82,4 +87,5 @@ class LaserOff(NVAveragerProgram):
                      adc_trig_offset=0,
                      t=0)
 
-        self.synci(self.cfg.relax_delay_treg + self.cfg.relax_delay_treg)
+        self.wait_all()
+        self.synci(self.cfg.relax_delay_treg)

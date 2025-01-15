@@ -9,7 +9,8 @@ while taking the difference between PL for microwave drive on or off
 
 from qick.averager_program import QickSweep
 from .nvaverageprogram import NVAveragerProgram
-from ..util import ItemAttribute
+from itemattribute import ItemAttribute
+from ..util import apply_on_axis_0_n_times
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -107,12 +108,11 @@ class LockinODMR(NVAveragerProgram):
         qickdawg.NVQickSweep to sweep over frequencies
         """
         self.check_cfg()
+
         if self.cfg.mw_gain > 30000:
             assert 0, 'Microwave gain exceeds maximum value'
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
+
+        self.setup_readout()
 
         # Get registers for mw
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
@@ -126,7 +126,7 @@ class LockinODMR(NVAveragerProgram):
             length=self.cfg.readout_integration_treg,
             phase=0)
 
-        ## Get frequency register and convert frequency values to integers
+        # Get frequency register and convert frequency values to integers
         self.mw_frequency_register = self.get_gen_reg(self.cfg.mw_channel, "freq")
 
         self.add_sweep(QickSweep(self,
@@ -135,7 +135,10 @@ class LockinODMR(NVAveragerProgram):
                                  self.cfg.mw_end_fMHz,
                                  self.cfg.nsweep_points))
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.pulse(ch=self.cfg.mw_channel)
@@ -157,22 +160,28 @@ class LockinODMR(NVAveragerProgram):
 
         self.pulse(ch=self.cfg.mw_channel, t=0)
 
-        self.trigger(
-            adcs=[self.cfg.adc_channel],
+        self.trigger_no_off(
+            adcs=self.cfg.adcs,
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=0)
 
+        self.trigger_no_off(
+            pins=[self.cfg.laser_gate_pmod],
+            width=self.cfg.relax_delay_treg,
+            adc_trig_offset=0,
+            t=self.cfg.readout_integration_treg)
+
         self.trigger(
-            adcs=[self.cfg.adc_channel],
+            adcs=self.cfg.adcs,
             pins=[self.cfg.laser_gate_pmod],
             width=self.cfg.readout_integration_treg,
             adc_trig_offset=0,
             t=self.cfg.readout_integration_treg + self.cfg.relax_delay_treg)
 
-        self.sync_all(self.cfg.relax_delay_treg)
         self.wait_all()
+        self.sync_all(self.cfg.relax_delay_treg)
 
     def acquire(self, raw_data=False, *arg, **kwarg):
 
@@ -202,34 +211,44 @@ class LockinODMR(NVAveragerProgram):
             .odmr_contrast (nfrequency np.array, % units) - (.signal - .reference)/.reference *100
         """
         data = np.reshape(data, self.data_shape)
-        data = data / self.cfg.readout_integration_treg
 
-        if len(self.data_shape) == 2:
-            signal = data[:, 0]
-            reference = data[:, 1]
-        elif len(self.data_shape) == 3:
-            signal = data[:, :, 0]
-            reference = data[:, :, 1]
-        elif len(self.data_shape) == 4:
-            signal = data[:, :, :, 0]
-            reference = data[:, :, :, 1]
-
-        odmr = (signal - reference)
-        odmr_contrast = (signal - reference) / reference * 100
-
-        for _ in range(len(odmr.shape) - 1):
-            odmr = np.mean(odmr, axis=0)
-            signal = np.mean(signal, axis=0)
-            reference = np.mean(reference, axis=0)
-            odmr_contrast = np.mean(odmr_contrast, axis=0)
-
-        d = ItemAttribute()
-        d.odmr = odmr
-        d.signal = signal
-        d.reference = reference
-        d.odmr_contrast = odmr_contrast
+        d = self.analyze_data(data)
 
         d.frequencies = self.qick_sweeps[0].get_sweep_pts()
+
+        return d
+
+    def analyze_data(self, data):
+
+        if self.cfg.edge_counting is False:
+            data = data / self.cfg.readout_integration_treg
+
+        signal = data[..., 0]
+        reference = data[..., 1]
+
+        contrast = (signal - reference)
+        if self.cfg.edge_counting is False:
+            contrast_percent = (signal - reference) / reference * 100
+
+        n = len(contrast.shape) - 1
+
+        d = ItemAttribute()
+
+        if self.cfg.edge_counting is False:
+            func = np.mean
+        else:
+            func = np.sum
+
+        d.contrast = apply_on_axis_0_n_times(
+            contrast, func, n)
+        d.signal = apply_on_axis_0_n_times(
+            signal, func, n)
+        d.reference = apply_on_axis_0_n_times(
+            reference, func, n)
+
+        if self.cfg.edge_counting is False:
+            d.contrast_percent = apply_on_axis_0_n_times(
+                contrast_percent, func, n)
 
         return d
 
@@ -266,7 +285,7 @@ class LockinODMR(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'ODMR.png')
 
         if cfg is None:

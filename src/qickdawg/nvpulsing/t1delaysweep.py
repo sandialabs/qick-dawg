@@ -100,12 +100,17 @@ class T1DelaySweep(NVAveragerProgram):
         '''
 
         self.check_cfg()
-        self.declare_readout(ch=self.cfg.adc_channel,
-                             freq=0,
-                             length=self.cfg.readout_integration_treg,
-                             sel="input")
 
-        ## Setup Microwave Channel
+        self.setup_readout()
+
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(ch=self.cfg.mw_readout_channel,
+                                freq=self.cfg.mw_fMHz,
+                                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
+
 
         self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
 
@@ -141,7 +146,10 @@ class T1DelaySweep(NVAveragerProgram):
                 self.cfg.delay_end_treg,
                 self.cfg.nsweep_points))
 
-        self.synci(400)  # give processor some time to self.cfgure pulses
+        self.synci(100)  # give processor some time to configure pulses
+        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+            self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
+        self.synci(100)
 
         if self.cfg.pre_init:
             self.trigger(
@@ -168,9 +176,8 @@ class T1DelaySweep(NVAveragerProgram):
         ## First pulse sequence
         ## pi(x) - delay - readout
         # pi2(x)
-        self.pulse(ch=self.cfg.mw_channel, t=0)
-        self.pulse(ch=self.cfg.mw_channel, t=self.cfg.mw_pi2_treg)
         self.synci(self.cfg.mw_pi2_treg * 2)
+
         # delay
         self.sync(self.delay_register.page, self.delay_register.addr)
         # readout
@@ -182,7 +189,9 @@ class T1DelaySweep(NVAveragerProgram):
         ## Second pulse sequence
         ## Nothing - delay - readout
         # pi(x) - off
-        self.synci(self.cfg.mw_pi2_treg * 2)
+        self.pulse(ch=self.cfg.mw_channel)
+        self.pulse(ch=self.cfg.mw_channel)
+        self.sync_all()
         # delay
         self.sync(self.delay_register.page, self.delay_register.addr) 
         # readout
@@ -194,8 +203,7 @@ class T1DelaySweep(NVAveragerProgram):
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
 
         if raw_data is False:
-            data = self.analyze_pulse_sequence_results(data)
-            data.contrast = data.contrast * -1
+            data = self.analyze_pulse_sequence(data)
 
         return data
 
@@ -209,7 +217,7 @@ class T1DelaySweep(NVAveragerProgram):
             If None, this plots the squence with configuration labels
             If a `.NVConfiguration` object is supplied, the configuraiton value are added to the plot
         '''
-        graphics_folder = os.path.join(os.path.dirname(__file__), '../../graphics')
+        graphics_folder = os.path.join(os.path.dirname(__file__), 'graphics')
         image_path = os.path.join(graphics_folder, 'T1.png')
 
         if cfg is None:
