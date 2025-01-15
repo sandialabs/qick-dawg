@@ -500,29 +500,34 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if self.cfg.edge_counting is False:
             ret_type = float
             func = np.mean
+
+            for key in ['signal1', 'signal2', 'reference1', 'reference2']:
+                d[key] = d[key] / self.cfg.readout_integration_treg
         else:
             ret_type = int
             func = np.sum
 
         if self.cfg.edge_counting is False:
-            d.contrast1 = ((d.signal1 - d.reference1) / d.reference1 * 100)
-            d.contrast2 = ((d.signal2 - d.reference2) / d.reference2 * 100)
+            d.contrast1_percent = ((d.signal1 - d.reference1) / d.reference1 * 100)
+            d.contrast2_percent = ((d.signal2 - d.reference2) / d.reference2 * 100)
+
+            d.contrast1 = (d.signal1 - d.reference1)
+            d.contrast2 = (d.signal2 - d.reference2)
         else:
             d.contrast1 = d.signal1 - d.reference1
             d.contrast2 = d.signal2 - d.reference2
 
         d.contrast = d.contrast1 - d.contrast2
+        d.contrast_percent = d.contrast1_percent - d.contrast2_percent
 
-        d.contrast1 = apply_on_axis_0_n_times(d.contrast1.astype(ret_type), func, n)
-        d.signal1 = apply_on_axis_0_n_times(d.signal1.astype(ret_type), func, n)
-        d.reference1 = apply_on_axis_0_n_times(d.reference1.astype(ret_type), func, n)
-        
-        d.contrast2 = apply_on_axis_0_n_times(d.contrast2.astype(ret_type), func, n)
-        d.signal2 = apply_on_axis_0_n_times(d.signal2.astype(ret_type), func, n)
-        d.reference2 = apply_on_axis_0_n_times(d.reference2.astype(ret_type), func, n)
+        for i in range(1, 3):
+            for key in ['contrast{}', 'signal{}', 'reference{}', 'contrast{}_percent']:
+                key = key.format(i)
+
+                d[key] = apply_on_axis_0_n_times(d[key].astype(ret_type), func, n)
 
         d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
-
+        d.contrast_percent = apply_on_axis_0_n_times(d.contrast_percent.astype(ret_type), func, n)
 
         try:
             d.sweep_treg = self.qick_sweeps[0].get_sweep_pts()
@@ -569,9 +574,19 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
                 edge_counting=True,
                 high_threshold=self.cfg.high_threshold,
                 low_threshold=self.cfg.low_threshold)
+
         else:
             self.declare_readout(
                 ch=self.cfg.adc_channel,
                 freq=0,
                 length=self.cfg.readout_integration_treg,
                 sel="input")
+
+        self.cfg.adcs = [self.cfg.adc_channel]
+
+        if self.cfg.test:
+            self.declare_readout(
+                ch=self.cfg.mw_readout_channel,
+                freq=self.cfg.mw_fMHz,
+                length=self.cfg.readout_integration_treg)
+            self.cfg.adcs.append(self.cfg.mw_readout_channel)
