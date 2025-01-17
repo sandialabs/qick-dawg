@@ -1,5 +1,4 @@
 from .nvaverageprogram import NVAveragerProgram
-from .nvqicksweep import NVQickSweep
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -110,7 +109,7 @@ class IntegratedReadoutWindow(NVAveragerProgram):
             phase=0)
 
         self.set_pulse_registers(ch=self.cfg.mw_channel)
-                                 
+
         self.synci(400)  # give processor some time to configure pulses
 
         if self.cfg.pre_init:
@@ -178,7 +177,7 @@ class IntegratedReadoutWindow(NVAveragerProgram):
         d.contrast1 = apply_on_axis_0_n_times(d.contrast1.astype(ret_type), func, n)
         d.signal1 = apply_on_axis_0_n_times(d.signal1.astype(ret_type), func, n)
         d.reference1 = apply_on_axis_0_n_times(d.reference1.astype(ret_type), func, n)
-        
+
         d.contrast2 = apply_on_axis_0_n_times(d.contrast2.astype(ret_type), func, n)
         d.signal2 = apply_on_axis_0_n_times(d.signal2.astype(ret_type), func, n)
         d.reference2 = apply_on_axis_0_n_times(d.reference2.astype(ret_type), func, n)

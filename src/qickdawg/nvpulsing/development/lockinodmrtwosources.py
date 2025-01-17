@@ -1,6 +1,7 @@
 from .nvqicksweep import NVQickSweep
 from .nvaverageprogram import NVAveragerProgram
 import numpy as np
+from itemattribute import ItemAttribute
 
 
 class LockinODMRTwoSources(NVAveragerProgram):

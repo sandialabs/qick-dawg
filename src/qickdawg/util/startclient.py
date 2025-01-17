@@ -39,7 +39,7 @@ def start_client(host_ip_address=None, host_port=8888, server_name="myqick", *ar
         qd.soccfg = qd.soc
 
     qd.max_int_time_tus = qd.soc.cycles2us(2 ** 16 - 1)
-    qd.max_int_time_tns = qd.soc.cycles2us(2 ** 16 - 1) *  1000
+    qd.max_int_time_tns = qd.soc.cycles2us(2 ** 16 - 1) * 1000
     qd.max_int_time_treg = 2 ** 16 - 1
 
     qd.min_time_tus = qd.soc.cycles2us(1)

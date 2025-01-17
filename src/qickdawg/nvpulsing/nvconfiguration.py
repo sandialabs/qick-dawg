@@ -188,23 +188,23 @@ class NVConfiguration(ItemAttribute):
             self.__setattr__(name + '_delta_' + unit, delta)
             self.nsweep_points = int(
                 floor((stop - start)
-                / delta + 1))
+                      / delta + 1))
 
             self.__setattr__(name + '_end_' + runit, (
-                self[name + '_start_' + runit] +
-                self[name + '_delta_' + runit] *
-                (self.nsweep_points - 1)))
+                self[name + '_start_' + runit]
+                + self[name + '_delta_' + runit]
+                * (self.nsweep_points - 1)))
 
         elif (delta == 0) & (nsweep_points != 0):
 
             self.nsweep_points = nsweep_points
             self.__setattr__(name + '_delta_' + ounit, int(
                 floor((start - stop)
-                / (nsweep_points - 1))))
+                      / (nsweep_points - 1))))
             self.__setattr__(name + '_end_' + runit, (
-                self[name + '_start_' + runit] +
-                self[name + '_delta_' + runit] *
-                self.nsweep_points))
+                self[name + '_start_' + runit]
+                + self[name + '_delta_' + runit]
+                * self.nsweep_points))
 
         actual_start = self[name + '_start_' + ounit]
         actual_end = self[name + '_end_' + ounit]
@@ -232,12 +232,12 @@ class NVConfiguration(ItemAttribute):
 
         if (delta != 0) & (nsweep_points == 0):
             self[delta_name] = delta        
-            self.nsweep_points = int(floor((stop-start)/delta + 1))
+            self.nsweep_points = int(floor((stop - start) / delta + 1))
             self[end_name] = (start + delta * self.nsweep_points)
 
         elif (delta == 0) & (nsweep_points == 0):
             self.nsweep_points = nsweep_points
-            self[delta_name] = int(floor((stop-start)/(nsweep_points - 1)))
+            self[delta_name] = int(floor((stop - start) / (nsweep_points - 1)))
             self[end_name] = (start + delta * self.nsweep_points)
 
         if (self[start_name] + self[delta_name] * self.nsweep_points) != stop:

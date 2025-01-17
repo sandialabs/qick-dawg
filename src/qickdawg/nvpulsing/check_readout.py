@@ -1,5 +1,4 @@
 from .readoutwindow import ReadoutWindow
-import numpy as np
 
 
 def check_readout(config, reps=1, readout_integration_treg=1020):

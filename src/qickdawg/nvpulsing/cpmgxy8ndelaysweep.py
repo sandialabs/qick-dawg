@@ -2,10 +2,6 @@
 from .nvaverageprogram import NVAveragerProgram
 from .nvqicksweep import NVQickSweep
 
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import os 
-
 
 class CPMGXY8nDelaySweep(NVAveragerProgram):
     '''
@@ -102,8 +98,8 @@ class CPMGXY8nDelaySweep(NVAveragerProgram):
 
         if self.cfg.test:
             self.declare_readout(ch=self.cfg.mw_readout_channel,
-                                freq=self.cfg.mw_fMHz,
-                                length=self.cfg.readout_integration_treg)
+                                 freq=self.cfg.mw_fMHz,
+                                 length=self.cfg.readout_integration_treg)
             self.cfg.adcs.append(self.cfg.mw_readout_channel)
 
         # Get registers for mw
@@ -132,7 +128,7 @@ class CPMGXY8nDelaySweep(NVAveragerProgram):
         self.n_cpmg_register = self.new_gen_reg(
             self.cfg.mw_channel,
             name='ncpmg',
-            init_val = self.cfg.n_cpmg - 1)
+            init_val=self.cfg.n_cpmg - 1)
 
         if self.cfg.scaling_mode == 'exponential':
             self.add_sweep(NVQickSweep(
@@ -155,7 +151,7 @@ class CPMGXY8nDelaySweep(NVAveragerProgram):
             assert 0, 'cfg.scaling_mode must be "linear" or "exponential"'
 
         self.synci(100)  # give processor some time to configure pulses
-        if (self.cfg.ddr4 == True) or (self.cfg.mr == True):
+        if (self.cfg.ddr4 is True) or (self.cfg.mr is True):
             self.trigger(ddr4=self.cfg.ddr4, mr=self.cfg.mr, adc_trig_offset=0)
         self.synci(100)
 
@@ -180,7 +176,6 @@ class CPMGXY8nDelaySweep(NVAveragerProgram):
         9. Loop over reps
         10. Loop over rounds
         '''
-
 
         for i, project_phase in enumerate([0, 180]):
             self.set_pulse_registers(ch=self.cfg.mw_channel, phase=self.deg2reg(0))
