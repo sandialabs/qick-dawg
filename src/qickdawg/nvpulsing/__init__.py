@@ -6,6 +6,7 @@ from .nvaverageprogram import NVAveragerProgram
 from .laseron import LaserOn, laser_on
 from .laseroff import LaserOff, laser_off
 from .plintensity import PLIntensity
+from .dark_counts import DarkCounts
 from .lockinodmr import LockinODMR
 from .readoutwindow import ReadoutWindow
 from .getreadoutwindow import get_readout_window

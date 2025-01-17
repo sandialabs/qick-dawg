@@ -1,5 +1,4 @@
 from .readoutwindow import ReadoutWindow
-import numpy as np
 
 
 def check_readout(config, reps=1, readout_integration_treg=1020):
@@ -26,7 +25,6 @@ def check_readout(config, reps=1, readout_integration_treg=1020):
     config.mw_readout_delay_treg = 0
     config.laser_readout_offset_treg = 0
     config.reps = 1
-
 
     prog = ReadoutWindow(config)
     data = prog.acquire_decimated(progress=False)

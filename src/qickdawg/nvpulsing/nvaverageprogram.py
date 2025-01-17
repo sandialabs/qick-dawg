@@ -70,7 +70,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         self.reps = cfg['reps']
         if "soft_avgs" in cfg:
             self.soft_avgs = cfg['soft_avgs']
-        
+
         # reps loop is the outer loop, first-added sweep is innermost loop
         loop_dims = [cfg['reps'], *self.sweep_axes[::-1]]
         # average over the reps axis
@@ -196,9 +196,9 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             dimensions for a program with multiple expts/steps: (n_ch, n_reads, n_expts, 2)
         """
 
-        if self.cfg.ddr4 == True:
+        if self.cfg.ddr4 is True:
             qd.soc.arm_ddr4(ch=self.cfg.ddr4_channel, nt=self.cfg.n_ddr4_chunks)
-        if self.cfg.mr == True:
+        if self.cfg.mr is True:
             qd.soc.arm_mr(ch=self.cfg.ddr4_channel)
 
         if readouts_per_experiment is not None:
@@ -317,9 +317,9 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         '''
 
-        if self.cfg.ddr4 == True:
+        if self.cfg.ddr4 is True:
             qd.soc.arm_ddr4(ch=self.cfg.ddr4_channel, nt=self.cfg.n_ddr4_chunks)
-        if self.cfg.mr == True:
+        if self.cfg.mr is True:
             qd.soc.arm_mr(ch=self.cfg.ddr4_channel)
 
         if readouts_per_experiment is not None:
@@ -449,9 +449,9 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
 
         # just laser for the rest of the time = remaining_time
         remaining_time = (
-            self.cfg.laser_on_treg -
-            self.cfg.readout_integration_treg -
-            self.cfg.readout_reference_start_treg)
+            self.cfg.laser_on_treg
+            - self.cfg.readout_integration_treg
+            - self.cfg.readout_reference_start_treg)
 
         self.trigger(
             pins=[self.cfg.laser_gate_pmod],
@@ -517,6 +517,9 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             d.contrast1 = d.signal1 - d.reference1
             d.contrast2 = d.signal2 - d.reference2
 
+            d.contrast1_percent = d.signal1 - d.reference1
+            d.contrast2_percent = d.signal2 - d.reference2
+
         d.contrast = d.contrast1 - d.contrast2
         d.contrast_percent = d.contrast1_percent - d.contrast2_percent
 
@@ -525,6 +528,12 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
                 key = key.format(i)
 
                 d[key] = apply_on_axis_0_n_times(d[key].astype(ret_type), func, n)
+
+        if self.cfg.edge_counting is True:
+            d.contrast1_percent = d.contrast1_percent / d.reference1
+            d.contrast2_percent = d.contrast2_percent / d.reference2
+
+            d.contrast_percent = d.contrast1_percent - d.contrast2_percent
 
         d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
         d.contrast_percent = apply_on_axis_0_n_times(d.contrast_percent.astype(ret_type), func, n)
