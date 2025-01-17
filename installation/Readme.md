@@ -200,7 +200,7 @@ To connect the low frequency differential amplifier to the RFSoC4x2,
 The image below is an image of the diff amp wired to the capacitors and the balun removed for a working RFSoC4x2 with DC inputs.
 
 <p align="center">
-    <img src="graphics/balun_bypass_2.PNG"
+    <img src="graphics/balun_bypass_2.png"
         alt="balun_bypass_2"
         width="1000px"/>     
 </p>
