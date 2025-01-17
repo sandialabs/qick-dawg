@@ -105,14 +105,6 @@ class RabiSweep(NVAveragerProgram):
 
         self.setup_readout()
 
-        self.cfg.adcs = [self.cfg.adc_channel]
-
-        if self.cfg.test:
-            self.declare_readout(ch=self.cfg.mw_readout_channel,
-                                freq=self.cfg.mw_fMHz,
-                                length=self.cfg.readout_integration_treg)
-            self.cfg.adcs.append(self.cfg.mw_readout_channel)
-
         # configure pulse defaults and initial parameters for microwave
         self.declare_gen(
             ch=self.cfg.mw_channel,

@@ -77,7 +77,6 @@ class IntegratedReadoutWindow(NVAveragerProgram):
                     "pre_init",
                     "laser_gate_pmod",
                     "laser_on_treg",
-                    "adc_trigger_offset_treg",
                     "relax_delay_treg",
                     "mw_readout_delay_treg",
                     "reps",
@@ -112,7 +111,6 @@ class IntegratedReadoutWindow(NVAveragerProgram):
 
         self.set_pulse_registers(ch=self.cfg.mw_channel)
                                  
-
         self.synci(400)  # give processor some time to configure pulses
 
         if self.cfg.pre_init:
@@ -135,9 +133,11 @@ class IntegratedReadoutWindow(NVAveragerProgram):
         '''
 
         self.pulse(ch=self.cfg.mw_channel, t=0)
+        self.sync_all()
         self.synci(self.cfg.mw_readout_delay_treg)
         self.ttl_readout()
 
+        self.synci(self.cfg.mw_pi2_treg * 2)
         self.synci(self.cfg.mw_readout_delay_treg)
         self.ttl_readout()
 
