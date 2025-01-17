@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/sandialabs/qick-dawg/compare/v1.1.0...v1.2.0) (2025-01-17)
+
+
+### Features
+
+* **photon_counting:** confirmed photon counting works for all pulse sequences ([8b2b19b](https://github.com/sandialabs/qick-dawg/commit/8b2b19be11afb0ecf28463a3fcdd160128649500))
+
+
+
 # [1.1.0](https://github.com/sandialabs/qick-dawg/compare/v1.0.2...v1.1.0) (2025-01-15)
 
 
