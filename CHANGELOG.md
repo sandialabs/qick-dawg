@@ -1,3 +1,12 @@
+## [1.2.1](https://github.com/sandialabs/qick-dawg/compare/v1.2.0...v1.2.1) (2025-01-29)
+
+
+### Bug Fixes
+
+* fixed installation to remove qd install and paths ([033c254](https://github.com/sandialabs/qick-dawg/commit/033c254772d211be45b8f4bffe012e33bde48643))
+
+
+
 # [1.2.0](https://github.com/sandialabs/qick-dawg/compare/v1.1.0...v1.2.0) (2025-01-17)
 
 
