@@ -1,0 +1,11 @@
+Id,Designator,Footprint,Quantity,Designation,Supplier and ref
+1,"J9,J10,J7,J5,J6,J11,J8,J4",SMA_Amphenol_132134_Vertical,8,Conn_Coaxial,https://www.digikey.com/en/products/detail/taoglas-limited/PCB-114SMAFSTJ-A/15998672
+2,"U7,U5,U1,U6,U3,U8,U4,U2",SOT-23-6,8,LM5114BMF,https://www.digikey.com/en/products/detail/texas-instruments/LM5114BMF-NOPB/3137454
+3,"C3,C8,C5,C2,C6,C1,C7,C4",C_0805_2012Metric,8,10u,https://www.digikey.com/en/products/detail/samsung-electro-mechanics/CL21A106KOQNNNE/3886754
+4,"R6,R10,R14,R13,R7,R2,R15,R1,R8,R11,R16,R3,R12,R9,R5,R4",R_0805_2012Metric,16,0,https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-6GEY0R00V/78163
+5,R17,R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,1,4.7k,https://www.digikey.com/en/products/detail/vishay-dale/CRCW08054K70FKEAC/7928553
+6,D1,LED_0603_1608Metric,1,LED,https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/150060GS75000/4489898
+9,J3 (2nd needed if using ribbon cable),PinHeader_2x06_P2.54mm_Vertical,2,Conn_02x06_Odd_Even,https://www.digikey.com/en/products/detail/amphenol-cs-commercial-products/G800W590018EU/13682991
+10,U9,USB-A-S-RA-TSMT_ADM,1,USB-A-S-RA-TSMT,https://www.digikey.com/en/products/detail/adam-tech/USB-A-S-RA-TSMT/9832331
+,USBA-USBA,,,,https://www.digikey.com/en/products/detail/assmann-wsw-components/AK670-2-1-BLACK/2391702
+,Ribbon cable,,,,https://www.digikey.com/en/products/detail/samtec-inc/IDSD-06-D-08-00-T/9719603
