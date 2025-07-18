@@ -577,7 +577,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if self.cfg.edge_counting:
             self.declare_readout(
                 ch=self.cfg.adc_channel,
-                length=self.cfg.readout_integration_treg,
+                length=self.us2cycles(self.cfg.readout_integration_tus, ro_ch=self.cfg.adc_channel),
                 freq=0,
                 sel='input',
                 edge_counting=True,
@@ -588,7 +588,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             self.declare_readout(
                 ch=self.cfg.adc_channel,
                 freq=0,
-                length=self.cfg.readout_integration_treg,
+                length=self.us2cycles(self.cfg.readout_integration_tus, ro_ch=self.cfg.adc_channel),
                 sel="input")
 
         self.cfg.adcs = [self.cfg.adc_channel]
@@ -597,5 +597,5 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
             self.declare_readout(
                 ch=self.cfg.mw_readout_channel,
                 freq=self.cfg.mw_fMHz,
-                length=self.cfg.readout_integration_treg)
+                length=self.us2cycles(self.cfg.readout_integration_tus, ro_ch=self.cfg.adc_channel))
             self.cfg.adcs.append(self.cfg.mw_readout_channel)
