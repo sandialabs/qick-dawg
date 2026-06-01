@@ -62,14 +62,44 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         Constructor for the NVAveragerProgram. Make the ND sweep asm commands.
         """
         super().__init__(qd.soccfg)
+        
+        dac_freq = qd.soc['gens'][0]['f_fabric']
+        adc_freq = qd.soc['readouts'][0]['f_output']  # readout channel 0
+        tproc_freq = qd.soc.get_cfg()['tprocs'][0]['f_time']
+        print(f"DAC Frequency: {dac_freq}")
+        print(f"ADC Frequency: {adc_freq}")
+        print(f"tProc Frequency: {tproc_freq}")
+    
+# If working with a firmware where the DAC and sig-gen is 2x faster than the ADC and tproc.
+        if "length" in cfg:
+            if dac_freq == 2 * adc_freq and dac_freq == 2 * tproc_freq:
+                cfg["length"] *= 2
+                print(f"DAC is 2x faster than the ADC and tprocessor. Adjusting pulse to: {cfg['length']} for readout.")
+                
+        if "mw_pi2_treg" in cfg:
+            if dac_freq == 2 * adc_freq and dac_freq == 2 * tproc_freq:
+                cfg["mw_pi2_treg"] *= 2
+                print(f"DAC is 2x faster than the ADC and tprocessor. Adjusting pulse to: {cfg['mw_pi2_treg']} for readout.")
+                
         self.cfg = cfg
         self.qick_sweeps: List[AbsQickSweep] = []
         self.expts = 1
         self.sweep_axes = []
         self.make_program()
         self.reps = cfg['reps']
-        if "soft_avgs" in cfg:
-            self.soft_avgs = cfg['soft_avgs']
+        
+        if "rounds" in cfg:
+            self.rounds= cfg['rounds']
+        elif "soft_avgs" in cfg:
+            cfg["rounds"] = cfg["soft_avgs"]
+            self.rounds = cfg["rounds"]
+
+            #self.soft_avgs = cfg['soft_avgs']
+            
+        else:
+            raise KeyError("Configuration must include either 'rounds' or 'soft_avgs'.")
+            
+        #self.soft_avgs = self.rounds
 
         # reps loop is the outer loop, first-added sweep is innermost loop
         loop_dims = [cfg['reps'], *self.sweep_axes[::-1]]
@@ -163,7 +193,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
                 save_experiments: List = None, start_src: str = "internal",
                 progress=False, remove_offset=True):
         """
-        Method that exectues the qick program and accumulates data from the data buffer until the proram is complete
+        Method that executes the qick program and accumulates data from the data buffer until the program is complete
         For NV measurements, the results are DC values and thus only have I values (rather than I and Q)
 
         Parameters
@@ -204,7 +234,10 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if readouts_per_experiment is not None:
             self.set_reads_per_shot(readouts_per_experiment)
 
-        self.config_all(qd.soc, load_pulses=load_pulses, load_mem=False)
+        # Explicitly set self.reads_per_shot
+        self.reads_per_shot = [ro['trigs'] for ro in self.ro_chs.values()]
+        
+        self.config_all(qd.soc, load_envelopes=load_pulses, load_mem=False)
 
         if any([x is None for x in [self.counter_addr, self.loop_dims, self.avg_level]]):
             raise RuntimeError("data dimensions need to be defined with setup_acquire() before calling acquire()")
@@ -222,7 +255,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         hide_soft_avgs = True
         hidereps = True
         if progress:
-            if self.soft_avgs > 1:
+            if self.rounds > 1:
                 hide_soft_avgs = False
             else:
                 hidereps = False
@@ -234,7 +267,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         # Actual data acquisition
 
         # avg_d = None
-        for ir in tqdm(range(self.soft_avgs), disable=hide_soft_avgs):
+        for ir in tqdm(range(self.rounds), disable=hide_soft_avgs):
             # Configure and enable buffer capture.
             self.config_bufs(qd.soc, enable_avg=True, enable_buf=False)
 
@@ -293,11 +326,11 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if self.cfg.reps > 1:
             self.dbuf_shape = [self.cfg.reps] + self.dbuf_shape
 
-        if 'soft_avgs' not in self.cfg:
-            self.cfg.soft_avgs = 1
+        if 'rounds' not in self.cfg:
+            self.cfg.rounds = 1
 
-        if self.cfg.soft_avgs > 1:
-            self.data_shape = [self.cfg.soft_avgs] + self.dbuf_shape
+        if self.cfg.rounds > 1:
+            self.data_shape = [self.cfg.rounds] + self.dbuf_shape
         else:
             self.data_shape = self.dbuf_shape
 
@@ -325,7 +358,7 @@ class NVAveragerProgram(QickRegisterManagerMixin, AcquireProgram):
         if readouts_per_experiment is not None:
             self.set_reads_per_shot(readouts_per_experiment)
 
-        data = super().acquire_decimated(qd.soc, soft_avgs=self.cfg['soft_avgs'], *arg, **kwarg)
+        data = super().acquire_decimated(qd.soc, rounds=self.cfg['rounds'], *arg, **kwarg)
 
         if raw_data:
             return data
