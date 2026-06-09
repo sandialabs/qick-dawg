@@ -16,7 +16,7 @@ QICK-DAWG firmware
 # Building the firmware
 
 If you want to make changes to the firmware or look at the design, you can build the 2x DAC speed firmware yourself.
-* Available build files are for the 4x2, zcu111 and zcu216. Navigate to the board directory you want to build and then to the `/src/` directory. You will find a project script (`proj_v2.tcl`) and a block design script (`bd_2022-1_2.tcl` or similar version).
+* Available build files are for the 4x2, zcu111 and zcu216. Navigate to the board directory you want to build and then to the `/src/` directory. You will find a project script `proj_v2.tcl` and a block design script `bd_2022-1_2.tcl` or a similar version.
 * Install the version of Vivado specified by the block design filename (older or newer versions will fail!). Start Vivado.
 * In the Tcl console at the bottom of the screen navigate to the `firmware/<selected board>/src` directory then run the following command:
 ```
