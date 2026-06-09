@@ -4,11 +4,11 @@ QICK-DAWG firmware
 ### Available QICK-DAWG firmwares:
 #### RFSoC4x2
 * `qickdawg_4x2_commonClk` - All clocks including the DAC, ADC and tprocessor are synced at 409.6 MHz.
-* `qickdawg_4x2_commonClk` - DAC clk = 614.40 MHz, ADC clk = 307.2 MHz, tproc = 307.2 MHz. DAC is 2x faster than the ADC and tproc.
+* `qickdawg_4x2_2xDAC` - DAC clk = 614.40 MHz, ADC clk = 307.2 MHz, tproc = 307.2 MHz. DAC is 2x faster than the ADC and tproc.
 
 #### ZCU216
 * `qickdawg_216_commonClk` - All clocks including the DAC, ADC and tprocessor are synced at 307.2 MHz.
-* `qickdawg_216_commonClk` - DAC clk = 599.40 MHz, ADC clk = 299.52 MHz, tproc = 299.52 MHz. DAC is 2x faster than the ADC and tproc
+* `qickdawg_216_2xDAC` - DAC clk = 599.40 MHz, ADC clk = 299.52 MHz, tproc = 299.52 MHz. DAC is 2x faster than the ADC and tproc
   
 #### ZCU111
 * `qickdawg_111_commonClk` - All clocks including the DAC, ADC and tprocessor are synced at 409.6 MHz.
