@@ -8,7 +8,7 @@ QICK-DAWG firmware
 
 #### ZCU216
 * `qickdawg_216_commonClk` - All clocks including the DAC, ADC and tprocessor are synced at 307.2 MHz.
-* `qickdawg_216_2xDAC` - DAC clk = 599.40 MHz, ADC clk = 299.52 MHz, tproc = 299.52 MHz. DAC is 2x faster than the ADC and tproc
+* `qickdawg_216_2xDAC` - DAC clk = 614.40 MHz, ADC clk = 307.2 MHz, tproc = 307.2 MHz. DAC is 2x faster than the ADC and tproc.
   
 #### ZCU111
 * `qickdawg_111_commonClk` - All clocks including the DAC, ADC and tprocessor are synced at 409.6 MHz.
@@ -20,7 +20,7 @@ If you want to make changes to the firmware or look at the design, you can build
 * Install the version of Vivado specified by the block design filename (older or newer versions will fail!). Start Vivado.
 * In the Tcl console at the bottom of the screen navigate to the `firmware/<selected board>/src` directory then run the following command:
 ```
- source ./proj_2.tcl
+ source ./proj_v2.tcl
  ```
 This will create the block diagram design of the of the firmware. Do not run `bd_2022-1_2.tcl`.  
 
