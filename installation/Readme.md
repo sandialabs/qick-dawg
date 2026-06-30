@@ -62,19 +62,18 @@ For all initial setup parts, see the build files for your selected RFSoC [here](
 
 ### Software 
 - [Win32DiskImager](https://sourceforge.net/projects/win32diskimager/) for Windows or Disk Manager on MacOS
-- Dependent packages (follow `Installing Necessary Packages` section--included in the setup batch file)
-    - [QICK](https://github.com/openquantumhardware/qick)
+- [QICK](https://github.com/openquantumhardware/qick) - dependent packages (follow `Installing Necessary Packages` section--included in the setup batch file)
 
 
 # 1. Install QICK-DAWG and other software to your RFSoC FPGA 
-<!-- This file no longer exists.. -->
+<!-- This file below no longer exists.. -->
 <!-- (Getting started directions adapted from [QICK ZCU111 quick-start-guide](https://github.com/openquantumhardware/qick/blob/main/quick_start/README_ZCU111.md)) -->
 
 ## 1a. Flash your Micro SD Card ##
 - First, you will need to flash the micro SD card with the appropiate PYNQ image file for your selected RFSoC FPGA. Download the RFSoC PYNQ image and unzip the file if it is a .zip file. Lastest and older versions are avaiable.
    - **RFSoC4x2 PYNQ** v3.1.1 image found [here](https://www.pynq.io/boards.html). 
-   - **ZCU111** v3.1.1 image found [here](https://www.pynq.io/boards.html)
-   - **ZCU216** v2.7 image found [here](https://github.com/sarafs1926/ZCU216-PYNQ)
+   - **ZCU111   PYNQ** v3.1.1 image found [here](https://www.pynq.io/boards.html)
+   - **ZCU216   PYNQ** v2.7   image found [here](https://github.com/sarafs1926/ZCU216-PYNQ)
 
 On Windows:
 - With your micro SD card plugged in to your computer, open Win32DiskImager. Select the PYNQ file as your image file and select your micro SD card as the device. Double check you are not flashing the image file to the wrong drive (**not your computer hard drive**)! To execute, click `Write`. 
@@ -92,16 +91,16 @@ On the RFSoC4x2, the LED screen on top of the board will have your ip address wh
 - When connected to the board on the linux command line type: `*vim etc/networks/interfaces.d/eth0`
 - For ethernet port `*eth0`, change `*iface eth0 inet dynamic` to `*iface eth0 inet dynamic`
 - Save and exit
-- Ensure on the host computer the gateway IP on your selected ehternet port to the FPGA is static (i.e 192.168.0.1) and your ipv4 net is set static as well (i.e 192.168.0.xxx) -->
+- Ensure on the host computer the gateway IP on your selected ethernet port to the FPGA is static (i.e 192.168.0.1) and your ipv4 net is set static as well (i.e 192.168.0.xxx) -->
 
 ## 1b. Clone QICK-DAWG on your FPGA ##
 
-SSH directly into the board using it's IP via windows cmd.exe with the command,
+SSH directly into the board using it's IP via Windows Powershell with the command:
 
 `ssh xilinx@{ip address}`
 
 You will then be prompted for the password, which is also `xilinx` and asked to store the ssh footprint, for which you should respond `yes`. 
-Now you'll have remote, terminal control of the board.  From here type
+Now you'll have remote, terminal control of the board.  From here type:
 
 ```
 cd ./jupyter_notebooks
@@ -125,11 +124,9 @@ In a browser window type your FPGA's IP address and use password `xilinx` as sho
 </p>
  
 From the home page, navigate to the installation folder, open install_packages.ipynb and run all of the cells to install the packages. This does three things:
-
 1. installs pyro4 for remote control of the board
 2. downloads and installs qick
 3. moves some files around
-
 
 ## 1d. Run the Pyro server to remotely connect to QICK and the RFSoC FPGA ##
 
