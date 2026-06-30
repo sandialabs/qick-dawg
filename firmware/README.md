@@ -3,15 +3,15 @@ QICK-DAWG firmware
 
 ### Available QICK-DAWG firmwares:
 #### RFSoC4x2
-* `qickdawg_4x2_commonClk` - The DAC, ADC and tprocessor are synced at 409.6 MHz.
-* `qickdawg_4x2_2xDAC`     - DAC is 2x faster than the ADC and tprocessor. DAC sampling rate is 9.8 GSPS. DAC fabric clk = 614.40 MHz, ADC fabric clk = 307.2 MHz, tprocessor = 307.2 MHz. 
+* `qickdawg_4x2`        - DAC sampling rate is 6.5536 GSPS. The DAC and ADC runs at 409.6 MHz.
+* `qickdawg_4x2_2xDAC`  - DAC sampling rate is 6.5536 GSPS  9.8 GSPS. DAC is 2x faster than the ADC and tprocessor. DAC clk = 614.40 MHz, and ADC clk = 307.2 MHz.
 
 #### ZCU216
-* `qickdawg_216_commonClk` - The DAC, ADC and tprocessor are synced at 307.2 MHz.
-* `qickdawg_216_2xDAC`     - DAC is 2x faster than the ADC and tprocessor. DAC sampling rate is 9.8 GSPS. DAC fabric clk = 614.40 MHz, ADC fabric clk = 307.2 MHz, tprocessor = 307.2 MHz.
+* `qickdawg_216`        - DAC sampling rate is 4.9152 GSPS. The DAC and ADC runs at 307.2 MHz.
+* `qickdawg_216_2xDAC`  - DAC is 2x faster than the ADC and tprocessor. DAC sampling rate is 9.8 GSPS. DAC clk = 614.40 MHz, ADC clk = 307.2 MHz.
   
 #### ZCU111
-* `qickdawg_111_commonClk` - The DAC, ADC and tprocessor are synced at 409.6 MHz.
+* `qickdawg_111` - DAC sampling rate is 4.9152 GSPS. The DAC and ADC runs at 307.2 MHz.
 
 # Building the firmware
 
