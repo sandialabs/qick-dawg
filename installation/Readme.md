@@ -17,14 +17,14 @@ The ZCU216 and ZCU11 as shown in the images belows, are evaluation boards built 
 <!-- However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is typically too high frequency for our measurements and thus must be modified. -->
 
 <p align="center">
-    <img src="graphics/zcu216_label.png"
+    <img src="graphics/zcu216_labels.png"
         alt="ZCU111 Evaluation Board"
         width="400px"/>
 
 </p>
 
 <p align="center">
-    <img src="graphics/zcu111_label.png"
+    <img src="graphics/zcu111_labels.png"
         alt="ZCU111 Evaluation Board"
         width="400px"/>
 
