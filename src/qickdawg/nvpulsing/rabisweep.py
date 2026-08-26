@@ -36,7 +36,7 @@ class RabiSweep(NVAveragerProgram):
         .mw_nqz (required)
             nyquist zone for microwave generator (1 or 2)
         .mw_gain (required)
-            gain of micrwave channel, in register values, from 0 to 2**15-1
+            gain of microwave channel, in register values, from 0 to 2**15-1
 
         .pre_init (required)
             boolian value that indicates whether to pre-pulse the laser to initialize

@@ -64,9 +64,10 @@ class CPMGXY8nSweep(NVAveragerProgram):
         "mw_nqz",
         "mw_pi2_treg",
         "mw_gain",
+        "delay_treg",
         "scaling_mode",
-        "delay_start_treg",
-        "delay_end_treg",
+        "n_start",
+        "n_end",
         "nsweep_points",
         "pre_init",
         "laser_gate_pmod",
@@ -84,7 +85,7 @@ class CPMGXY8nSweep(NVAveragerProgram):
         1. Configures the adc to acquire points for self.cfg.readout_integration_t#
         2. Configures the microwave channel
         3. Configures the sweep parameters
-        4. Initiailzes the spin state with a laser pulse
+        4. Initializes the spin state with a laser pulse
         '''
         self.check_cfg()
 
@@ -104,11 +105,11 @@ class CPMGXY8nSweep(NVAveragerProgram):
         self.set_pulse_registers(ch=self.cfg.mw_channel,
                                  phase=0)
 
-        # Addd loops
+        # Add loops
         self.n_total_register = self.new_gen_reg(
             self.cfg.mw_channel,
             name='n_total',
-            init_val=self.cfg.delay_start_treg)
+            init_val=self.cfg.delay_treg)
 
         self.mw_time_register = self.get_gen_reg(self.cfg.mw_channel,
                                                  name='t')
@@ -117,6 +118,10 @@ class CPMGXY8nSweep(NVAveragerProgram):
             self.cfg.mw_channel,
             name='ncpmg',
             init_val=0)
+        
+        self.delay_register = self.new_gen_reg(self.cfg.mw_channel,
+                                               name='delay',
+                                               init_val=self.cfg.delay_treg)
 
         if self.cfg.scaling_mode == 'exponential':
             self.add_sweep(NVQickSweep(
@@ -179,7 +184,7 @@ class CPMGXY8nSweep(NVAveragerProgram):
                       self.n_cpmg_register.addr,
                       self.n_cpmg_register.addr,
                       "+",
-                      self.n_total_reg.addr)
+                      self.n_total_register.addr)
             self.label("LOOP_ncpmg{}".format(i))
             for phase in [0, 90, 0, 90, 90, 0, 90, 0]:
                 #  delay

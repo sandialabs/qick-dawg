@@ -44,7 +44,7 @@ class LockinODMR(NVAveragerProgram):
         .nsweep_points (required)
             number of points between mw_start_fMHz and mw_end_fMHz
         .mw_gain (required)
-            gain of micrwave channel, in register values, from 0 to 2**15-1
+            gain of microwave channel, in register values, from 0 to 2**15-1
 
         .pre_init (required)
             boolian value that indicates whether to pre-pulse the laser to initialize
@@ -104,7 +104,7 @@ class LockinODMR(NVAveragerProgram):
         """
         Method that generates the assembly code that initializes the pulse sequence.
         For LockinODMR this sets up the adc to integrate for self.cfg.readout_intregration_t#,
-        setups hte microave channel to run fo the same amount of time, and setups the a
+        setups the microwave channel to run fo the same amount of time, and setups the a
         qickdawg.NVQickSweep to sweep over frequencies
         """
         self.check_cfg()

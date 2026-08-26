@@ -22,6 +22,10 @@ class NVConfiguration(ItemAttribute):
     Time  properties: properties that end in '_tus', '_tns', or '_treg'
     are converted to all three variants as soon as they are initialized
 
+    Fine Time properties: properties that end in '_ftus', '_ftns', or '_ftsamp'
+    are converted to all three variants as soon as they are initialized.
+    A specific samples per cycle conversion factor is assumed based on generator channel 0.
+
     Frequency properties: properties that end in '_fMHz', 'fGHz', and '_freg'
     are converted to all three variations as soon as they are initialized
 
@@ -40,10 +44,10 @@ class NVConfiguration(ItemAttribute):
     Methods
     -------
     add_linear_sweep
-        method that generates all the attributes required for exectuing a linear sweep
+        method that generates all the attributes required for executing a linear sweep
 
     add_exponential_sweep
-        method that generates all the attributes required for exectuing a linear sweep
+        method that generates all the attributes required for executing an exponential sweep
     '''
 
     def __init__(self):
@@ -62,6 +66,10 @@ class NVConfiguration(ItemAttribute):
         self.high_threshold = 0
         self.low_threshold = 0
 
+        # Assumes fine-time conversion factor (samples per fabric clock cycle)
+        # Based on generator channel 0
+        self.ft_samps_per_clk_assumed = self.soccfg['gens'][0]['samps_per_clk']
+
     def __setattribute__(self, name, value):
 
         super().__setattribute__(self, name, value)
@@ -72,7 +80,46 @@ class NVConfiguration(ItemAttribute):
         related to units used by the qick-dawg program
         """
 
-        if name.split('_')[-1] == 'tus':
+        # Allow bootstrap attributes to be set before conversion helpers are available.
+        if (
+            ('soccfg' not in self.__dict__)
+            or ('ft_samps_per_clk_assumed' not in self.__dict__)
+            or (name in ('soccfg', 'ft_samps_per_clk_assumed'))
+        ):
+            self.__dict__[name] = value
+            return
+
+        suffix = name.split('_')[-1]
+        sample2us = self.soccfg.cycles2us(1) / self.ft_samps_per_clk_assumed
+
+        # Fine Timing units added (time in sample units)
+        if suffix == 'ftus':
+            ftsamp = int(round(value / sample2us))
+            ftus = ftsamp * sample2us
+
+            self.__dict__[name.replace('ftus', 'ftsamp')] = ftsamp
+            self.__dict__[name] = ftus
+            self.__dict__[name.replace('ftus', 'ftns')] = ftus * 1000
+
+        elif suffix == 'ftsamp':
+            if not isinstance(value, (int, np.integer)):
+                raise TypeError("ftsamp must be an integer number of samples")
+
+            ftus = value * sample2us
+
+            self.__dict__[name.replace('ftsamp', 'ftus')] = ftus
+            self.__dict__[name] = int(value)
+            self.__dict__[name.replace('ftsamp', 'ftns')] = ftus * 1000
+
+        elif suffix == 'ftns':
+            ftsamp = int(round((value / 1000) / sample2us))
+            ftus = ftsamp * sample2us
+
+            self.__dict__[name.replace('ftns', 'ftsamp')] = ftsamp
+            self.__dict__[name.replace('ftns', 'ftus')] = ftus
+            self.__dict__[name] = ftus * 1000
+
+        elif suffix == 'tus':
 
             treg = self.soccfg.us2cycles(value)
             tus = self.soccfg.cycles2us(treg)
@@ -81,14 +128,14 @@ class NVConfiguration(ItemAttribute):
             self.__dict__[name] = tus
             self.__dict__[name.replace('tus', 'tns')] = tus * 1000
 
-        elif name.split('_')[-1] == 'treg':
+        elif suffix == 'treg':
             tus = self.soccfg.cycles2us(value)
 
             self.__dict__[name] = value
             self.__dict__[name.replace('treg', 'tus')] = tus
             self.__dict__[name.replace('treg', 'tns')] = tus * 1000
 
-        elif name.split('_')[-1] == 'tns':
+        elif suffix == 'tns':
             treg = self.soccfg.us2cycles(value / 1000)
             tus = self.soccfg.cycles2us(treg)
 
@@ -96,7 +143,7 @@ class NVConfiguration(ItemAttribute):
             self.__dict__[name.replace('tns', 'tus')] = tus
             self.__dict__[name] = tus * 1000
 
-        elif name.split('_')[-1] == 'fMHz':
+        elif suffix == 'fMHz':
             freg = self.soccfg.freq2reg(value)
             fMHz = self.soccfg.reg2freq(freg)
 
@@ -104,7 +151,7 @@ class NVConfiguration(ItemAttribute):
             self.__dict__[name] = fMHz
             self.__dict__[name.replace('fMHz', 'fGHz')] = fMHz / 1000
 
-        elif name.split('_')[-1] == 'fGHz':
+        elif suffix == 'fGHz':
             freg = self.soccfg.freq2reg(value * 1000)
             fMHz = self.soccfg.reg2freq(freg)
 
@@ -112,20 +159,20 @@ class NVConfiguration(ItemAttribute):
             self.__dict__[name.replace('fGHz', 'fMHz')] = fMHz
             self.__dict__[name] = fMHz / 1000
 
-        elif name.split('_')[-1] == 'freg':
+        elif suffix == 'freg':
             fMHz = self.soccfg.reg2freq(value)
 
             self.__dict__[name] = value
             self.__dict__[name.replace('freg', 'fMHz')] = fMHz
             self.__dict__[name.replace('freg', 'fGHz')] = fMHz / 1000
 
-        elif name.split('_')[-1] == 'pdegrees':
+        elif suffix == 'pdegrees':
             preg = self.soccfg.deg2reg(value)
 
             self.__dict__[name] = self.soccfg.reg2deg(preg)
             self.__dict__[name.replace('pdegrees', 'preg')] = preg
 
-        elif name.split('_')[-1] == 'preg':
+        elif suffix == 'preg':
             pdegrees = self.soccfg.reg2deg(value)
 
             self.__dict__[name.replace('preg', 'pdegrees')] = pdegrees
@@ -163,15 +210,19 @@ class NVConfiguration(ItemAttribute):
         assert unit in [
             'fMHz', 'fGHz', 'freg',
             'tus', 'tns', 'treg',
+            'ftus', 'ftns', 'ftsamp',
             'pdeg', 'preg']
         assert isinstance(nsweep_points, int)
-        if 'reg' in unit:
+        if ('reg' in unit) or (unit == 'ftsamp'):
             assert np.all([isinstance(var, int) for var in (start, stop, delta)]), \
-                "reg units require int start, stop, and delta"
+                "reg/ftsamp units require int start, stop, and delta"
 
         self.scaling_mode = 'linear'
 
-        if 'f' == unit[0]:
+        if unit.startswith('ft'):
+            ounit = unit
+            runit = 'ftsamp'
+        elif 'f' == unit[0]:
             ounit = unit
             runit = 'freg'
         elif 't' == unit[0]:
@@ -183,7 +234,7 @@ class NVConfiguration(ItemAttribute):
 
         self.__setattr__(name + '_start_' + unit, start)
 
-        if (delta != 0) & (nsweep_points == 0):
+        if (delta != 0) and (nsweep_points == 0):
 
             self.__setattr__(name + '_delta_' + unit, delta)
             self.nsweep_points = int(
@@ -195,7 +246,7 @@ class NVConfiguration(ItemAttribute):
                 + self[name + '_delta_' + runit]
                 * (self.nsweep_points - 1)))
 
-        elif (delta == 0) & (nsweep_points != 0):
+        elif (delta == 0) and (nsweep_points != 0):
 
             self.nsweep_points = nsweep_points
             self.__setattr__(name + '_delta_' + ounit, int(
@@ -221,8 +272,11 @@ class NVConfiguration(ItemAttribute):
 
     def add_unitless_linear_sweep(self, name, start, stop, delta=0, nsweep_points=0):
 
-        for var in [start, stop, delta]:
-            assert issubclass(var, int), "Unitless linear sweep requires integer start, stop, delta" 
+        assert np.sum(np.array([delta, nsweep_points]) > 0) == 1, 'Either delta and nsweep_points are required, but not both'
+        assert isinstance(start, int) and isinstance(stop, int), "Unitless linear sweep requires integer start and stop"
+        assert isinstance(nsweep_points, int), "nsweep_points must be an int"
+        if delta != 0:
+            assert isinstance(delta, int), "Unitless linear sweep requires integer delta"
 
         start_name = name + '_start'
         end_name = name + '_end'
@@ -230,23 +284,24 @@ class NVConfiguration(ItemAttribute):
 
         self[start_name] = start
 
-        if (delta != 0) & (nsweep_points == 0):
-            self[delta_name] = delta        
+        if (delta != 0) and (nsweep_points == 0):
+            self[delta_name] = delta
             self.nsweep_points = int(floor((stop - start) / delta + 1))
-            self[end_name] = (start + delta * self.nsweep_points)
+            self[end_name] = (start + delta * (self.nsweep_points - 1))
 
-        elif (delta == 0) & (nsweep_points == 0):
+        elif (delta == 0) and (nsweep_points != 0):
+            assert nsweep_points > 1, "nsweep_points must be > 1 when delta is not provided"
             self.nsweep_points = nsweep_points
             self[delta_name] = int(floor((stop - start) / (nsweep_points - 1)))
-            self[end_name] = (start + delta * self.nsweep_points)
+            self[end_name] = (start + self[delta_name] * (self.nsweep_points - 1))
 
-        if (self[start_name] + self[delta_name] * self.nsweep_points) != stop:
+        if self[end_name] != stop:
             print('Warning: exact sweep condition not possible\n')
             if delta == 0:
                 print(f'Requested {start} to {stop} in {nsweep_points}')
             else:
                 print(f'Requested {start} to {stop} by {delta}')
-            print(f'Instead using {start} to {self[end_name]} by {self[delta_name]} in {self.n_sweep_points}')
+            print(f'Instead using {start} to {self[end_name]} by {self[delta_name]} in {self.nsweep_points}')
 
     def add_exponential_sweep(self, name, unit, start, stop, scaling_factor=0):
         """
@@ -272,6 +327,11 @@ class NVConfiguration(ItemAttribute):
         """
 
         self.scaling_mode = 'exponential'
+        assert unit in [
+            'fMHz', 'fGHz', 'freg',
+            'tus', 'tns', 'treg',
+            'ftus', 'ftns', 'ftsamp',
+            'pdeg', 'preg']
         assert scaling_factor in ['17/16', '9/8', '5/4', '3/2'], 'Currently accepting only \
         scaling values 17/16, 9/8, /5/4, 3/2'
 
@@ -279,7 +339,16 @@ class NVConfiguration(ItemAttribute):
         self.__setattr__(name + '_start_' + unit, start)
         self.__setattr__(name + '_end_' + unit, stop)
 
-        start = self[name + '_start_treg']
-        stop = self[name + '_end_treg']
+        if unit.startswith('ft'):
+            runit = 'ftsamp'
+        elif 'f' == unit[0]:
+            runit = 'freg'
+        elif 't' == unit[0]:
+            runit = 'treg'
+        elif 'p' == unit[0]:
+            runit = 'preg'
+
+        start = self[name + '_start_' + runit]
+        stop = self[name + '_end_' + runit]
 
         self.nsweep_points = len(int_exp_scale(start, stop, self.scaling_factor))

@@ -1,145 +1,98 @@
-from .nvaverageprogram import NVAveragerProgram
+'''
+Counting Duration
+=======================================================================
+Min resolution of 200ps for steps between pulses in Rabi sequence
+using fine control of waveform start address and phase.
+
+Modified from Tommy's RabiFineRes program. See his notebook for more details on the method.
+'''
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import os
-import numpy as np
 from itemattribute import ItemAttribute
-from ..util import apply_on_axis_0_n_times
+from qickdawg.util.apply_on_axis_0_n_times import apply_on_axis_0_n_times
 
+from qickdawg.nvpulsing.nvaverageprogram import NVAveragerProgram
+from qickdawg.nvpulsing.nvqicksweep import NVQickSweep
+from .readout_helpers import ReadoutHelpers
+import numpy as np
 
-class IntegratedReadoutWindow(NVAveragerProgram):
+# NVAveragerProgram first as this class should only use the
+# Use the default acquire method from NVAveragerProgram, when acquire.super() is called
+class CountingDurationFineRes(NVAveragerProgram, ReadoutHelpers):
     '''
-    An NVAveragerProgram class that generates and executes a sequence used
-    to determine the pi (pi/2) pulse lenghts for your experimental configuration
-
-    Parameters
-    -------------------------------------------------------------------
-    soccfg
-        instance of qick.QickConfig class
-    cfg
-        instance of qickdawg.NVConfiguration class with attributes:
-        .adc_channel (required)
-            int channel which is reading data 0 or 1
-
-        .mw_channel (required)
-            qick channel that provides microwave excitation
-            0 or 1 for RFSoC4x2
-            0 to 6 for ZCU111 or ZCU216
-        .mw_nqz (required)
-            nyquist zone for microwave generator (1 or 2)
-        .mw_gain (required)
-            gain of micrwave channel, in register values, from 0 to 2**15-1
-
-        .pre_init (required)
-            boolian value that indicates whether to pre-pulse the laser to initialize
-            the spin state
-
-        .relax_delay_treg (required)
-            int that indicates how long to delay between on/off cycles and reps
-            in register units
-        .readout_length_treg (required)
-            int time for which the adc accumulates data
-            the limit is 1020 points for the FPGA buffer
-        .laser_readout_offset_treg (required)
-
-        .laser_gate_pmod(required)
-            int PMOD channel used to trigger laser source
-            0 to 4
-    returns
-        an instances of LockinODMR class with assembly language compiled
-
-
-    Methods
-    -------
-    initialize
-        method that generates the assembly code that setups the adcs &  mw generators,
-        and performs other one-off setps
-    body
-        method that generates the assembly code that exectues in the middle of each sweep
-        and rep
-    plot_sequence
-        generates a plot labeled with self.cfg attributes or the required inputs
-    time_per_rep
-        returns the approximatetime for one rep to complete
-    total_time
-        returns the approximate total time for the entire program to complete
-
+    Rabi sub-nanosecond resolution pulsing program
     '''
-    required_cfg = ["adc_channel",
-                    "readout_integration_treg",
-                    "mw_channel",
-                    "mw_nqz",
-                    "mw_gain",
-                    "mw_freg",
-                    "mw_pi2_treg",
-                    "pre_init",
-                    "laser_gate_pmod",
-                    "laser_on_treg",
-                    "relax_delay_treg",
-                    "mw_readout_delay_treg",
-                    "reps",
-                    "readout_reference_start_treg"
-                    ]
+    required_cfg = [
+        # Channels and pmods
+        "mw_channel",
+        "adc_channel",
+        "laser_gate_pmod", # should be 0 for PMOD0_0
+
+        # MW pulse parameters
+        "mw_pi_ftsamp", # length of mw
+        "mw_freg", # Microwave freq 
+        "mw_nqz", # 1 at 1405 MHz
+        "mw_gain", # MW Gain
+
+        # Readout and delays
+        "mw_to_laser_delay_treg", # How long do we need to delay the mw, to ensure the laser pulse is correctly timed before it
+        "relax_delay_treg", # delay between laser and next MW pulse
+
+        # Readout
+        "laser_on_treg",
+        "readout_reference_start_treg",
+        "readout_integration_treg",
+        "laser_readout_offset_treg",
+
+        # Other
+        "reps",
+        "pre_init",
+        "get_reference",  # Whether to acquire a reference readout with MW gain = 0
+    ]
 
     def initialize(self):
-        '''
-        Method that generates the assembly code that is sets up adcs and sources. 
-        For RabiSweep this:
-        configures the adc to acquire points for self.cfg.readout_integration_t#. 
-        configures the microwave channel 
-        configures the sweep parameters
-        initiailzes the spin state with a laser pulse
-        '''
         self.check_cfg()
 
+        # Get mw registers
+        self.declare_gen(ch=self.cfg.mw_channel, nqz=self.cfg.mw_nqz)
+        self.setup_helper_registers(self.cfg.mw_channel)
+
+        # Setup laser
         self.setup_readout()
 
-        # configure pulse defaults and initial parameters for microwave
-        self.declare_gen(
-            ch=self.cfg.mw_channel,
-            nqz=self.cfg.mw_nqz)        
-
-        self.default_pulse_registers(
-            ch=self.cfg.mw_channel,
-            style='const',
-            freq=self.cfg.mw_freg,
-            gain=self.cfg.mw_gain,
-            length=self.cfg.mw_pi2_treg,
-            phase=0)
-
+        # Get samps per clk for later calculations
+        self.samps_per_clk = self.soccfg['gens'][self.cfg.mw_channel]['samps_per_clk']
+        # Configure the waveforms for fine resolution pulse steps (must be >= 3 treg units)
+        self.mw_pulse_waveform_len_treg = max(int(np.ceil(self.cfg.mw_pi_ftsamp / self.samps_per_clk)), 3)
+        self.mw_pulse_waveform_len_ftsamp = self.mw_pulse_waveform_len_treg * self.samps_per_clk
+        # Create waveform with exact duration
+        data = np.zeros(self.mw_pulse_waveform_len_ftsamp)
+        data[:self.cfg.mw_pi_ftsamp] = 1
+        data *= self.soccfg.get_maxv(self.cfg.mw_channel)
+        self.add_envelope(ch=self.cfg.mw_channel, name="pulse", idata=data, qdata=None)
+        # MW pulse register
+        self.default_pulse_registers(ch=self.cfg.mw_channel,
+                                     style='arb',
+                                     freq=self.cfg.mw_freg,
+                                     gain=self.cfg.mw_gain,
+                                     waveform="pulse",
+                                     phase=0)
+        # Explicitly arm the pulse
         self.set_pulse_registers(ch=self.cfg.mw_channel)
 
-        self.synci(400)  # give processor some time to configure pulses
-
-        if self.cfg.pre_init:
-
-            self.trigger(
-                pins=[self.cfg.laser_gate_pmod],
-                width=self.cfg.laser_on_treg, 
-                adc_trig_offset=self.cfg.laser_readout_offset_treg)
-            self.sync_all(self.cfg.laser_on_treg)
-
-        self.wait_all()
-        self.sync_all(self.cfg.relax_delay_treg)
+        self.pre_init()
 
     def body(self):
-        '''
-        Method that generates the assembly code that is looped over or repeated. 
-        For RabiSweep this peforms four measurements at a time and does two pulse sequences:
-        1. Microwave pulse followed by readout and reference emasurement
-        2. No micrwave pulse followed by readout and reference 
-        '''
+        self.initialize_spin()
+        self.program_pulse()
+        self.readout_and_reference(self.program_pulse)
 
-        self.pulse(ch=self.cfg.mw_channel, t=0)
+    def program_pulse(self):
+        """Program the MW pulse sequence"""
+        self.pulse(ch=self.cfg.mw_channel)
         self.sync_all()
-        self.synci(self.cfg.mw_readout_delay_treg)
-        self.ttl_readout()
-
-        self.synci(self.cfg.mw_pi2_treg * 2)
-        self.synci(self.cfg.mw_readout_delay_treg)
-        self.ttl_readout()
-
+    
     def acquire(self, raw_data=False, *arg, **kwarg):
 
         data = super().acquire(readouts_per_experiment=4, *arg, **kwarg)
@@ -183,6 +136,10 @@ class IntegratedReadoutWindow(NVAveragerProgram):
         d.reference2 = apply_on_axis_0_n_times(d.reference2.astype(ret_type), func, n)
 
         d.contrast = apply_on_axis_0_n_times(d.contrast.astype(ret_type), func, n)
+
+        norm_factor = self.cfg.readout_integration_tns * 1e-9 * self.cfg.reps
+        for key in ['signal1', 'reference1', 'signal2', 'reference2']:
+            d[key + '_cts_s'] = d[key] / norm_factor
 
         return d
 
