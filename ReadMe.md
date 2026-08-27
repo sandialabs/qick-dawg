@@ -34,7 +34,9 @@ QICKDAWG has programs for the characterization of:
 - Rabi Oscillations 
 - Hanhn Echo T<sub>2</sub>
 - T<sub>1</sub> Relaxation
-- Ramsey Interferometry 
+- Ramsey Interferometry
+- Photon counting
+- Car-Purcell-Meiboom-Gill (CPMG)
 
 using a ZCU111, RFSoC4x2 and now the ZCU216!
 

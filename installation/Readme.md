@@ -17,14 +17,14 @@ The ZCU216 and ZCU11 as shown in the images belows, are evaluation boards built 
 <!-- However, as the RFSOC4x2 is sold, the ADCs have a high frequency 1GHz high-pass balun inline which is typically too high frequency for our measurements and thus must be modified. -->
 
 <p align="center">
-    <img src="graphics/zcu216_label.png"
+    <img src="graphics/zcu216_labels.png"
         alt="ZCU111 Evaluation Board"
         width="400px"/>
 
 </p>
 
 <p align="center">
-    <img src="graphics/zcu111_label.png"
+    <img src="graphics/zcu111_labels.png"
         alt="ZCU111 Evaluation Board"
         width="400px"/>
 
@@ -42,44 +42,40 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2, ZCU11
     b. Install necessary packages<br>
 
 3. Setup RFSoC FPGA Hardware<br>
+    a. Buffer board setup <br>
+    b. Assemble and power on your RF SoC FPGA <br>
+    c. Optional full enclosure assembly <br>
     <!-- a. Photon counting mode<br> -->
     <!-- b. Low frequency analog modification<br> -->
     <!-- c. Connect PMOD digital outputs<br> -->
-    a. Buffer board setup
-    b. Assemble and power on your RF SoC FPGA <br>
-    c. (Optional) Full enclosure assembly
-
 ## ***Prerequisites***
-<!-- #### For initial setup: -->
-<!-- - See xxxx build files for more details. -->
+For all initial setup parts, see the build files for your selected RFSoC [here](https://github.com/sandialabs/qick-dawg/tree/main/hardware) in the /hardware/ directory.
 - [RFSoC4x2](https://www.xilinx.com/support/university/xup-boards/RFSoC4x2.html) (with 12 volt 50 watt power supply)
 - [ZCU216](https://www.amd.com/en/products/adaptive-socs-and-fpgas/evaluation-boards/zcu216.html)
 - [ZCU111](https://www.amd.com/en/products/adaptive-socs-and-fpgas/evaluation-boards/zcu111.html)
 - Ethernet cord
 - Micro SD card reader
+- SMA cables
 <!-- (DC Mode) -->
 <!-- - Low frequency differential amplifier [Texas Instruments LMH5401EVM](https://www.digikey.com/en/products/detail/texas-instruments/LMH5401EVM/5031896?s=N4IgTCBcDaIDIFkASBWALABgIwFEBqCIAugL5A) -->
 <!-- - 3 x DC output voltage supply (+3.2, +0.7, -1.8V for biasing the differential amplifier) -->
-- SMA cables
 
 ### Software 
 - [Win32DiskImager](https://sourceforge.net/projects/win32diskimager/) for Windows or Disk Manager on MacOS
-- Dependent packages (follow `Installing Necessary Packages` section--included in the setup batch file)
-    - [QICK](https://github.com/openquantumhardware/qick)
-
+- [QICK](https://github.com/openquantumhardware/qick) - dependent packages (follow `Installing Necessary Packages` section--included in the setup batch file)
 
 
 # 1. Install QICK-DAWG and other software to your RFSoC FPGA 
-<!-- This file no longer exists.. -->
+<!-- This file below no longer exists.. -->
 <!-- (Getting started directions adapted from [QICK ZCU111 quick-start-guide](https://github.com/openquantumhardware/qick/blob/main/quick_start/README_ZCU111.md)) -->
 
 ## 1a. Flash your Micro SD Card ##
 - First, you will need to flash the micro SD card with the appropiate PYNQ image file for your selected RFSoC FPGA. Download the RFSoC PYNQ image and unzip the file if it is a .zip file. Lastest and older versions are avaiable.
    - **RFSoC4x2 PYNQ** v3.1.1 image found [here](https://www.pynq.io/boards.html). 
-   - **ZCU111** v3.1.1 image found [here](https://www.pynq.io/boards.html)
-   - **ZCU216** found [here](https://github.com/sarafs1926/ZCU216-PYNQ)
+   - **ZCU111   PYNQ** v3.1.1 image found [here](https://www.pynq.io/boards.html)
+   - **ZCU216   PYNQ** v2.7   image found [here](https://github.com/sarafs1926/ZCU216-PYNQ)
 
-(Windows)
+On Windows:
 - With your micro SD card plugged in to your computer, open Win32DiskImager. Select the PYNQ file as your image file and select your micro SD card as the device. Double check you are not flashing the image file to the wrong drive (**not your computer hard drive**)! To execute, click `Write`. 
 
 <p align="center">
@@ -88,23 +84,23 @@ In this document we outline the setup for using QICK-DAWG with a RFSoC4x2, ZCU11
         width="500px"/>
 </p>
 
-Once the image is written to the microSD card, put the microSD card into the RFSoC FPGA, connect to the internet via ethernet, and turn the board on. 
-On the RFSoC4x2, the LED screen on top of the board will have your ip address which you will need for further steps. 
+Once the image is written to the microSD card, put the microSD card into the RFSoC FPGA, connect to the internet via ethernet, and turn the board on. Establish your own ethernet connection between your host computer and FPGA. 
+On the RFSoC4x2, the LED screen on top of the board will have your ip address which you will need to connect to the board. 
 
 <!-- To setup your own static IP for the ZCU216 and ZC111:
 - When connected to the board on the linux command line type: `*vim etc/networks/interfaces.d/eth0`
 - For ethernet port `*eth0`, change `*iface eth0 inet dynamic` to `*iface eth0 inet dynamic`
 - Save and exit
-- Ensure on the Host machine the gateway IP on your selected ehternet port to the FPGA is static (i.e 192.168.0.1) and your ipv4 net is set static as well (i.e 192.168.0.xxx) -->
+- Ensure on the host computer the gateway IP on your selected ethernet port to the FPGA is static (i.e 192.168.0.1) and your ipv4 net is set static as well (i.e 192.168.0.xxx) -->
 
 ## 1b. Clone QICK-DAWG on your FPGA ##
 
-SSH directly into the board using it's IP via windows cmd.exe with the command,
+SSH directly into the board using it's IP via Windows Powershell with the command:
 
 `ssh xilinx@{ip address}`
 
 You will then be prompted for the password, which is also `xilinx` and asked to store the ssh footprint, for which you should respond `yes`. 
-Now you'll have remote, terminal control of the board.  From here type
+Now you'll have remote, terminal control of the board.  From here type:
 
 ```
 cd ./jupyter_notebooks
@@ -112,10 +108,9 @@ git clone https://github.com/sandialabs/qick-dawg
 
 ```
 This will download the qick-dawg repository to the default directory of the jupyter notebook server run by the RFSoC FPGA.
-If you cannot clone the qick-dawg repo from the board, clone it locally on your Host machine and copy it over the FPGA via scp, 
+If you cannot clone the qick-dawg repo from the board, clone it locally on your host computer, zip the folder and copy it over the FPGA via scp:
 
 `scp qick-dawg/ xilinx@{ip address}:/jupyter_notebooks/`
-
 
 ## 1c. Install necessary Packages on your RFSoC FPGA ##
 With the required files copied to your RFSoC FPGA, we will now install the required packages by running an .ipynb though the FPGA's Jupyter Notebook server. To connect to the jupyter notebook server:
@@ -129,11 +124,9 @@ In a browser window type your FPGA's IP address and use password `xilinx` as sho
 </p>
  
 From the home page, navigate to the installation folder, open install_packages.ipynb and run all of the cells to install the packages. This does three things:
-
 1. installs pyro4 for remote control of the board
 2. downloads and installs qick
 3. moves some files around
-
 
 ## 1d. Run the Pyro server to remotely connect to QICK and the RFSoC FPGA ##
 
@@ -154,20 +147,20 @@ With all of the packages installed, you can now run your Pyro server to connect 
         width="800px"/>
 </p>
 
-With these two notebooks running you can now start communicating with your FPGA from a python kernel on your Host computer. From here, we recommend running through `qickdawg/jupyter_notebooks/` which contains significant documentation on how to run our basic NV characterization notebooks. 
+With these two notebooks running you can now start communicating with your FPGA from a python kernel on your host computer. From here, we recommend running through `qickdawg/jupyter_notebooks/` which contains significant documentation on how to run our basic NV characterization notebooks. 
 
 Note that the qick_daemon notebook specifically points to a firmware made for qick-dawg.
 
 # 2. Setup lab control computer
 
 ## 2a. Download/clone a local copy QICK-DAWG
-You need a local copy of QICK-DAWG on your lab control computer. There are two options for obtaining a local copy of QICK-DAWG
+You need a local copy of QICK-DAWG on your lab local host computer. There are two options for obtaining a local copy of QICK-DAWG
 
 1.  use a git manager to clone QICK-DAWG, found at `https://github.com/sandialabs/qick-dawg` (on Windows, VSCode is nice for this)
 2.  download QICK-DAWG as a .zip file from the [GitHub repository](https://github.com/sandialabs/qick-dawg) and unzip it. 
 
 ## 2b. Install Necessary Packages
-To run your FPGA from your lab computer you need to install QICK-DAWG. To install QICK-DAWG, on your lab computer:
+To run your FPGA from your host computer you need to install QICK-DAWG. To install QICK-DAWG, on your host computer:
 
 - In the command prompt navigate to `*\qick-dawg`
 - Enter `pip install -e ./`
@@ -176,7 +169,7 @@ This will install QICK-DAWG and it's dependent packages.
 
 ## Running demo notebooks
 
-With the remote pyro4 server running on the FPGA and qick-dawg installed on your local computer you should now be able to connect to the demo notebooks in the /qick-dawg/jupyter_notebooks folder. 
+With the remote pyro4 server running on the FPGA and qick-dawg installed on your host computer you should now be able to connect to the demo notebooks in the /qick-dawg/jupyter_notebooks folder. 
 
 # 3. Setup Your FPGA Hardware 
 <!-- Is this section needed now? -->
@@ -247,40 +240,32 @@ Note if you are worried about removing the balun from your RFSoC4x2, marketplace
  -->
 <!-- To connect, we cut the female head off a PMOD cable and soldered on a female BNC head instead. PMOD A 0-7 are enabled for QICK-DAWG (in the demo we use PMOD 0). The image below provides a schematic of the PMOD on the RFSoC4x2. -->
 
+
+## 3b. Assemble hardware on your FPGA board
+
+### Wiring and Powering the Buffer Board
+There are three wiring tasks for the enclosure: main power, the PMOD buffer board, and the final network connections. The PMOD TTL outputs are connected by first plugging in a 12-pin PMOD Header connector, which mates with one end of the 12 pin PMOD cable to the FPGA’s PL PMOD. 
+
 <p align="center">
     <img src="graphics/PMOD.png"
         alt="PMOD diagram"
         width="500px"/>
 </p>
 
-## 3b. Assemble and power on your FPGA board
+If you have DAWG House enclosure, place the buffer board in the designated PMOD slot on the front panel of the enclosure labeled ”PMOD”. Ensure that the corresponding pin numbers on the buffer board align with those on the front label of the panel. See section 3c and the available encloser file in the [/hardware/ directory](https://github.com/sandialabs/qick-dawg/tree/main/hardware).
 
-With the hardware setup and PMOD Buffer board connected, the FPGA can be assembled to be connected to your computer. This connection is made with a WAN connection and a router. To do so:
-- slide your micro SD card into its slot on the FOGA board and check that the BOOT switch is on SD mode; 
-- connect an Ethernet cable from the board to the router;
-- and connect the FPGA to its power supply and turn it on.
+The buffer board will be powered using a type A USB connector and the available USB 2.0 port on the FPGA. To allow power through the USB 2.0 port on the ZCU111 and ZCU216, the USB port must be enabled through jumper settings on the board to supply power to the buffer board. For the ZCU111, a jumper should be place on J17 GND and SHLD. For the ZCU216 at J19 HOST and J20 GND and SHLD. 
 
-You should hear the fan above the RFSoC chip begin to whir and you should see green LED lights blinking all over the board. On the 4x2, after about 30 seconds the boot light should turn green and the LED screen will display the board's IP address. Your setup should resemble the schematic below. 
+## 3c. Ethernet Router Connection
+The Ethernet port of the RFSoC can be connected using a router by connecting one ethernet cable from the FPGA ethernent port to one channel of the router and a second cable connecting another channel of the router to the Ethernet port of the host computer. 
 
-### Wiring and Powering the Buffer Board
-There are three wiring tasks for the enclosure: main power, the PMOD buffer board, and the final network connections. The PMOD TTL outputs are connected by first plugging in a 12-pin PMOD Header connector, which mates with one end of the 12 pin PMOD cable to the FPGA’s PL PMOD. Place the buffer board in the designated PMOD slot on the front panel of the enclosure labeled ”PMOD”. Ensure that the corresponding pin numbers on the buffer board align with those on the front label of the panel. The buffer board will be powered using a type A USB connector and the available USB 2.0 port on the FPGA. To allow power through the USB 2.0 port on the ZCU111 and ZCU216, the USB port must be enabled through jumper settings on the board to supply power to the buffer board. For the ZCU111, a jumper should be place on J17 GND and SHLD. For the ZCU216 at J19 HOST and J20 GND and SHLD. 
+## 3d. Optional full enclosure setup
 
-#### Final connections and setup
-Finally, the Ethernet port of the RFSoC can be connected either directly to the host machine or to one channel of a router, with a second cable connecting another channel of the router to the Ethernet port of the FPGA. With all components assembled, the RFSoC firmware should be flashed to a microSD card as indicated in the installation section of https://github.com/sandialabs/qickdawg.
+In our lab, we have assembled all the necessary components into a custom rack box, [DAWG House](https://github.com/sandialabs/qick-dawg/tree/main/hardware), with screw holes and cages for fastening components. The following CAD files for the enclosure are found in `qickdawg/hardware/DAWG_House_{your FPGA}`:
+<!-- ([Bud Industries CH-14404 Enclosure](https://www.digikey.com/en/products/detail/bud-industries/CH-14404/428959)).  Hardware setup instructions for the enclosure can be found on our [QICK-DAWG Read the Docs](https://qick-dawg.readthedocs.io/en/latest/index.html) site.-->
 
-<!-- ???? -->
-<!-- <p align="center">
-    <img src="graphics/RFSoC_Diagram_WAN.png"
-        alt="Diagram of the RFSoC4x2 Board"
-        width="800px"/>
-</p> --> -->
-
-## 3c. (Optional) Full enclosure setup
-
-In our lab, we have assembled all the necessary components into a custom rack box ([Bud Industries CH-14404 Enclosure](https://www.digikey.com/en/products/detail/bud-industries/CH-14404/428959)) with screw holes and 3D printed cages for fastening components. Hardware setup instructions for the enclosure can be found on our [QICK-DAWG Read the Docs](https://qick-dawg.readthedocs.io/en/latest/index.html) site. The following CAD files for the enclosure are found in `qickdawg/hardware/DAWG_House_{your FPGA}`:
-
-- enclosure_Main.SLDPRT, CAD for custom enclosure drill holes to secure FPGA and front panel holes for SMA and buffer pass through.
-- xxxx_front_graphics, graphics and labels for the front panel of the dawg house.
+   * enclosure_Main.SLDPRT : CAD for custom enclosure drill holes to secure FPGA and front panel holes for SMA and buffer pass through
+   * xxxx_front_graphics, graphics and labels for the front panel of the dawg house
 
 <!-- - Low_Freq_Diff_Amp_Base.SLDRT, CAD for 3D printable differential amplifier support for mounting the differential amplifier near the RFSoC 4x2 board
 - Low-Freq_Diff_Amp_Top.SLDPRT, CAD for 3D printable differential amplifier top
@@ -292,8 +277,23 @@ In our lab, we have assembled all the necessary components into a custom rack bo
         alt="Full Enclosure "
         width="800px"/>
 </p> -->
-
 <!-- While this is listed as optional, for DC mode it is really required to sabilize the differential ampifier relative to the RFSoC4x2.  -->
+
+# 4. Final Setup
+### 4a. Final checklist
+- check that the BOOT switch is on SD mode and slide your micro SD card into its slot on the FPGA board.
+- Connect an Ethernet cable from the board to the router or directly to your host computer.
+- Connect the FPGA to its power supply and switch the power switch to on.
+
+You should hear the fan above the RFSoC chip begin to whirl and see green LED lights blinking all over the board. 
+On the 4x2, after about 30 seconds the boot light should turn green and the LED screen will display the board's IP address.
+The RFSoC firmware and notebooks should be available in the microSD card after install qick-dawg to the board as indicated in section 1.
+
+<p align="center">
+    <img src="graphics/RFSoC_Diagram_WAN.png"
+        alt="Diagram of the RFSoC4x2 Board"
+        width="800px"/>
+</p>
 
 # References
 <a name="RFSoc4x2_Schematic">1</a>: [RFSoC4x2 Schematic](https://www.realdigital.org/downloads/3ae3a2552d7da46e9041196c654cd63d.pdf)
